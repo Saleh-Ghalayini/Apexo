@@ -7,7 +7,7 @@
 
 > Apexo is a next-generation, AI-powered business assistant built to automate, optimize, and augment internal operations for modern organizations.
 >
-> By intelligently participating in meetings, managing tasks, and automating workflows, Apexo bridges the gap between human collaboration and artificial intelligence — enabling businesses to operate smarter, faster, and more efficiently.
+> By intelligently participating in meetings, managing tasks, and automating workflows, Apexo bridges the gap between human collaboration and artificial intelligence - enabling businesses to operate smarter, faster, and more efficiently.
 
 <br><br>
 
