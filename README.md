@@ -23,12 +23,14 @@
 <!-- Project Highlights -->
 <img src="./readme/title4.svg"/>
 
-### Add Title Here
-
-- Real-time Meeting Participation: Transcribing discussions, summarizing key points, and automatically extracting actionable tasks.
-- Task Management Assistance: Empowering employees to track, update, and query their tasks seamlessly through AI interactions.
-- Workflow Automation: Handling repetitive administrative duties like reminders, reporting, and follow-ups with minimal human input.
-- Future-Proof Expansion: Designed with modularity to integrate advanced AI capabilities such as AI-driven hiring assistance and internal knowledge querying.
+- ### Real-time Meeting Participation:
+  Transcribing discussions, summarizing key points, and automatically extracting actionable tasks.
+- ### Task Management Assistance:
+  Empowering employees to track, update, and query their tasks seamlessly through AI interactions.
+- ### Workflow Automation:
+  Handling repetitive administrative duties like reminders, reporting, and follow-ups with minimal human input.
+- ### Future-Proof Expansion:
+  Designed with modularity to integrate advanced AI capabilities such as AI-driven hiring assistance and internal knowledge querying.
 
 <br><br>
 
