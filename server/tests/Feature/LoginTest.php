@@ -5,9 +5,12 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class LoginTest extends TestCase
 {
+    use DatabaseTransactions;
+
     public function testLoginWithValidCredentials()
     {
         $password = 'password123';
@@ -67,7 +70,7 @@ class LoginTest extends TestCase
         $user->delete();
     }
 
-    public function testUserLoginWithNonExistentEmail()
+    public function testLoginWithNonExistentEmail()
     {
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'nonexistent@example.com',
