@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,10 @@ class MeetingFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'company_id' => Company::factory(),
+            'transcript' => fake()->optional()->paragraphs(3, true),
+            'summary' => fake()->optional()->sentence(),
+            'scheduled_at' => fake()->dateTimeBetween('now', '+1 month'),
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,13 @@ class SlackAnnouncementFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => User::factory(),
+            'recipient_emails' => [
+                fake()->unique()->safeEmail(),
+                fake()->unique()->safeEmail(),
+                fake()->unique()->safeEmail(),
+            ],
+            'message' => fake()->sentence(12),
         ];
     }
 }
