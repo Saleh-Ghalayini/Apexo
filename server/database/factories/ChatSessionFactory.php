@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,22 @@ class ChatSessionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => User::factory(),
+            'summary' => $this->faker->sentence(10),
+            'messages' => json_encode([
+                [
+                    'sender' => 'user',
+                    'message' => $this->faker->sentence(),
+                    'timestamp' => now()->subMinutes(2)->toIso8601String()
+                ],
+                [
+                    'sender' => 'ai',
+                    'message' => $this->faker->sentence(),
+                    'timestamp' => now()->subMinute()->toIso8601String()
+                ],
+            ]),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }
