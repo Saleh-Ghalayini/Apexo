@@ -18,76 +18,97 @@ class RoleAccessControlTest extends TestCase
 
     private function createUserWithRole(string $role): User
     {
-        return User::factory()->create(['role' => $role]);
+        return User::factory()->create(['role' => strtolower($role)]);
+    }
+
+    private function assertForbidden($response)
+    {
+        $response->assertStatus(403)
+            ->assertJson([
+                'success' => false,
+                'error' => 'Unauthorized access',
+            ]);
+    }
+
+    private function assertSuccess($response)
+    {
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'payload',
+            ])
+            ->assertJson([
+                'success' => true,
+            ]);
     }
 
     public function testEmployeeAccessingManagerEndpoint()
     {
         $employee = $this->createUserWithRole('employee');
-
         $this->actingAs($employee);
+
         $response = $this->getJson('/api/v1/manager-only-endpoint');
 
-        $response->assertStatus(403);
+        $this->assertForbidden($response);
     }
 
     public function testEmployeeAccessingHREndpoint()
     {
         $employee = $this->createUserWithRole('employee');
-
         $this->actingAs($employee);
+
         $response = $this->getJson('/api/v1/hr-only-endpoint');
 
-        $response->assertStatus(403);
+        $this->assertForbidden($response);
     }
 
     public function testManagerAccessingHREndpoint()
     {
         $manager = $this->createUserWithRole('manager');
-
         $this->actingAs($manager);
+
         $response = $this->getJson('/api/v1/hr-only-endpoint');
 
-        $response->assertStatus(403);
+        $this->assertForbidden($response);
     }
 
     public function testManagerAccessingManagerEndpoint()
     {
         $manager = $this->createUserWithRole('manager');
-
         $this->actingAs($manager);
+
         $response = $this->getJson('/api/v1/manager-only-endpoint');
 
-        $response->assertStatus(200);
+        $this->assertSuccess($response);
     }
 
     public function testEmployeeAccessingEmployeeEndpoint()
     {
         $employee = $this->createUserWithRole('employee');
-
         $this->actingAs($employee);
+
         $response = $this->getJson('/api/v1/employee-only-endpoint');
 
-        $response->assertStatus(200);
+        $this->assertSuccess($response);
     }
 
     public function testHRAccessingHREndpoint()
     {
         $hr = $this->createUserWithRole('hr');
-
         $this->actingAs($hr);
+
         $response = $this->getJson('/api/v1/hr-only-endpoint');
 
-        $response->assertStatus(200);
+        $this->assertSuccess($response);
     }
 
     public function testHRAccessingManagerEndpoint()
     {
         $hr = $this->createUserWithRole('hr');
-
         $this->actingAs($hr);
+
         $response = $this->getJson('/api/v1/manager-only-endpoint');
 
-        $response->assertStatus(403);
+        $this->assertForbidden($response);
     }
 }
