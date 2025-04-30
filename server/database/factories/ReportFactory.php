@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,15 @@ class ReportFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'company_id' => Company::factory(),
+            'type' => fake()->randomElement(['weekly', 'monthly', 'yearly']),
+            'data' => [
+                'summary' => fake()->sentence(),
+                'performance_score' => fake()->numberBetween(60, 100),
+                'highlights' => fake()->sentences(3),
+                'issues' => fake()->optional()->sentences(2),
+            ],
+            'generated_at' => fake()->dateTimeBetween('-1 month', 'now'),
         ];
     }
 }
