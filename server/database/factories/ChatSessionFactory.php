@@ -27,7 +27,7 @@ class ChatSessionFactory extends Factory
                     'timestamp' => now()->subMinutes(2)->toIso8601String()
                 ],
                 [
-                    'sender' => 'ai',
+                    'sender' => 'apexo',
                     'message' => $this->faker->sentence(),
                     'timestamp' => now()->subMinute()->toIso8601String()
                 ],
