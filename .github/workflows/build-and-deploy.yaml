@@ -25,10 +25,31 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/Apexo:latest .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/apexo:latest .
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/Apexo:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/apexo:latest
+
+  Copy-Docker-Compose-To-Server:
+    needs: Build-And-Push-Docker
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Copy Docker Compose File To EC2
+        uses: appleboy/scp-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            sudo usermod -aG docker $USER
+            docker-compose down
+            docker rmi ${{ secrets.DOCKER_USERNAME }}/apexo:latest
+            docker-compose up -d
 
   Deploy-To-Server:
     needs: Build-And-Push-Docker
@@ -46,5 +67,5 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             docker-compose down || true
-            docker pull ${{ secrets.DOCKER_USERNAME }}/Apexo:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/apexo:latest
             docker-compose up -d --build
