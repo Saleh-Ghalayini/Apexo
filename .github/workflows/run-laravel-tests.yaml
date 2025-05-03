@@ -19,7 +19,7 @@ jobs:
           - 5432:5432
         env:
           POSTGRES_DB: testing
-          POSTGRES_USER: postgress
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
         options: >-
           --health-cmd "pg_isready -U postgres"
@@ -44,8 +44,8 @@ jobs:
           sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
           sed -i 's/^DB_PORT=.*/DB_PORT=5432/' .env
           sed -i 's/^DB_DATABASE=.*/DB_DATABASE=testing/' .env
-          sed -i 's/^DB_USERNAME=.*/DB_USERNAME=postgress/' .env
-          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=password/' .env
+          sed -i 's/^DB_USERNAME=.*/DB_USERNAME=postgres/' .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=S@lehgh2004/' .env
 
           composer install --no-interaction --prefer-dist
           php artisan key:generate --force
