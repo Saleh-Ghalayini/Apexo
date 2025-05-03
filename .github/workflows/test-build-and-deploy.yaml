@@ -72,6 +72,7 @@ jobs:
         run: php artisan test
 
   Build-And-Push-Docker:
+    needs: Run-Laravel-Tests
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
