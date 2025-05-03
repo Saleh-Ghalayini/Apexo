@@ -69,7 +69,7 @@ jobs:
 
       - name: Run Laravel tests
         working-directory: ./server
-        run: php artisan test
+        run: php artisan test --verbose
 
       - name: Trigger deploy workflow if tests pass
         if: ${{ success() }}
