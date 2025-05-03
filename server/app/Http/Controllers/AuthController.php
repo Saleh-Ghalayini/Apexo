@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\AuthService;
 use App\Traits\ResponseTrait;
 use App\Http\Requests\LoginRequest;
@@ -26,8 +25,11 @@ class AuthController extends Controller
         $loginResponse = $this->authService->login($credentials);
 
         if (isset($loginResponse['success']) && !$loginResponse['success'])
-            return $this->errorResponse($loginResponse[''], 401);
+            return $this->errorResponse($loginResponse['message'], 401);
 
-        return $this->successResponse($loginResponse);
+        return $this->successResponse([
+            'token' => $loginResponse['token'],
+            'user' => $loginResponse['user']
+        ]);
     }
 }
