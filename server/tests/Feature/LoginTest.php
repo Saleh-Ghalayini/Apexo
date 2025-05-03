@@ -64,7 +64,7 @@ class LoginTest extends TestCase
         $response->assertStatus(401)
             ->assertJson([
                 'success' => false,
-                'error' => 'Invalid credentials',
+                'error' => 'Invalid Credentials',
             ]);
 
         $user->delete();
@@ -77,10 +77,14 @@ class LoginTest extends TestCase
             'password' => 'irrelevant',
         ]);
 
-        $response->assertStatus(401)
+        $response->assertStatus(422)
             ->assertJson([
-                'success' => false,
-                'error' => 'Invalid credentials',
+                'message' => 'The selected email is invalid.',
+                'errors' => [
+                    'email' => [
+                        'The selected email is invalid.',
+                    ],
+                ],
             ]);
     }
 }
