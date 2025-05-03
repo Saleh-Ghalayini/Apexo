@@ -53,4 +53,17 @@ class AuthService
             ],
         ];
     }
+
+    public function logout()
+    {
+        try {
+            JWTAuth::invalidate(JWTAuth::getToken());
+            return ['success' => true];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to log out, please try again.'
+            ];
+        }
+    }
 }
