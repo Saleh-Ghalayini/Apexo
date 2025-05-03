@@ -32,4 +32,16 @@ class AuthController extends Controller
             'user' => $loginResponse['user']
         ]);
     }
+
+    public function register(RegisterRequest $request)
+    {
+        $credentails = $request->validated();
+
+        $registerResponse = $this->authService->register($credentails);
+
+        if (isset($registerResponse['success']) && !$registerResponse['success'])
+            return $this->errorResponse($registerResponse['message']);
+
+        return $this->successResponse(['user' => $registerResponse['user']], 201);
+    }
 }
