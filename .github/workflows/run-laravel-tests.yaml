@@ -54,7 +54,8 @@ jobs:
           sleep 10
 
           php artisan migrate --force
-
+      - name: Debug DB_PASSWORD
+        run: echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
       - name: Run Laravel tests
         working-directory: ./server
         run: php artisan test
