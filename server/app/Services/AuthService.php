@@ -36,4 +36,21 @@ class AuthService
             ]
         ];
     }
+
+    public function register(array $user_data)
+    {
+        $user_data['password'] = Hash::make($user_data['password']);
+
+        $user = User::create($user_data);
+
+        return [
+            'success' => true,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+            ],
+        ];
+    }
 }
