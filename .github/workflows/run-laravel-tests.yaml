@@ -45,11 +45,14 @@ jobs:
           sed -i 's/^DB_PORT=.*/DB_PORT=5432/' .env
           sed -i 's/^DB_DATABASE=.*/DB_DATABASE=testing/' .env
           sed -i 's/^DB_USERNAME=.*/DB_USERNAME=postgres/' .env
-          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=your-db-password-here/' .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=password/' .env
 
           composer install --no-interaction --prefer-dist
           php artisan key:generate --force
           php artisan jwt:secret --force
+
+          sleep 10
+
           php artisan migrate --force
 
       - name: Run Laravel tests
