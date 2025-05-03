@@ -25,6 +25,9 @@ class RegisterRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
+            'password_confirmation' => 'required|same:password',
+            'company_name' => 'required',
+            'company_domain' => 'required|url',
             'role' => 'required|in:employee,manager,hr',
         ];
     }
