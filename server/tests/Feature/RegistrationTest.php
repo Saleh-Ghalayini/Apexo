@@ -14,14 +14,18 @@ class RegistrationTest extends TestCase
     public function testRegisterWithValidData()
     {
         $password = "password123";
-        $company = Company::factory()->create();
+
+        $company_name = fake()->company();
+        $company_domain = 'https://www.google.com';
 
         $user_data = [
-            'company_id' => $company->id,
+            'company_name' => $company_name,
+            'company_domain' => $company_domain,
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'password' => $password,
             'password_confirmation' => $password,
+            'role' => fake()->randomElement(['employee', 'manager', 'hr']),
         ];
 
         $response = $this->postJson('/api/v1/auth/register', $user_data);
@@ -30,7 +34,6 @@ class RegistrationTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'payload' => [
-                    'token',
                     'user' => [
                         'id',
                         'name',
@@ -48,10 +51,13 @@ class RegistrationTest extends TestCase
                 ]
             ]);
 
+        $company = Company::where('domain', $company_domain)->first();
+
         $this->assertDatabaseHas('users', [
             'email' => $user_data['email'],
             'name' => $user_data['name'],
             'company_id' => $company->id,
+            'role' => $user_data['role'],
         ]);
     }
 
@@ -62,7 +68,8 @@ class RegistrationTest extends TestCase
         $password = "password123";
 
         $user_data = [
-            'company_id' => $existing_user->company_id ?? Company::factory()->create()->id,
+            'company_name' => $existing_user->company->name,
+            'company_domain' => $existing_user->company->domain,
             'name' => fake()->name(),
             'email' => $existing_user->email,
             'password' => $password,
@@ -80,37 +87,51 @@ class RegistrationTest extends TestCase
         $response = $this->postJson('/api/v1/auth/register', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name', 'email', 'password', 'company_id']);
+            ->assertJsonValidationErrors(
+                [
+                    'name',
+                    'email',
+                    'password',
+                    'company_name',
+                    'company_domain'
+                ]
+            );
     }
 
     public function testRegisterWithPasswordMismatch()
     {
-        $company = Company::factory()->create();
+        $company_name = fake()->company();
+        $company_domain = 'https://www.google.com';
 
         $user_data = [
-            'company_id' => $company->id,
+            'company_name' => $company_name,
+            'company_domain' => $company_domain,
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'password' => 'password123',
             'password_confirmation' => 'differentPassword',
+            'role' => fake()->randomElement(['employee', 'manager', 'hr']),
         ];
 
         $response = $this->postJson('/api/v1/auth/register', $user_data);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['password']);
+            ->assertJsonValidationErrors(['password_confirmation']);
     }
 
     public function testRegisterWithInvalidEmail()
     {
-        $company = Company::factory()->create();
+        $company_name = fake()->company();
+        $company_domain = 'https://www.google.com';
 
         $user_data = [
-            'company_id' => $company->id,
+            'company_name' => $company_name,
+            'company_domain' => $company_domain,
             'name' => fake()->name(),
             'email' => 'not-an-email',
             'password' => 'password123',
             'password_confirmation' => 'password123',
+            'role' => fake()->randomElement(['employee', 'manager', 'hr']),
         ];
 
         $response = $this->postJson('/api/v1/auth/register', $user_data);
