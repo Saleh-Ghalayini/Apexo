@@ -1,17 +1,11 @@
 name: Build and Deploy Laravel App
 
 on:
-  push:
-    branches:
-      - develop
-
-  pull_request:
-    branches:
-      - develop
+  repository_dispatch:
+    types: [trigger-deploy]
 
 jobs:
   Build-And-Push-Docker:
-    needs: Run-Laravel-Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -32,7 +26,6 @@ jobs:
 
   Copy-Docker-Compose-To-Server:
     needs: Build-And-Push-Docker
-
     runs-on: ubuntu-latest
 
     steps:
