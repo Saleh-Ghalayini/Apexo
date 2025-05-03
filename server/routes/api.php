@@ -2,12 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AIController;
 
 Route::group(['prefix' => 'v1'], function () {
 
     Route::group(['prefix' => 'auth'], function () {
         Route::post('login', [AuthController::class, 'login']);
         Route::post('register', [AuthController::class, 'register']);
+    });
+
+    Route::group(['prefix' => 'ai', 'middleware' => ['auth:api']], function () {
+        Route::post('chat', [AIController::class, 'chat']);
     });
 
     // Routes for EMPLOYEE, MANAGER, HR
