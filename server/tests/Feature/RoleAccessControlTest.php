@@ -16,6 +16,13 @@ class RoleAccessControlTest extends TestCase
 
     use DatabaseTransactions;
 
+    public function test_the_application_returns_a_successful_response(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+    }
+
     // private function createUserWithRole(string $role): User
     // {
     //     return User::factory()->create(['role' => strtolower($role)]);
