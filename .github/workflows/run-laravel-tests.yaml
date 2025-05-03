@@ -75,5 +75,5 @@ jobs:
         if: ${{ success() }}
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
           event-type: trigger-deploy
