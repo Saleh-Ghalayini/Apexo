@@ -29,8 +29,13 @@ class AIService
 
     private function processAIResponse($user, string $response_text): array
     {
+        $cleaned = trim($response_text);
+        $cleaned = preg_replace('/^```(json)?/i', '', $cleaned);
+        $cleaned = preg_replace('/```$/', '', $cleaned);
+        $cleaned = trim($cleaned);
+
         try {
-            $structured = json_decode($response_text, true, 512, JSON_THROW_ON_ERROR);
+            $structured = json_decode($cleaned, true, 512, JSON_THROW_ON_ERROR);
         } catch (\Throwable $e) {
             return [
                 'intent' => 'none',

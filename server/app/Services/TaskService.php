@@ -2,8 +2,16 @@
 
 namespace App\Services;
 
+use App\Services\NotionService;
+
 class TaskService
 {
+    private $NotionService;
+
+    public function __construct(NotionService $NotionService)
+    {
+        $this->NotionService = $NotionService;
+    }
     public function handleAIAction($user, $action, $data): array
     {
         switch ($action) {
