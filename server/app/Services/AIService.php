@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
+use App\Services\TaskService;
 use App\Traits\ExecuteExternalServiceTrait;
 
 class AIService
