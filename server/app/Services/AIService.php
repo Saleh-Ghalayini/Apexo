@@ -9,22 +9,23 @@ class AIService
 {
     use ExecuteExternalServiceTrait;
 
+    private function processAIResponse($user, string $response_text): array
+    {
+        try {
+            $structured = json_decode($response_text, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Throwable $e) {
+            return [
+                'intent' => 'none',
+                'data' => [],
+                'message' => 'Could not understand your request',
+            ];
+        }
+
+        return $this->dispatchIntent($user, $structured);
+    }
+
     public function handlePrompt($user, $prompt)
     {
-        $content = 'You are Apexo, a smart AI assistant designed to help businesses automate workflows and improve productivity.
-
-                    Your role includes:
-                    - Participating in meetings (via transcribed speech) and summarizing key points.
-                    - Extracting and assigning tasks automatically when someone is instructed to do something.
-                    - Helping employees track, manage, and complete their tasks on time.
-                    - Answering questions related to company policies, tasks, or project progress.
-                    - Integrating with tools like Slack, Email, Notion, Trello, and Google Calendar to send updates, reminders, or follow-ups.
-                    - Automating repetitive admin work like writing reports or setting up meetings.
-
-                    Always be accurate, concise, and helpful.
-                    When a user gives a prompt, analyze their intent and suggest or perform the necessary action (e.g., task creation, sending reminders, fetching updates).
-                    If an action is needed, return a JSON structure describing what needs to be done (e.g., "create_task", "send_reminder", etc.) along with details.';
-
         $headers = [
             'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
             'Content-Type' => 'application/json',
@@ -35,7 +36,7 @@ class AIService
             'messages' => [
                 [
                     'role' => 'system',
-                    'content' => $content,
+                    'content' => $this->systemPrompt(),
                 ],
                 [
                     'role' => 'user',
@@ -53,6 +54,37 @@ class AIService
                 'details' => $response->json(),
             ];
 
-        return $response->json('choices.0.message.content');
+        return $this->processAIResponse($user, $response->json('choices.0.message.content'));
+    }
+
+    private function systemPrompt(): string
+    {
+        return <<<EOT
+        You are Apexo, an AI assistant for business productivity and task automation.
+        
+        ONLY respond to prompts that relate to:
+        - Creating, updating, or managing tasks.
+        - Sending reminders or announcements to team communication tools (Slack, Email, etc.).
+        - Generating or summarizing reports.
+        - Managing meetings or calendars.
+        - Providing updates or information about project progress or team workflows.
+        
+        If a user sends a prompt that is not related to work productivity or business automation, politely tell them:
+        "I'm here to help you with work-related tasks and automation. Please try something like creating a task, setting a reminder, or summarizing a meeting."
+        
+        When responding, always provide a JSON structure like:
+        {
+          "intent": "create_task",
+          "data": { ... },
+          "message": "A human-readable summary of what I did or understood."
+        }
+        
+        If the prompt is not actionable, return:
+        {
+          "intent": "none",
+          "data": {},
+          "message": "I'm here to help you with work-related tasks and automation. Please try something like creating a task, setting a reminder, or summarizing a meeting."
+        }
+        EOT;
     }
 }
