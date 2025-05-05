@@ -11,6 +11,33 @@ class AIService
 
 
 
+    private function processAIResponse($user, string $response_text): array
+    {
+        $cleaned = trim($response_text);
+        $cleaned = preg_replace('/^```(json)?/i', '', $cleaned);
+        $cleaned = preg_replace('/```$/', '', $cleaned);
+        $cleaned = trim($cleaned);
+
+        try {
+            $structured = json_decode($cleaned, true, 512, JSON_THROW_ON_ERROR);
+
+            if (!isset($structured['intent']) || !isset($structured['action']) || !isset($structured['message']))
+                return [
+                    'intent' => 'none',
+                    'data' => [],
+                    'message' => 'The AI response was incomplete or malformed.',
+                ];
+        } catch (\Throwable $e) {
+            return [
+                'intent' => 'none',
+                'data' => [],
+                'message' => 'Could not understand the request or returned an invalid response.',
+            ];
+        }
+
+        return $this->dispatchIntent($user, $structured);
+    }
+
     public function handlePrompt($user, $prompt)
     {
         $headers = [
