@@ -9,6 +9,41 @@ class AIService
 {
     use ExecuteExternalServiceTrait;
 
+
+
+    public function handlePrompt($user, $prompt)
+    {
+        $headers = [
+            'Authorization' => 'Bearer ' . config('services.openai.key'),
+            'Content-Type' => 'application/json',
+        ];
+
+        $data = [
+            'model' => config('services.openai.model'),
+            'messages' => [
+                [
+                    'role' => 'system',
+                    'content' => $this->systemPrompt(),
+                ],
+                [
+                    'role' => 'user',
+                    'content' => $prompt,
+                ]
+            ]
+        ];
+
+        $response = $this->request('POST', config('services.openai.url'), $headers, $data);
+
+        if (!$response->successful())
+            return [
+                'error' => true,
+                'message' => 'Sorry, something went wrong with the AI request.',
+                'details' => $response->json(),
+            ];
+
+        return $this->processAIResponse($user, $response->json('choices.0.message.content'));
+    }
+
     private function systemPrompt(): string
     {
         return <<<EOT
