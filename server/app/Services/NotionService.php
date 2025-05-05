@@ -62,6 +62,162 @@ class NotionService
         ];
     }
 
+    public function update($user, $data)
+    {
+        $notionToken = config('notion.api_key');
+
+        $prompt = $data['prompt'] ?? $data['payload']['prompt'] ?? null;
+
+        if (!$prompt) {
+            return [
+                'status' => 'error',
+                'message' => 'Prompt is required for updating a task.',
+                'data' => [],
+            ];
+        }
+
+        $parsed = $this->parsePrompt($prompt);
+
+        if (empty($parsed['page_title']) || empty($parsed['properties'])) {
+            return [
+                'status' => 'error',
+                'message' => 'Failed to extract page title or properties from prompt.',
+                'data' => [],
+            ];
+        }
+
+        $page = NotionPage::where('title', $parsed['page_title'])->where('user_id', $user->id)->first();
+
+        if (!$page) {
+            return [
+                'status' => 'error',
+                'message' => 'Page not found for user.',
+                'data' => [],
+            ];
+        }
+
+        $data['page_id'] = $page->page_id;
+        $data = array_merge($data, $parsed['properties']);
+
+        $headers = [
+            'Authorization' => "Bearer {$notionToken}",
+            'Notion-Version' => config('notion.version'),
+            'Content-Type' => 'application/json',
+        ];
+
+        $payload = [
+            'properties' => $this->formatProperties($data, $user),
+        ];
+
+        $url = "https://api.notion.com/v1/pages/{$data['page_id']}";
+
+        $response = $this->request('PATCH', $url, $headers, $payload);
+
+        if (!$response->successful()) {
+            return [
+                'status' => 'error',
+                'message' => 'Failed to update task in Notion',
+                'data' => [],
+                'details' => $response->json(),
+            ];
+        }
+
+        return [
+            'status' => 'success',
+            'message' => 'Task updated in Notion successfully.',
+            'data' => $response->json(),
+        ];
+    }
+
+    public function assign($user, $data)
+    {
+        return [
+            'status' => 'not_implemented',
+            'message' => 'Assigning Notion tasks is not implemented yet.',
+            'data' => [],
+        ];
+    }
+
+    public function track($user, $data)
+    {
+        return [
+            'status' => 'not_implemented',
+            'message' => 'Tracking Notion tasks is not implemented yet.',
+            'data' => [],
+        ];
+    }
+
+    public function delete($user, $data)
+    {
+        $page = NotionPage::where('title', $data['title'])->where('user_id', $user->id)->first();
+
+        if (!$page) {
+            return [
+                'status' => 'error',
+                'message' => 'Page not found for deletion.',
+                'data' => [],
+            ];
+        }
+
+        $url = "https://api.notion.com/v1/pages/{$page->page_id}";
+
+        $headers = [
+            'Authorization' => "Bearer " . config('notion.api_key'),
+            'Notion-Version' => config('notion.version'),
+            'Content-Type' => 'application/json',
+        ];
+
+        $response = $this->request('PATCH', $url, $headers, ['archived' => true]);
+
+        if (!$response->successful()) {
+            return [
+                'status' => 'error',
+                'message' => 'Failed to archive (delete) the task in Notion.',
+                'data' => [],
+            ];
+        }
+
+        $page->delete();
+
+        return [
+            'status' => 'success',
+            'message' => 'Task archived (deleted) from Notion successfully.',
+            'data' => [],
+        ];
+    }
+
+    private function formatProperties(array $data, $user): array
+    {
+        $properties = [];
+
+        foreach ($data as $property => $value) {
+            if ($property === 'page_id' || is_array($value) || empty($value))
+                continue;
+
+            $formatted_prop = ucwords(str_replace('_', ' ', $property));
+
+            if (str_contains(strtolower($formatted_prop), 'date') || strtolower($formatted_prop) === 'due date') {
+                $properties[$formatted_prop] = ['date' => ['start' => $value]];
+            } elseif (str_contains(strtolower($formatted_prop), 'title')) {
+                $properties[$formatted_prop] = ['title' => [[
+                    'text' => ['content' => $value]
+                ]]];
+            } else {
+                $properties[$formatted_prop] = ['rich_text' => [[
+                    'text' => ['content' => $value]
+                ]]];
+            }
+        }
+
+        if (!isset($properties['Title'])) {
+            $properties['Title'] = ['title' => [[
+                'text' => ['content' => self::DEFAULT_TITLE]
+            ]]];
+        }
+
+        return $properties;
+    }
+
     private function parsePrompt(string $prompt): array
     {
         $properties = [];
