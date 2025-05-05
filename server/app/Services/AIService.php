@@ -9,7 +9,23 @@ class AIService
 {
     use ExecuteExternalServiceTrait;
 
+    private function dispatchIntent($user, array $structured): array
+    {
+        $intent = $structured['intent'] ?? 'none';
+        $action = $structured['action'] ?? null;
+        $data = $structured['data'] ?? [];
 
+        switch ($intent) {
+            case 'task_management':
+                return app(TaskService::class)->handleAIAction($user, $action, $data);
+            default:
+                return [
+                    'intent' => 'none',
+                    'data' => [],
+                    'message' => 'I could not understand your request.',
+                ];
+        }
+    }
 
     private function processAIResponse($user, string $response_text): array
     {
