@@ -6,30 +6,31 @@ use App\Services\NotionService;
 
 class TaskService
 {
-    private $NotionService;
+    private $notionService;
 
-    public function __construct(NotionService $NotionService)
+    public function __construct(NotionService $notionService)
     {
-        $this->NotionService = $NotionService;
+        $this->notionService = $notionService;
     }
+
     public function handleAIAction($user, $action, $data): array
     {
         switch ($action) {
             case 'create':
-                return $this->NotionService->create($user, $data);
+                return $this->notionService->create($user, $data);
             case 'update':
-                return $this->NotionService->update($user, $data);
+                return $this->notionService->update($user, $data);
             case 'assign':
-                return $this->NotionService->assign($user, $data);
+                return $this->notionService->assign($user, $data);
             case 'track':
-                return $this->NotionService->track($user, $data);
+                return $this->notionService->track($user, $data);
             case 'delete':
-                return $this->NotionService->delete($user, $data);
+                return $this->notionService->delete($user, $data);
             default:
                 return [
-                    'status' => 'error',
+                    'intent' => 'task_management',
                     'data' => [],
-                    'message' => 'Unknown action provided.',
+                    'message' => "Unknown or unsupported action: $action.",
                 ];
         }
     }
