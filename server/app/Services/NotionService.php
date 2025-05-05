@@ -2,77 +2,63 @@
 
 namespace App\Services;
 
+use App\Models\NotionPage;
+use Illuminate\Support\Str;
 use App\Traits\ExecuteExternalServiceTrait;
 
 class NotionService
 {
     use ExecuteExternalServiceTrait;
 
+    private const DEFAULT_TITLE = 'Untitled Task';
+
     public function create($user, $data)
     {
-        $notionToken = env('NOTION_API_KEY');
-        $notionDatabaseId = env('NOTION_DB_ID');
+        $notion_key = config('notion.api_key');
+        $notion_db_Id = config('notion.database_id');
 
         $headers = [
-            'Authorization' => "Bearer {$notionToken}",
-            'Notion-Version' => env('NOTION_API_VERSION', '2022-06-28'),
+            'Authorization' => "Bearer {$notion_key}",
+            'Notion-Version' => config('notion.version'),
             'Content-Type' => 'application/json',
         ];
 
         $payload = [
             'parent' => [
-                'database_id' => $notionDatabaseId,
+                'database_id' => $notion_db_Id,
             ],
-            'properties' => [
-                'Title' => [
-                    'title' => [
-                        [
-                            'text' => [
-                                'content' => $data['title'] ?? 'Untitled Task',
-                            ]
-                        ]
-                    ]
-                ],
-                'Due Date' => [
-                    'date' => [
-                        'start' => $data['due_date'] ?? now()->toDateString(),
-                    ]
-                ],
-                'Assignee' => [
-                    'rich_text' => [
-                        [
-                            'text' => [
-                                'content' => $data['assignee'] ?? $user->name,
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+            'properties' => $this->formatProperties($data, $user),
         ];
 
-        $response = $this->request('POST', env('NOTION_API_URL'), $headers, $payload);
+        $response = $this->request('POST', config('notion.api_url'), $headers, $payload);
 
         if (!$response->successful()) {
+            $errorDetails = $response->json();
+            $errorMessage = $errorDetails['message'] ?? 'An unknown error occurred.';
+            $statusCode = $response->status();
+
             return [
                 'status' => 'error',
                 'data' => [],
-                'message' => 'Failed to create task in Notion',
-                'details' => $response->json()
+                'message' => "Failed to create task in Notion. Error: {$errorMessage}",
+                'status_code' => $statusCode,
+                'details' => $errorDetails,
             ];
         }
 
+        $notionPage = new NotionPage();
+        $notionPage->user_id = $user->id;
+        $notionPage->page_id = $response->json('id');
+        $notionPage->title = $data['title'] ?? self::DEFAULT_TITLE;
+        $notionPage->save();
+
         return [
             'status' => 'success',
-            'data' => $response->json(),
+            'data' => [
+                'page_id' => $response->json('id'),
+                'notion_response' => $response->json(),
+            ],
             'message' => 'Task created in Notion successfully.',
         ];
     }
-
-    public function update($user, $data) {}
-
-    public function assign($user, $data) {}
-
-    public function track($user, $data) {}
-
-    public function delete($user, $data) {}
 }
