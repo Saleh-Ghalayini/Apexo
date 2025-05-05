@@ -15,6 +15,7 @@ class AIService
         $action = $structured['action'] ?? null;
         $data = $structured['data'] ?? [];
 
+
         switch ($intent) {
             case 'task_management':
                 return app(TaskService::class)->handleAIAction($user, $action, $data);
