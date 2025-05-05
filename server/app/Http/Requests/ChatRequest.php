@@ -22,7 +22,7 @@ class ChatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'prompt' => 'required|string|min:5',
+            'prompt' => 'required|string',
         ];
     }
 }
