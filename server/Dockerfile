@@ -3,12 +3,13 @@ FROM bitnami/laravel
 WORKDIR /app
 
 COPY . /app/
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN cp .env.example .env \
-    && composer install --no-dev --optimize-autoloader \
+RUN install_packages php-pgsql php8.2-pgsql
+
+RUN composer install --no-dev --optimize-autoloader \
     && php artisan key:generate \
     && php artisan config:cache \
-    && php artisan migrate --force
-
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+    && php artisan migrate --force \
+    && php artisan optimize:clear
