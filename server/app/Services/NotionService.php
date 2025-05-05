@@ -61,4 +61,28 @@ class NotionService
             'message' => 'Task created in Notion successfully.',
         ];
     }
+
+    private function parsePrompt(string $prompt): array
+    {
+        $properties = [];
+
+        preg_match_all('/([\w\s]+):\s*(.+?)(?=\s+\w+:|$)/', $prompt, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $match) {
+            $key = ucwords(trim($match[1]));
+            $value = trim($match[2]);
+            $properties[$key] = $value;
+        }
+
+        return [
+            'page_title' => $this->extractTitle($prompt),
+            'properties' => $properties,
+        ];
+    }
+
+    private function extractTitle(string $prompt): string
+    {
+        preg_match('/"([^"]+)"/', $prompt, $matches);
+        return $matches[1] ?? self::DEFAULT_TITLE;
+    }
 }
