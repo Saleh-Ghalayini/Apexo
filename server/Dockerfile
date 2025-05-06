@@ -13,4 +13,4 @@ RUN echo "extension=pgsql.so" >> /opt/bitnami/php/etc/php.ini && \
 
 RUN composer install --no-dev --optimize-autoloader
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+CMD ["bash", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"]
