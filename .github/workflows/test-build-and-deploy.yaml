@@ -129,4 +129,13 @@ jobs:
             sudo docker-compose down || true
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/apexo:latest
             sudo docker-compose up -d --build
-            sudo docker exec ${{ secrets.EC2_USER }}_app_1 php artisan migrate --force
+
+            sudo docker exec ${{ secrets.EC2_USER }}_app_1 sh -c '
+              if [ ! -f .env ]; then cp .env.example .env; fi
+              php artisan key:generate --force
+              php artisan jwt:secret --force || true
+              php artisan migrate --force
+              php artisan config:clear
+              php artisan cache:clear
+              php artisan config:cache
+            '
