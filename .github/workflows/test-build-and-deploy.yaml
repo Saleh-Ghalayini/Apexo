@@ -129,4 +129,4 @@ jobs:
             sudo docker-compose down || true
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/apexo:latest
             sudo docker-compose up -d --build
-            sudo docker exec apexo php artisan migrate --force
+            sudo docker exec apexo-app-1 php artisan migrate --force
