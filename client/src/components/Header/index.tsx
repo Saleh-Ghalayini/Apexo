@@ -19,8 +19,8 @@ const Header: React.FC = () => {
                 </ul>
             </div>
             <div className='auth'>
-                <Button className='login-btn'>Login</Button>
-                <Button className='start-btn'>Get Started</Button>
+                <Button className='btn login-btn'>Log in</Button>
+                <Button className='btn start-btn'>Get Started</Button>
             </div>
         </header>
     );

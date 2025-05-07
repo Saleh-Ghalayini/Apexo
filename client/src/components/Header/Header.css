@@ -18,7 +18,7 @@ header {
 }
 
 .nav ul {
-    gap: 30px;
+    gap: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -29,6 +29,7 @@ header {
     text-decoration: none;
 }
 .nav li {
+    font-size: 20px;
     list-style: none;
     font-weight: 500;
 }
@@ -42,6 +43,7 @@ header {
 
 .btn {
     height: 40px;
+    cursor: pointer;
     color: #FFFFFF;
     font-weight: 600;
     padding: 8px 10px;
@@ -51,5 +53,11 @@ header {
     width: 80px;
     border:  1px solid #FFFFFF;
     background-color: transparent;
+}
+
+.start-btn {
+    border: none;
+    width: 120px;
+    background-color: #008F8F;
 }
 
