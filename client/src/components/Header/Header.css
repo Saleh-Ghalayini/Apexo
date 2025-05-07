@@ -1,5 +1,5 @@
 header {
-    height: 100px;
+    height: 80px;
     width: 100%;
     display: flex;
     padding: 0px 10px;
@@ -7,4 +7,14 @@ header {
     flex-direction: row;
     background-color: #15262C;
     justify-content: space-between;
+    color: #ffffff;
 }
+
+.logo {
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
