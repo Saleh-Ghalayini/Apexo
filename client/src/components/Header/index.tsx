@@ -1,4 +1,5 @@
 import logo from '../../assets/images/apexo_logo.svg';
+import Button from '../Button';
 import React from 'react';
 import './Header.css';
 
@@ -18,8 +19,8 @@ const Header: React.FC = () => {
                 </ul>
             </div>
             <div className='auth'>
-                <button className='login-btn'>Login</button>
-                <button className='start-bth'>Get Started</button>
+                <Button className='login-btn'>Login</Button>
+                <Button className='start-btn'>Get Started</Button>
             </div>
         </header>
     );
