@@ -1,5 +1,6 @@
 import Header from '../../components/Header';
 import Hero from '../../components/Hero';
+import './landingPage.css';
 import React from 'react';
 
 const LandingPage: React.FC = () => {
