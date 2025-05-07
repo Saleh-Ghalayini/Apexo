@@ -1,3 +1,4 @@
+import apexo_network from '../../assets/images/Apexo-network.svg';
 import Button from '../Button';
 import React from 'react';
 import './Hero.css';
@@ -14,15 +15,17 @@ const Hero: React.FC = () => {
                     effortless task management, intelligent workflow automation,<br />
                     and smarter hiring - all in one platform.
                 </p>
-                <p>
+                <p className='teams'>
                     Trusted by forward-thinking teams
                 </p>
                 <div className='btns'>
-                    <Button>Get Started</Button>
-                    <Button>Try Apexo Now</Button>
+                    <Button className='btn start-btn'>Get Started</Button>
+                    <Button className='btn try-btn'>Try Apexo Now</Button>
                 </div>
             </div>
-            <div className='structure'></div>
+            <div className='structure'>
+                <img src={apexo_network} alt='network' className='network' />
+            </div>
         </div>
     );
 }
