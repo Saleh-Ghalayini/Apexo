@@ -1,0 +1,63 @@
+.hero {
+    display: flex;
+    justify-content: space-between;
+    padding: 100px 90px;
+}
+
+.product-name, .slogan {
+    letter-spacing: -2%;
+    font-family: 'Montserrat-bold', sans-serif;
+}
+
+.product-name {
+    font-size: 64px;
+    font-weight: bold;
+    color: #008F8F;
+}
+
+.slogan {
+    font-size: 56px;
+    color: #203030;
+    font-weight: 800;
+}
+
+.text {
+    font-size: 24px;
+    color: #555555;
+    font-family: 'Poppins', sans-serif;
+    margin-top: 20px;
+}
+
+.teams {
+    font-size: 24px;
+    color: #203030;
+    font-family: 'Poppins', sans-serif;
+    margin: 20px 0px;
+}
+
+.btns {
+    gap: 20px;
+    display: flex;
+}
+
+.btn {
+    height: 50px;
+    cursor: pointer;
+    color: #FFFFFF;
+    padding: 8px 10px;
+    letter-spacing: 4%;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+.start-btn {
+    border: none;
+    width: 120px;
+    background-color: #008F8F;
+}
+
+.try-btn {
+    width: 130px;
+    border: none;
+    background-color: #555555;
+}
