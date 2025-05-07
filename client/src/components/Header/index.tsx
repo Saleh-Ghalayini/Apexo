@@ -1,3 +1,4 @@
+import logo from '../../assets/images/apexo_logo.svg';
 import React from 'react';
 import './Header.css';
 
@@ -6,7 +7,7 @@ const Header: React.FC = () => {
     return (
         <header>
             <div className='logo'>
-                <img src="./../assets/apexo_logo.svg" />
+                <img src={logo} />
                 <h1>Apexo</h1>
             </div>
             <div className='nav'>
