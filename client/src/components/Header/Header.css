@@ -14,6 +14,7 @@ header {
     gap: 10px;
     display: flex;
     align-items: center;
+    font-family: 'Montserrat', sans-serif;
     justify-content: center;
 }
 
@@ -29,9 +30,11 @@ header {
     text-decoration: none;
 }
 .nav li {
-    font-size: 20px;
+    font-size:18px;
     list-style: none;
     font-weight: 500;
+    letter-spacing: 4%;
+    font-family: 'Poppins', sans-serif;
 }
 
 .auth {
@@ -47,6 +50,8 @@ header {
     color: #FFFFFF;
     font-weight: 600;
     padding: 8px 10px;
+    letter-spacing: 4%;
+    font-family: 'Poppins', sans-serif;
 }
 
 .login-btn {
