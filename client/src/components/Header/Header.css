@@ -2,12 +2,12 @@ header {
     height: 80px;
     width: 100%;
     display: flex;
-    padding: 0px 10px;
+    padding: 0px 20px;
     align-items: center;
     flex-direction: row;
     background-color: #15262C;
     justify-content: space-between;
-    color: #ffffff;
+    color: #FFFFFF;
 }
 
 .logo {
@@ -17,4 +17,16 @@ header {
     justify-content: center;
 }
 
+.nav ul {
+    gap: 30px;
+    display: flex;
+}
 
+.nav a {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+.nav li {
+    list-style: none;
+    font-weight: 500;
+}
