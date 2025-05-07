@@ -17,6 +17,12 @@ font-style: normal;
 }
 
 @font-face {
+  font-family: 'Montserrat-bold';
+  src: url('./assets/fonts/Montserrat/Montserrat-SemiBold.ttf') format('trueType');
+  font-style: normal;
+  }
+
+@font-face {
 font-family: 'Poppins';
 src: url('./assets/fonts/Poppins/Poppins-Regular.ttf') format('trueType');
 font-style: normal;
