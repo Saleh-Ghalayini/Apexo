@@ -42,6 +42,14 @@ header {
 
 .btn {
     height: 40px;
+    color: #FFFFFF;
+    font-weight: 600;
     padding: 8px 10px;
+}
+
+.login-btn {
+    width: 80px;
+    border:  1px solid #FFFFFF;
+    background-color: transparent;
 }
 
