@@ -5,7 +5,6 @@
 }
 
 :root {
-    /* Color Variables */
     --primary: #008F8F;
     --primary-dark: #007878;
     --secondary: #15262C;
@@ -14,26 +13,23 @@
     --text-muted: #555555;
     --background-light: #F5F5F5;
     
-    /* Spacing Variables */
     --spacing-xs: 5px;
     --spacing-sm: 10px;
     --spacing-md: 20px;
     --spacing-lg: 40px;
     --spacing-xl: 80px;
     
-    /* Border Radius */
     --border-radius-sm: 4px;
     --border-radius-md: 8px;
     --border-radius-lg: 12px;
     
-    /* Transitions */
     --transition-speed: 0.3s;
 }
 
 html {
     scroll-behavior: smooth;
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
 body {
@@ -54,7 +50,6 @@ button {
     transition: all var(--transition-speed) ease;
 }
 
-/* Typography */
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Montserrat-bold', sans-serif;
     margin-bottom: var(--spacing-md);
@@ -65,7 +60,6 @@ p {
     margin-bottom: var(--spacing-md);
 }
 
-/* Container */
 .container {
     width: 100%;
     max-width: 1200px;
@@ -73,7 +67,6 @@ p {
     padding: 0 var(--spacing-md);
 }
 
-/* Responsive breakpoints */
 @media (max-width: 1200px) {
     :root {
         --spacing-xl: 60px;
