@@ -8,8 +8,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #15262C;
-    color: #FFFFFF;
+    background: var(--secondary);
+    color: var(--text-light);
     position: relative;
     padding: 2rem;
 }
@@ -32,21 +32,10 @@
     gap: 0.5rem;
 }
 
-.logo-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 30px;
-    height: 30px;
-    color: #FFFFFF;
-    font-weight: bold;
-    border-radius: 4px;
-}
-
 .login-logo span {
     font-size: 2rem;
     font-weight: 600;
-    color: #FFFFFF;
+    color: var(--text-light);
     font-family: 'Montserrat', sans-serif;
 }
 
@@ -56,14 +45,17 @@
     right: 2rem;
 }
 
-.create-account-link:hover {
-    text-decoration: underline;
-}
-
 .create-account-link a {
-    color: #FFFFFF;
+    color: var(--text-light);
     text-decoration: none;
     font-size: 1rem;
+}
+
+.create-account-link a:hover,
+.forgot-password:hover,
+.trouble-signing a:hover,
+.mobile-create-account a:hover {
+    text-decoration: underline;
 }
 
 .login-form-wrapper {
@@ -83,7 +75,7 @@
 
 .form-field label {
     font-size: 1rem;
-    color: #FFFFFF;
+    color: var(--text-light);
 }
 
 .input-wrapper {
@@ -103,6 +95,7 @@
 
 .form-field input::placeholder {
     color: #C3C3C3;
+    opacity: 1; /* For Firefox */
 }
 
 .input-icon {
@@ -117,7 +110,7 @@
 
 .form-field input:focus {
     outline: none;
-    border-color: #008F8F;
+    border-color: var(--primary);
 }
 
 .form-options {
@@ -134,40 +127,36 @@
 }
 
 .remember-me input[type="checkbox"] {
-    accent-color: #008F8F;
+    accent-color: var(--primary);
 }
 
 .remember-me label {
     font-size: 0.85rem;
-    color: #FFFFFF;
+    color: var(--text-light);
 }
 
 .forgot-password {
     font-size: 0.85rem;
-    color: #FFFFFF;
+    color: var(--text-light);
     text-decoration: none;
 }
 
-.forgot-password:hover {
-    text-decoration: underline;
-}
-
 .sign-in-button {
-    background-color: #008F8F !important;
-    color: #FFFFFF;
+    background-color: var(--primary);
+    color: var(--text-light);
     width: 100%;
-    padding: 0.75rem !important;
-    border-radius: 4px !important;
+    padding: 0.75rem;
+    border-radius: 4px;
     font-size: 1rem;
     text-align: center;
     margin-top: 0.5rem;
     border: none;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color var(--transition-speed);
 }
 
 .sign-in-button:hover {
-    background-color: #017777 !important;
+    background-color: var(--primary-dark);
 }
 
 .trouble-signing {
@@ -179,13 +168,9 @@
 }
 
 .trouble-signing a {
-    color: #FFFFFF;
+    color: var(--text-light);
     font-size: 1rem;
     text-decoration: none;
-}
-
-.trouble-signing a:hover {
-    text-decoration: underline;
 }
 
 .login-illustration {
@@ -193,7 +178,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #FFFFFF;
+    background-color: var(--text-light);
     padding: 2rem;
 }
 
@@ -211,13 +196,9 @@
 }
 
 .mobile-create-account a {
-    color: #FFFFFF;
+    color: var(--text-light);
     text-decoration: none;
     font-size: 1rem;
-}
-
-.mobile-create-account a:hover {
-    text-decoration: underline;
 }
 
 @media (max-width: 992px) {
@@ -265,10 +246,6 @@
     
     .login-form-wrapper {
         gap: 1rem;
-    }
-    
-    .form-options {
-        flex-direction: row;
     }
 }
 
