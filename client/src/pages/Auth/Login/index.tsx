@@ -32,17 +32,21 @@ const Login: React.FC = () => {
   return (
     <div className="login-container">
       <div className="login-form-container">
-        <div className="login-logo">
+        <div className="login-header">
+          <div className="login-logo">
             <img src={logo} alt="Logo" style={{ width: '55px', height: '55px' }} />
-          <span>Apexo</span>
+            <span>Apexo</span>
+          </div>
+          <div className="create-account-link">
+            <Link to="/signup">Create an account</Link>
+          </div>
         </div>
-        <div className="create-account-link">
-          <Link to="/signup">Create an account</Link>
-        </div>
+
         <div className="login-form-wrapper">
           <div className="form-field">
             <label htmlFor="email">Email</label>
             <div className="input-wrapper">
+              <img src={mailIcon} alt="Email" className="input-icon" />
               <input
                 type="email"
                 id="email"
@@ -52,13 +56,13 @@ const Login: React.FC = () => {
                 placeholder="Example@gmail.com"
                 required
               />
-              <img src={mailIcon} alt="Email" className="input-icon" />
             </div>
           </div>
           
           <div className="form-field">
             <label htmlFor="password">Password</label>
             <div className="input-wrapper">
+              <img src={lockIcon} alt="Password" className="input-icon" />
               <input
                 type="password"
                 id="password"
@@ -68,7 +72,6 @@ const Login: React.FC = () => {
                 placeholder="ApexoP@123"
                 required
               />
-              <img src={lockIcon} alt="Password" className="input-icon" />
             </div>
           </div>
           
@@ -91,6 +94,11 @@ const Login: React.FC = () => {
           <button type="submit" className="sign-in-button" onClick={handleSubmit}>
             Sign in
           </button>
+          
+          {/* Mobile-only display for create an account link */}
+          <div className="mobile-create-account">
+            <Link to="/signup">Create an account</Link>
+          </div>
         </div>
 
         <div className="trouble-signing">
