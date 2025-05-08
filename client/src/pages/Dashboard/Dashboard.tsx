@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Sidebar from '../../components/Sidebar';
 import userIcon from '../../assets/images/user_icon.png';
 import arrowIcon from '../../assets/images/arrow_icon.png';
+import addIcon from '../../assets/images/add_icon.png';
 
 const Dashboard: React.FC = () => {
   const [username, setUsername] = useState('Username');
@@ -27,6 +28,7 @@ const Dashboard: React.FC = () => {
         
         <div className="dashboard-chat">
           <div className="chat-input-container">
+            <img src={addIcon} alt='upload' />
             <input 
               type="text" 
               placeholder="Type a command or ask Apexo for assistance..." 
