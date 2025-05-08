@@ -5,6 +5,27 @@ import Button from '../../../components/Button';
 
 const Login: React.FC = () => {
 
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false,
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // logic will be implemented later, focusing on UI for now
+    console.log('Login form submitted:', formData);
+  };
+
   return (
     <div className="login-container">
       <div className="login-form-container">
