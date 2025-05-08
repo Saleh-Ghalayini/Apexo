@@ -1,0 +1,145 @@
+.features {
+    background-color: #FFFFFF;
+    padding: var(--spacing-xl) 90px;
+}
+
+.features-container {
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.features-title {
+    font-size: 42px;
+    text-align: center;
+    color: var(--text-dark);
+    margin-bottom: var(--spacing-sm);
+    font-family: 'Poppins', sans-serif;
+}
+
+.title-regular {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.title-accent {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.features-subtitle {
+    font-size: 20px;
+    line-height: 1.5;
+    max-width: 600px;
+    text-align: center;
+    color: var(--text-dark);
+    margin: 0 auto var(--spacing-xl);
+    font-family: 'Poppins', sans-serif;
+}
+
+.subtitle-accent {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.feature-cards {
+    gap: 20px;
+    display: flex;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    max-width: 1080px;
+    justify-content: center;
+}
+
+.feature-card {
+    height: 100%;
+    display: flex;
+    border-radius: 6px;
+    padding: 25px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    flex: 0 0 calc(33.33% - 14px);
+    max-width: calc(33.33% - 14px);
+    transition: all var(--transition-speed) ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.07);
+}
+
+.feature-icon {
+    display: flex;
+    font-size: 32px; 
+    margin-bottom: 15px;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-image {
+    width: 32px;
+    height: auto;
+    object-fit: contain;
+}
+
+.feature-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-dark);
+    font-family: 'Poppins', sans-serif;
+}
+
+.feature-description {
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.5;
+    color: var(--text-muted);
+    font-family: 'Poppins', sans-serif;
+}
+
+@media (max-width: 1200px) {
+    .features {
+        padding: var(--spacing-xl) 60px;
+    }
+}
+
+@media (max-width: 992px) {
+    .feature-card {
+        max-width: calc(50% - 10px);
+    }
+}
+
+@media (max-width: 768px) {
+    .features {
+        padding: var(--spacing-lg) 40px;
+    }
+
+    .features-title {
+        font-size: 36px;
+    }
+
+    .features-subtitle {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 576px) {
+    .features {
+        padding: var(--spacing-md) 20px;
+    }
+
+    .features-title {
+        font-size: 28px;
+    }
+
+    .features-subtitle {
+        font-size: 16px;
+    }
+    
+    .feature-card {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
