@@ -1,5 +1,5 @@
 .features {
-    background-color: white;
+    background-color: #FFFFFF;
     padding: var(--spacing-xl) 90px;
 }
 
@@ -57,7 +57,7 @@
     padding: 25px 20px;
     flex-direction: column;
     align-items: flex-start;
-    background-color: white;
+    background-color: #FFFFFF;
     border: 1px solid #E8E8E8;
     flex: 0 0 calc(33.33% - 14px);
     max-width: calc(33.33% - 14px);
