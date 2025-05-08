@@ -8,8 +8,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #15262C;
-    color: #FFFFFF;
+    background: var(--secondary);
+    color: var(--text-light);
     position: relative;
     padding: 2rem;
     overflow-y: auto;
@@ -41,7 +41,7 @@
 .signup-logo span {
     font-size: 1.5rem;
     font-weight: 600;
-    color: #FFFFFF;
+    color: var(--text-light);
 }
 
 .login-account-link {
@@ -51,12 +51,14 @@
 }
 
 .login-account-link a {
-    color: #FFFFFF;
+    color: var(--text-light);
     text-decoration: none;
     font-size: 1rem;
 }
 
-.login-account-link a:hover {
+.login-account-link a:hover,
+.terms-policy a:hover,
+.mobile-login-account a:hover {
     text-decoration: underline;
 }
 
@@ -77,7 +79,7 @@
 
 .form-field label {
     font-size: 1rem;
-    color: #FFFFFF;
+    color: var(--text-light);
 }
 
 .input-wrapper {
@@ -88,15 +90,16 @@
     width: 100%;
     padding: 0.75rem 1rem;
     padding-left: 2.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    background: #FFFFFF;
-    color: #333333;
+    border: 1px solid var(--translucent-white-2);
+    border-radius: var(--border-radius-sm);
+    background: var(--input-bg);
+    color: var(--input-text);
     font-size: 1rem;
 }
 
 .form-field input::placeholder {
     color: #C3C3C3;
+    opacity: 1; /* For Firefox */
 }
 
 .input-icon {
@@ -104,8 +107,8 @@
     left: 0.5rem;
     top: 50%;
     transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
     opacity: 0.6;
 }
 
@@ -116,10 +119,10 @@
 .form-field select {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    background: #FFFFFF;
-    color: #333333;
+    border: 1px solid var(--translucent-white-2);
+    border-radius: var(--border-radius-sm);
+    background: var(--input-bg);
+    color: var(--input-text);
     font-size: 1rem;
     appearance: none;
     background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
@@ -130,25 +133,25 @@
 .form-field input:focus,
 .form-field select:focus {
     outline: none;
-    border-color: #008F8F;
+    border-color: var(--primary);
 }
 
 .sign-up-button {
-    background-color: #008F8F;
-    color: #FFFFFF;
+    background-color: var(--primary);
+    color: var(--text-light);
     width: 100%;
     padding: 0.75rem;
-    border-radius: 4px;
+    border-radius: var(--border-radius-sm);
     font-size: 1rem;
     text-align: center;
     margin-top: 0.5rem;
     border: none;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color var(--transition-speed);
 }
 
 .sign-up-button:hover {
-    background-color: #017777;
+    background-color: var(--primary-dark);
 }
 
 .mobile-login-account {
@@ -158,29 +161,21 @@
 }
 
 .mobile-login-account a {
-    color: #FFFFFF;
+    color: var(--text-light);
     text-decoration: none;
     font-size: 1rem;
-}
-
-.mobile-login-account a:hover {
-    text-decoration: underline;
 }
 
 .terms-policy {
     text-align: center;
     font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--translucent-white-7);
     margin-top: 1.5rem;
 }
 
 .terms-policy a {
-    color: #FFFFFF;
+    color: var(--text-light);
     text-decoration: none;
-}
-
-.terms-policy a:hover {
-    text-decoration: underline;
 }
 
 .signup-illustration {
@@ -188,7 +183,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #FFFFFF;
+    background-color: var(--text-light);
     padding: 2rem;
 }
 
@@ -260,8 +255,8 @@
     }
     
     .input-icon {
-        width: 16px;
-        height: 16px;
+        width: var(--icon-size-xs);
+        height: var(--icon-size-xs);
         left: 0.8rem;
     }
 }
