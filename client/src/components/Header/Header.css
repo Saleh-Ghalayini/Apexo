@@ -2,12 +2,16 @@ header {
     width: 100%;
     height: 80px;
     display: flex;
-    color: #FFFFFF;
-    padding: 0px 20px;
+    color: var(--text-light);
+    padding: 0 var(--spacing-lg);
     align-items: center;
     flex-direction: row;
-    background-color: #15262C;
+    background-color: var(--secondary);
     justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
@@ -18,22 +22,56 @@ header {
     justify-content: center;
 }
 
+.logo h1 {
+    margin-bottom: 0;
+    font-size: 24px;
+}
+
+.logo img {
+    height: 40px;
+    width: auto;
+}
+
 .nav ul {
     gap: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 0;
 }
 
 .nav a {
-    color: #FFFFFF;
+    color: var(--text-light);
     text-decoration: none;
+    position: relative;
+    padding: 5px 0;
+    transition: all var(--transition-speed) ease;
 }
+
+.nav a:hover {
+    color: var(--primary);
+}
+
+.nav a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary);
+    transition: width var(--transition-speed) ease;
+}
+
+.nav a:hover::after {
+    width: 100%;
+}
+
 .nav li {
-    font-size:18px;
+    font-size: 18px;
     list-style: none;
     font-weight: 500;
-    letter-spacing: 4%;
+    letter-spacing: 0.04em;
     font-family: 'Poppins', sans-serif;
 }
 
@@ -41,55 +79,139 @@ header {
     gap: 15px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    height: 100%;
 }
 
 .btn {
     height: 40px;
     cursor: pointer;
-    color: #FFFFFF;
+    color: var(--text-light);
     font-weight: 600;
-    padding: 8px 10px;
-    letter-spacing: 4%;
+    padding: 8px 16px;
+    letter-spacing: 0.04em;
     font-family: 'Poppins', sans-serif;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-speed) ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .login-btn {
     width: 80px;
-    border:  1px solid #FFFFFF;
+    border: 1px solid var(--text-light);
     background-color: transparent;
+}
+
+.login-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .start-btn {
     border: none;
     width: 120px;
-    background-color: #008F8F;
+    background-color: var(--primary);
+}
+
+.start-btn:hover {
+    background-color: var(--primary-dark);
+}
+
+.mobile-menu-button {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.mobile-menu {
+    display: none;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background-color: var(--secondary);
+    padding: var(--spacing-md);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 99;
+}
+
+.mobile-menu.open {
+    display: block;
+}
+
+.mobile-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mobile-menu li {
+    margin-bottom: var(--spacing-md);
+}
+
+.mobile-menu a {
+    color: var(--text-light);
+    font-size: 18px;
+    text-decoration: none;
+    display: block;
+    padding: var(--spacing-sm) 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+@media (max-width: 992px) {
+    .nav ul {
+        gap: 25px;
+    }
 }
 
 @media (max-width: 768px) {
     .nav {
-      display: none;
+        display: none;
     }
   
     header {
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      height: auto;
-      padding: 15px 20px;
+        height: 70px;
+        padding: 0 var(--spacing-md);
+        justify-content: space-between;
     }
   
+    .logo {
+        margin: 0 auto;
+    }
+
     .logo h1 {
-      font-size: 20px;
+        font-size: 20px;
     }
   
     .auth {
-      gap: 10px;
+        gap: 10px;
     }
   
     .btn {
-      padding: 8px 14px;
-      font-size: 14px;
+        padding: 8px 14px;
+        font-size: 14px;
     }
-  }
-  
+
+    .mobile-menu-button {
+        display: block;
+        order: -1;
+        margin-right: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .logo img {
+        height: 32px;
+    }
+
+    .login-btn {
+        width: 70px;
+    }
+    
+    .start-btn {
+        width: 100px;
+    }
+}
