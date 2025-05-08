@@ -55,47 +55,66 @@
   flex: 1;
   display: flex;
   margin-top: 50px;
-  margin-right: 100px;
   align-items: center;
   flex-direction: column;
   padding: 40px 100px;
   color: #FFFFFF;
+  text-align: center;
+  padding-right: 70px;
 }
 
 .welcome-message {
   font-size: 42px;
   font-weight: 600;
+  margin-right: 10px;
 }
 
 .username {
-  color: #00A993;
+  color: #008F7D;
 }
 
 .dashboard-chat {
-  padding: 20px 100px;
+  padding: 20px 0;
   margin-bottom: 40px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  position: absolute;
+  bottom: 20px;
 }
 
 .chat-input-container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  max-width: 800px;
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  padding: 5px;
-  background-color: transparent;
-  border: 1px solid #008F7D;
+  padding: 10px 15px;
+  max-width: 800px;
+  width: 70%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chat-input-container img[alt='upload'] {
+  width: 24px;
+  height: 24px;
+  opacity: 0.7;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: opacity 0.2s;
+}
+
+.chat-input-container img[alt='upload']:hover {
+  opacity: 1;
 }
 
 .chat-input {
   flex: 1;
-  height: 110px;
+  height: 50px;
   max-width: 100%;
   background: transparent;
   border: none;
-  padding: 15px;
+  padding: 10px;
   color: #FFFFFF;
   font-size: 16px;
 }
@@ -111,15 +130,26 @@
 .send-button {
   background-color: transparent;
   border: none;
-  color: #00A993;
-  font-size: 20px;
-  padding: 10px 15px;
+  padding: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
 }
 
 .send-button:hover {
-  color: #00C5AD;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.send-button img {
+  width: 24px;
+  height: 24px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.send-button:hover img {
+  opacity: 1;
 }
