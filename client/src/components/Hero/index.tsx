@@ -4,15 +4,17 @@ import React from 'react';
 import './Hero.css';
 
 const Hero: React.FC = () => {
-
+    
     return (
-        <div className='hero'>
+        <section className='hero' id="about">
             <div className='description'>
-                <div className='product-name'>Apexo</div>
-                <div className='slogan'>Elevae Every Action</div>
+                <div className='product-name-container'>
+                    <div className='product-name'>Apexo</div>
+                </div>
+                <h2 className='slogan'>Elevate Every Action</h2>
                 <p className='text'>
-                    Your AI-powered assistant for streamlined meetings,<br />
-                    effortless task management, intelligent workflow automation,<br />
+                    Your AI-powered assistant for streamlined meetings,
+                    effortless task management, intelligent workflow automation,
                     and smarter hiring - all in one platform.
                 </p>
                 <p className='teams'>
@@ -24,9 +26,14 @@ const Hero: React.FC = () => {
                 </div>
             </div>
             <div className='structure'>
-                <img src={apexo_network} alt='network' className='network' />
+                <img 
+                    src={apexo_network} 
+                    alt='Apexo network visualization' 
+                    className='network' 
+                    loading="eager"
+                />
             </div>
-        </div>
+        </section>
     );
 }
 
