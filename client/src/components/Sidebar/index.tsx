@@ -2,7 +2,7 @@ import './Sidebar.css';
 import React from 'react';
 import helpIcon from '../../assets/images/help_icon.png';
 import burgerIcon from '../../assets/images/burger_icon.png';
-import settingsIcon from '../../assets/images/settings_icon.png';
+import integrationsIcon from '../../assets/images/integrations_icon.png';
 
 const Sidebar: React.FC = () => {
   return (
@@ -17,8 +17,8 @@ const Sidebar: React.FC = () => {
         <button className="sidebar-icon-btn">
           <img src={helpIcon} alt="Help" />
         </button>
-        <button className="sidebar-icon-btn">
-          <img src={settingsIcon} alt="Settings" />
+        <button className="sidebar-icon-btn integrations-btn">
+          <img src={integrationsIcon} alt="Integrations" />
         </button>
       </div>
     </div>
