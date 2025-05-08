@@ -2,9 +2,9 @@ import './Login.css';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../../assets/images/apexo_logo.svg';
-import illustration from '../../../assets/images/illustration.png';
 import mailIcon from '../../../assets/images/mail_icon.png';
 import lockIcon from '../../../assets/images/lock_icon.png';
+import illustration from '../../../assets/images/illustration.png';
 
 const Login: React.FC = () => {
 

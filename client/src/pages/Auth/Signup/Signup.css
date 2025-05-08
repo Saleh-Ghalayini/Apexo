@@ -151,3 +151,117 @@
     background-color: #017777;
 }
 
+.mobile-login-account {
+    display: none;
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.mobile-login-account a {
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.mobile-login-account a:hover {
+    text-decoration: underline;
+}
+
+.terms-policy {
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 1.5rem;
+}
+
+.terms-policy a {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.terms-policy a:hover {
+    text-decoration: underline;
+}
+
+.signup-illustration {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFFFFF;
+    padding: 2rem;
+}
+
+.signup-illustration img {
+    width: 80%;
+    height: auto;
+    max-height: 80vh;
+    object-fit: contain;
+}
+
+@media (max-width: 992px) {
+    .signup-container {
+        flex-direction: column;
+    }
+    
+    .signup-illustration {
+        display: none;
+    }
+    
+    .signup-form-container {
+        width: 100%;
+        min-height: 100vh;
+        padding: 1.5rem;
+    }
+    
+    .signup-header {
+        position: static;
+        margin-bottom: 2rem;
+    }
+    
+    .signup-logo {
+        margin: 0 auto;
+    }
+    
+    .signup-header .login-account-link {
+        display: none;
+    }
+    
+    .mobile-login-account {
+        display: block;
+    }
+    
+    .terms-policy {
+        position: static;
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .signup-form-container {
+        padding: 1rem;
+    }
+    
+    .signup-form-wrapper {
+        gap: 1rem;
+        margin: 1rem auto;
+    }
+    
+    .form-field label {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .form-field input,
+    .form-field select {
+        font-size: 0.9rem;
+        padding: 0.6rem 0.8rem 0.6rem 2.2rem;
+    }
+    
+    .input-icon {
+        width: 16px;
+        height: 16px;
+        left: 0.8rem;
+    }
+}
