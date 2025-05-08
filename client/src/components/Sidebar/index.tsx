@@ -1,11 +1,10 @@
 import './Sidebar.css';
 import React, { useState } from 'react';
-import logo from '../../assets/images/apexo_logo.svg';
-import helpIcon from '../../assets/images/help_icon.png';
 import addIcon from '../../assets/images/add_icon.png';
+import helpIcon from '../../assets/images/help_icon.png';
+import linesIcon from '../../assets/images/lines_icon.png';
 import burgerIcon from '../../assets/images/burger_icon.png';
 import searchIcon from '../../assets/images/search_icon.png';
-import linesIcon from '../../assets/images/lines_icon.png';
 import integrationsIcon from '../../assets/images/integrations_icon.png';
 
 // Example chat data for demonstration
