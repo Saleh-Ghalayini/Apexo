@@ -1,9 +1,10 @@
 .arrow {
+    top: 50%;
     width: 100%;
     height: 80px;
     display: block;
-    margin-top: -40px;
     position: relative;
+    transform: translateY(-50%);
     background-color: #FFFFFF;
 }
 
