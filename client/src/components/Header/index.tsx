@@ -2,6 +2,7 @@ import './Header.css';
 import Button from '../Button';
 import React, { useState } from 'react';
 import logo from '../../assets/images/apexo_logo.svg';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
     
@@ -43,8 +44,12 @@ const Header: React.FC = () => {
             </nav>
             
             <div className='auth'>
-                <Button className='btn login-btn'>Log in</Button>
-                <Button className='btn start-btn'>Get Started</Button>
+                <Link to="/login">
+                    <Button className='btn login-btn'>Log in</Button>
+                </Link>
+                <Link to="/signup">
+                    <Button className='btn start-btn'>Get Started</Button>
+                </Link>
             </div>
 
             <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
@@ -52,6 +57,8 @@ const Header: React.FC = () => {
                     <li><a href='#' onClick={scrollToSection('about')}>About</a></li>
                     <li><a href='#' onClick={scrollToSection('features')}>Features</a></li>
                     <li><a href='#' onClick={scrollToSection('pricing')}>Pricing</a></li>
+                    <li><Link to="/login" onClick={() => setMobileMenuOpen(false)}>Log in</Link></li>
+                    <li><Link to="/signup" onClick={() => setMobileMenuOpen(false)}>Get Started</Link></li>
                 </ul>
             </div>
         </header>
