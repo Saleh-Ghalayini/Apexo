@@ -7,8 +7,6 @@
 .login-form-container {
     flex: 1;
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
     background: #15262C;
     color: #FFFFFF;
@@ -17,10 +15,12 @@
 }
 
 .login-logo {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 1rem;
 }
 
 .logo-icon {
@@ -37,7 +37,7 @@
 .login-logo span {
     font-size: 2rem;
     font-weight: 600;
-    color: white;
+    color: #FFFFFF;
     font-family: 'Montserrat', sans-serif;
 }
 
@@ -63,7 +63,7 @@
     gap: 1.5rem;
     width: 100%;
     max-width: 350px;
-    margin: auto 0;
+    margin: auto;
 }
 
 .form-field {
@@ -84,15 +84,26 @@
 .form-field input {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 2px solid #FFFFFF;
+    padding-left: 2.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 4px;
     background: #FFFFFF;
-    color: #FFFFFF;
+    color: #333333;
     font-size: 1rem;
 }
 
 .form-field input::placeholder {
     color: #C3C3C3;
+}
+
+.input-icon {
+    position: absolute;
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
 }
 
 .form-field input:focus {
@@ -114,7 +125,7 @@
 }
 
 .remember-me input[type="checkbox"] {
-    accent-color: #0B9D8A;
+    accent-color: #008F8F;
 }
 
 .remember-me label {
@@ -151,9 +162,11 @@
 }
 
 .trouble-signing {
-    margin-top: auto;
+    position: absolute;
+    bottom: 2rem;
+    left: 0;
+    right: 0;
     text-align: center;
-    padding-top: 2rem;
 }
 
 .trouble-signing a {
