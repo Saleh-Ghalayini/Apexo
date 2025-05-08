@@ -31,7 +31,7 @@ const Login: React.FC = () => {
     <div className="login-container">
       <div className="login-form-container">
         <div className="login-logo">
-            <img src={logo} alt="Logo" style={{ width: '45px', height: '45px' }} />
+            <img src={logo} alt="Logo" style={{ width: '55px', height: '55px' }} />
           <span>Apexo</span>
         </div>
         <div className="create-account-link">
