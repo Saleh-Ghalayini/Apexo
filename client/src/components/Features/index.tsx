@@ -11,6 +11,7 @@ import schedule from '../../assets/images/schedule_icon.png';
 import automation from '../../assets/images/automation_icon.png';
 
 const Features: React.FC = () => {
+    
     // Feature data for each card
     const featuresData = [
         {
