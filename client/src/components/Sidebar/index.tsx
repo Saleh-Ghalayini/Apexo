@@ -1,17 +1,19 @@
 import './Sidebar.css';
 import React from 'react';
-import burgerIcon from '../../assets/images/burger_icon.png';
 import helpIcon from '../../assets/images/help_icon.png';
+import burgerIcon from '../../assets/images/burger_icon.png';
 import settingsIcon from '../../assets/images/settings_icon.png';
 
 const Sidebar: React.FC = () => {
   return (
     <div className="sidebar">
-      <button className="menu-toggle">
-        <img src={burgerIcon} alt="Menu" />
-      </button>
+      <div className="sidebar-top">
+        <button className="menu-toggle">
+          <img src={burgerIcon} alt="Menu" />
+        </button>
+      </div>
       
-      <div className="sidebar-icons">
+      <div className="sidebar-bottom">
         <button className="sidebar-icon-btn">
           <img src={helpIcon} alt="Help" />
         </button>
