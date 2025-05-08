@@ -1,63 +1,251 @@
 .hero {
     display: flex;
+    overflow: hidden;
+    position: relative;
+    align-items: center;
+    background-color: #FFFFFF;
     justify-content: space-between;
-    padding: 100px 90px;
+    padding: var(--spacing-xl) 90px;
+}
+
+.description {
+    flex: 1;
+    display: flex;
+    max-width: 600px;
+    flex-direction: column;
+    align-items: flex-start;
+    animation: fadeIn 1s ease-out;
+    padding-right: var(--spacing-lg);
+}
+
+.product-name-container {
+    width: 100%;
 }
 
 .product-name, .slogan {
-    letter-spacing: -2%;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
     font-family: 'Montserrat-bold', sans-serif;
 }
 
 .product-name {
     font-size: 64px;
     font-weight: bold;
-    color: #008F8F;
+    position: relative;
+    display: inline-block;
+    color: var(--primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.product-name::after {
+    left: 0;
+    bottom: 0;
+    width: 60%;
+    height: 3px;
+    content: '';
+    position: absolute;
+    background-color: var(--primary);
 }
 
 .slogan {
     font-size: 56px;
-    color: #203030;
     font-weight: 800;
+    color: transparent;
+    white-space: nowrap;
+    background-clip: text;
+    color: var(--text-dark);
+    -webkit-background-clip: text;
+    margin-bottom: var(--spacing-md);
+    background: linear-gradient(to right, var(--text-dark), var(--primary));
 }
 
 .text {
-    font-size: 24px;
-    color: #555555;
+    font-size: 20px;
+    line-height: 1.5;
+    max-width: 580px;
+    color: var(--text-muted);
+    margin: var(--spacing-md) 0;
     font-family: 'Poppins', sans-serif;
-    margin-top: 20px;
 }
 
 .teams {
     font-size: 24px;
-    color: #203030;
+    position: relative;
+    display: inline-block;
+    color: var(--text-dark);
+    margin: var(--spacing-md) 0;
+    padding-bottom: var(--spacing-xs);
     font-family: 'Poppins', sans-serif;
-    margin: 20px 0px;
+}
+
+.teams::after {
+    left: 0;
+    bottom: 0;
+    content: '';
+    width: 100%;
+    height: 2px;
+    position: absolute;
+    background-color: var(--text-dark);
 }
 
 .btns {
-    gap: 20px;
     display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
 }
 
 .btn {
     height: 50px;
     cursor: pointer;
-    color: #FFFFFF;
-    padding: 8px 10px;
-    letter-spacing: 4%;
+    font-weight: 600;
+    padding: 12px 24px;
     align-items: center;
+    letter-spacing: 0.04em;
+    color: var(--text-light);
     font-family: 'Poppins', sans-serif;
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all var(--transition-speed) ease;
 }
 
 .start-btn {
     border: none;
-    width: 120px;
-    background-color: #008F8F;
+    min-width: 140px;
+    background-color: var(--primary);
+}
+
+.start-btn:hover {
+    transform: translateY(-2px);
+    background-color: var(--primary-dark);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .try-btn {
-    width: 130px;
     border: none;
-    background-color: #555555;
+    min-width: 150px;
+    background-color: var(--text-muted);
+}
+
+.try-btn:hover {
+    background-color: #444444;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.structure {
+    flex: 1;
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding-left: var(--spacing-lg);
+}
+
+.network {
+    height: auto;
+    max-width: 100%;
+    animation: floatAnimation 5s ease-in-out infinite;
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.15));
+}
+
+@keyframes floatAnimation {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1200px) {
+    .hero {
+        padding: var(--spacing-xl) 60px;
+    }
+    
+    .product-name {
+        font-size: 54px;
+    }
+    
+    .slogan {
+        font-size: 48px;
+    }
+    
+    .text, .teams {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 992px) {
+    .hero {
+        text-align: center;
+        flex-direction: column;
+        padding: var(--spacing-lg) 40px;
+    }
+    
+    .description {
+        max-width: 100%;
+        align-items: center;
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .product-name::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .btns {
+        justify-content: center;
+    }
+    
+    .network {
+        max-width: 80%;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: var(--spacing-md) 20px;
+    }
+    
+    .product-name {
+        font-size: 42px;
+    }
+    
+    .slogan {
+        font-size: 36px;
+    }
+    
+    .text, .teams {
+        font-size: 18px;
+    }
+    
+    .btn {
+        height: 45px;
+        padding: 10px 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-name {
+        font-size: 32px;
+    }
+    
+    .slogan {
+        font-size: 28px;
+    }
+    
+    .text, .teams {
+        font-size: 16px;
+    }
+    
+    .btns {
+        gap: var(--spacing-sm);
+    }
+    
+    .start-btn, .try-btn {
+        padding: 10px;
+        min-width: 120px;
+    }
 }
