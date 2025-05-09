@@ -206,3 +206,127 @@
 .send-button:hover img {
   opacity: 1;
 }
+
+@media (max-width: 992px) {
+  .dashboard-content {
+    margin-left: var(--sidebar-width);
+  }
+
+  .dashboard-main {
+    padding: var(--spacing-md) var(--spacing-lg) calc(var(--spacing-lg) + 80px);
+  }
+
+  .welcome-message {
+    font-size: 36px;
+  }
+
+  .messages-container {
+    max-width: 90%;
+  }
+
+  .chat-input-container {
+    width: 85%;
+    max-width: none;
+  }
+
+  .message-container {
+    max-width: 80%;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
+
+  .dashboard-content {
+    margin-left: 0;
+    margin-top: 60px;
+  }
+
+  .dashboard-header {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .try-advanced-btn {
+    font-size: 12px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+  }
+
+  .dashboard-main {
+    padding: var(--spacing-sm) var(--spacing-md) calc(var(--spacing-lg) + 70px);
+  }
+
+  .welcome-message {
+    font-size: 28px;
+  }
+
+  .messages-container {
+    height: calc(100vh - 180px);
+    padding: var(--spacing-sm);
+    padding-bottom: calc(var(--spacing-lg) * 1.5);
+  }
+
+  .chat-input-container {
+    width: 90%;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .chat-input {
+    font-size: 14px;
+    padding: var(--spacing-xs);
+  }
+
+  .send-button {
+    padding: 4px;
+  }
+
+  .send-button img {
+    width: calc(var(--icon-size) - 4px);
+    height: calc(var(--icon-size) - 4px);
+  }
+
+  .message-container {
+    max-width: 90%;
+  }
+
+  .message-text {
+    font-size: 14px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-main {
+    padding: var(--spacing-xs) var(--spacing-sm) calc(var(--spacing-md) + 70px);
+  }
+
+  .welcome-message {
+    font-size: 24px;
+  }
+
+  .messages-container {
+    height: calc(100vh - 160px);
+    max-height: none;
+    width: 100%;
+  }
+
+  .chat-input-container {
+    width: 95%;
+    margin: 0 var(--spacing-xs);
+  }
+
+  .message-container {
+    max-width: 95%;
+  }
+
+  .chat-input-container img[alt='upload'] {
+    width: calc(var(--icon-size) - 4px);
+    height: calc(var(--icon-size) - 4px);
+  }
+}
