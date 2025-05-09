@@ -16,6 +16,47 @@ interface ChatMessage {
 const Dashboard: React.FC = () => {
   const [username, setUsername] = useState('Username');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Scrolling to the bottom of the chat when a new message is sent to the chat
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSendMessage = () => {
+    if (!inputValue.trim()) return;
+
+    const newMessage: ChatMessage = {
+      id: Date.now(),
+      text: inputValue,
+      isUser: true,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, newMessage]);
+    setInputValue('');
+
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto';
+    }
+    
+    // Making AI response appear after 1 second
+    setTimeout(() => {
+      const aiResponse: ChatMessage = {
+        id: Date.now() + 1,
+        text: "This is a simulated AI response. In a real application, this would come from the backend API.",
+        isUser: false,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, aiResponse]);
+    }, 1000);
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
