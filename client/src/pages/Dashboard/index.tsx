@@ -1,9 +1,9 @@
 import './Dashboard.css';
-import React, { useState, useRef, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import Message from '../../components/Message';
 import addIcon from '../../assets/images/add_icon.png';
 import userIcon from '../../assets/images/user_icon.png';
+import React, { useState, useRef, useEffect } from 'react';
 import arrowIcon from '../../assets/images/arrow_icon.png';
 
 interface ChatMessage {
@@ -80,7 +80,6 @@ const Dashboard: React.FC = () => {
       
       <div className="dashboard-content">
         <div className="dashboard-header">
-          <button className="try-advanced-btn">Try Apexo Advanced</button>
           <div className="user-avatar">
             <img src={userIcon} width='20px' height='20px' alt="User" />
           </div>
