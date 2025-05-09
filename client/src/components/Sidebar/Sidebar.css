@@ -215,13 +215,21 @@
   background-color: var(--translucent-white-2);
 }
 
-/* Bottom section with help and integrations icons */
 .sidebar-bottom {
   display: flex;
   flex-direction: column;
   margin-bottom: var(--spacing-md);
   gap: var(--spacing-md);
   padding: 0 var(--spacing-md);
+}
+
+.sidebar:not(.expanded) .sidebar-bottom {
+  align-items: center;
+  padding: 0 calc(var(--spacing-sm) / 2);
+}
+
+.sidebar:not(.expanded) .sidebar-icon-btn span {
+  display: none;
 }
 
 .sidebar-icon-btn {
@@ -263,4 +271,106 @@
 
 .sidebar-icon-btn.active img {
   opacity: 1;
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: 60px;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 var(--spacing-md);
+  }
+
+  .sidebar.expanded {
+    height: 100%;
+    width: 250px;
+    flex-direction: column;
+    align-items: flex-start;
+    z-index: 200;
+  }
+
+  .sidebar-top {
+    width: auto;
+    justify-content: space-between;
+    flex-direction: row;
+    height: 60px;
+    padding: 0;
+  }
+
+  .sidebar.expanded .sidebar-top {
+    flex-direction: row;
+    height: 70px;
+    width: 100%;
+    padding: var(--spacing-md);
+  }
+
+  .sidebar-logo {
+    margin-left: var(--spacing-md);
+  }
+
+  .sidebar.expanded .sidebar-logo {
+    margin-left: auto;
+  }
+
+  .new-chat-container {
+    display: none;
+  }
+
+  .sidebar.expanded .new-chat-container {
+    display: block;
+    width: 100%;
+  }
+
+  .chat-section {
+    display: none;
+  }
+
+  .sidebar.expanded .chat-section {
+    display: flex;
+  }
+
+  .sidebar-bottom {
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+  }
+
+  .sidebar.expanded .sidebar-bottom {
+    flex-direction: column;
+    margin-bottom: var(--spacing-md);
+    padding: 0 var(--spacing-md);
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .sidebar-icon-btn span {
+    display: none;
+  }
+
+  .sidebar.expanded .sidebar-icon-btn span {
+    display: inline-block;
+  }
+}
+
+/* More adjustments for extra small screens */
+@media (max-width: 576px) {
+  .sidebar-top {
+    gap: var(--spacing-xs);
+  }
+
+  .menu-toggle, .sidebar-icon-btn {
+    width: 35px;
+    height: 35px;
+  }
+
+  .menu-toggle img, .sidebar-icon-btn img {
+    width: calc(var(--icon-size-sm) - 2px);
+    height: calc(var(--icon-size-sm) - 2px);
+  }
 }
