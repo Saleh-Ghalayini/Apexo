@@ -1,7 +1,12 @@
 import React from 'react';
 import './Table.css';
 
-
+export interface TableColumn<T> {
+  key: string;
+  header: string;
+  render?: (item: T) => React.ReactNode;
+  width?: string;
+}
 
 export interface TableProps<T> {
   columns: TableColumn<T>[];
