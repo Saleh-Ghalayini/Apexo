@@ -139,15 +139,6 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="dropdown-section">
-                  <div className="dropdown-item">
-                    <div className="dropdown-icon">
-                      <img src={helpIcon} width='16px' height='16px' alt="Help" />
-                    </div>
-                    Help & Support
-                  </div>
-                </div>
-                
                 <div className="dropdown-divider"></div>
                 
                 <div className="dropdown-section">
