@@ -1,6 +1,17 @@
 import React from 'react';
 import './Table.css';
 
+
+
+export interface TableProps<T> {
+  columns: TableColumn<T>[];
+  data: T[];
+  keyExtractor: (item: T) => string;
+  emptyMessage?: string;
+  className?: string;
+  addButton?: React.ReactNode;
+}
+
 const Table = <T extends Record<string, unknown>>({
   columns,
   data,
