@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Integrations.css';
+import plusIcon from '../../assets/images/add_icon.png';
+import arrowIcon from '../../assets/images/l_arrow_icon.png';
 
 interface IntegrationAccount {
   id: string;
@@ -60,7 +62,7 @@ const IntegrationsPage: React.FC = () => {
     <div className="integrations-container">
       <div className="integrations-header">
         <button className="back-button" onClick={handleGoBack}>
-          ←
+          <img src={arrowIcon} width={22} height={22} alt="Go Back" className="back-icon" />
         </button>
         <h1 className="header-title">Currently Linked Accounts</h1>
       </div>
@@ -79,27 +81,46 @@ const IntegrationsPage: React.FC = () => {
             <tbody>
               {accounts.map((account) => (
                 <tr key={account.id}>
-                  <td>
-                    <div>{account.name}</div>
-                    <div>{account.email}</div>
+                  <td className="account-cell">
+                    <div className="account-icon">
+                      {account.type === 'workspace' && '🏢'}
+                      {account.type === 'channel' && '📢'}
+                      {account.type === 'scheduler' && '📅'}
+                    </div>
+                    <div className="account-info">
+                      <div className="account-name">{account.name}</div>
+                      <div className="account-email">{account.email}</div>
+                    </div>
                   </td>
-                  <td>{account.status}</td>
-                  <td>
+                  <td className={`status-cell ${account.status}`}>
+                    {account.status === 'active' ? 'Active' : 'Inactive'}
+                  </td>
+                  <td className="actions-cell">
                     {account.status === 'active' ? (
-                      <button onClick={() => handleDisconnect(account.id)}>
+                      <button 
+                        className="action-button disconnect"
+                        onClick={() => handleDisconnect(account.id)}
+                      >
                         Disconnect
                       </button>
                     ) : (
-                      <button onClick={() => handleConnect(account.id)}>
+                      <button 
+                        className="action-button connect"
+                        onClick={() => handleConnect(account.id)}
+                      >
                         Connect
                       </button>
                     )}
                   </td>
-                  <td>{account.linkingDate}</td>
+                  <td className="date-cell">{account.linkingDate}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          
+          <button className="add-account-button">
+            <img src={plusIcon} width={18} height={18} alt="Add Account" />
+          </button>
         </div>
       </div>
     </div>
