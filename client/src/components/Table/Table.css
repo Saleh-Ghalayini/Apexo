@@ -62,3 +62,43 @@
 .status-cell.inactive {
   color: var(--text-muted);
 }
+
+/* Account cell styles */
+.account-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding-left: 16px;
+}
+
+.account-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.account-name {
+  font-weight: 500;
+  margin-bottom: 4px;
+  text-align: center;
+  width: 100%;
+}
+
+.account-email {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  width: 100%;
+}
