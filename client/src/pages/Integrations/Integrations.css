@@ -24,6 +24,9 @@
   border-radius: 8px;
   transition: background-color 0.2s;
   line-height: 1;
+  align-self: flex-start;
+  margin-top: 6px;
+  margin-bottom: 25px;
 }
 
 .back-icon {
