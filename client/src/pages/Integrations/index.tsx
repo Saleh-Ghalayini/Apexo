@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Table from '../../components/Table';
+import type { TableColumn } from '../../components/Table';
 import './Integrations.css';
 import plusIcon from '../../assets/images/add_icon.png';
 import arrowIcon from '../../assets/images/l_arrow_icon.png';
@@ -11,6 +13,7 @@ interface IntegrationAccount {
   type: 'workspace' | 'channel' | 'scheduler';
   status: 'active' | 'inactive';
   linkingDate: string;
+  [key: string]: unknown;
 }
 
 const IntegrationsPage: React.FC = () => {
@@ -58,6 +61,62 @@ const IntegrationsPage: React.FC = () => {
     ));
   };
 
+  const columns: TableColumn<IntegrationAccount>[] = [
+    {
+      key: 'account',
+      header: 'Account',
+      render: (account) => (
+        <div className="account-cell">
+          <div className="account-icon">
+            {account.type === 'workspace' && '🏢'}
+            {account.type === 'channel' && '📢'}
+            {account.type === 'scheduler' && '📅'}
+          </div>
+          <div className="account-info">
+            <div className="account-name">{account.name}</div>
+            <div className="account-email">{account.email}</div>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (account) => (
+        <div className={`status-cell ${account.status}`}>
+          {account.status === 'active' ? 'Active' : 'Inactive'}
+        </div>
+      )
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      render: (account) => (
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          {account.status === 'active' ? (
+            <button 
+              className="action-button disconnect"
+              onClick={() => handleDisconnect(account.id)}
+            >
+              Disconnect
+            </button>
+          ) : (
+            <button 
+              className="action-button connect"
+              onClick={() => handleConnect(account.id)}
+            >
+              Connect
+            </button>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'linkingDate',
+      header: 'Linking Date',
+    }
+  ];
+
   return (
     <div className="integrations-container">
       <div className="integrations-header">
@@ -69,58 +128,16 @@ const IntegrationsPage: React.FC = () => {
       
       <div className="integrations-content">
         <div className="accounts-table-container">
-          <table className="accounts-table">
-            <thead>
-              <tr>
-                <th>Account</th>
-                <th>Status</th>
-                <th>Actions</th>
-                <th>Linking Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {accounts.map((account) => (
-                <tr key={account.id}>
-                  <td className="account-cell">
-                    <div className="account-icon">
-                      {account.type === 'workspace' && '🏢'}
-                      {account.type === 'channel' && '📢'}
-                      {account.type === 'scheduler' && '📅'}
-                    </div>
-                    <div className="account-info">
-                      <div className="account-name">{account.name}</div>
-                      <div className="account-email">{account.email}</div>
-                    </div>
-                  </td>
-                  <td className={`status-cell ${account.status}`}>
-                    {account.status === 'active' ? 'Active' : 'Inactive'}
-                  </td>
-                  <td className="actions-cell">
-                    {account.status === 'active' ? (
-                      <button 
-                        className="action-button disconnect"
-                        onClick={() => handleDisconnect(account.id)}
-                      >
-                        Disconnect
-                      </button>
-                    ) : (
-                      <button 
-                        className="action-button connect"
-                        onClick={() => handleConnect(account.id)}
-                      >
-                        Connect
-                      </button>
-                    )}
-                  </td>
-                  <td className="date-cell">{account.linkingDate}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          
-          <button className="add-account-button">
-            <img src={plusIcon} width={18} height={18} alt="Add Account" />
-          </button>
+          <Table<IntegrationAccount>
+            columns={columns}
+            data={accounts}
+            keyExtractor={(item) => item.id}
+            addButton={
+              <button className="add-account-button">
+                <img src={plusIcon} width={18} height={18} alt="Add Account" />
+              </button>
+            }
+          />
         </div>
       </div>
     </div>
