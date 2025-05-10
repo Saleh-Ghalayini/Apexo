@@ -49,3 +49,16 @@
   font-style: italic;
 }
 
+/* Status styles */
+.status-cell {
+  text-align: center;
+}
+
+.status-cell.active {
+  color: var(--teal);
+  font-weight: 500;
+}
+
+.status-cell.inactive {
+  color: var(--text-muted);
+}
