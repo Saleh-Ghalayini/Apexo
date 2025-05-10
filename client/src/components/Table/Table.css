@@ -102,3 +102,21 @@
   text-align: center;
   width: 100%;
 }
+
+.action-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.action-button.connect {
+  background-color: var(--teal);
+  color: #FFFFFF;
+}
+
+.action-button.connect:hover {
+  background-color: var(--teal-dark);
+}
