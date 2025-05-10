@@ -3,12 +3,11 @@ import Sidebar from '../../components/Sidebar';
 import Message from '../../components/Message';
 import addIcon from '../../assets/images/add_icon.png';
 import userIcon from '../../assets/images/user_icon.png';
+import wUserIcon from '../../assets/images/w_user_icon.png';
 import React, { useState, useRef, useEffect } from 'react';
 import arrowIcon from '../../assets/images/arrow_icon.png';
 import logoutIcon from '../../assets/images/w_logout_icon.png';
-import settingsIcon from '../../assets/images/settings_icon.png';
 import helpIcon from '../../assets/images/help_icon.png';
-import notifactionIcon from '../../assets/images/notification_icon.png';
 
 interface ChatMessage {
   id: number;
@@ -134,22 +133,13 @@ const Dashboard: React.FC = () => {
                 <div className="dropdown-section">
                   <div className="dropdown-item">
                     <div className="dropdown-icon">
-                    <img src={settingsIcon} width='16px' height='16px' alt="Logout" />
+                    <img src={wUserIcon} width='18px' height='18px' alt="Logout" />
                     </div>
                     Account settings
                   </div>
                 </div>
                 
-                <div className="dropdown-divider"></div>
-                
                 <div className="dropdown-section">
-                  <div className="dropdown-item">
-                    <div className="dropdown-icon">
-                      <img src={notifactionIcon} width='16px' height='16px' alt="Profile" />
-                    </div>
-                    Notifications
-                  </div>
-                  
                   <div className="dropdown-item">
                     <div className="dropdown-icon">
                       <img src={helpIcon} width='16px' height='16px' alt="Help" />
