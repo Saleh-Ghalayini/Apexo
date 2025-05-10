@@ -14,8 +14,13 @@ return new class extends Migration
         Schema::create('integrations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
-            $table->enum('provider', ['notion', 'slack', 'google_calendar', 'google_meet', 'gmail']);
+            $table->string('name');
+            $table->string('email')->nullable();
+            $table->enum('provider', ['workspace', 'channel', 'scheduler', 'Email', 'Other']); // Match frontend types
+            $table->enum('status', ['active', 'inactive'])->default('inactive');
             $table->jsonb('settings');
+            $table->timestamp('connected_at')->nullable();
+            $table->timestamp('disconnected_at')->nullable();
             $table->timestamps();
         });
     }
