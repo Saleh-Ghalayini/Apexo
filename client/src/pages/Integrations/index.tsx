@@ -5,12 +5,16 @@ import type { TableColumn } from '../../components/Table';
 import './Integrations.css';
 import plusIcon from '../../assets/images/add_icon.png';
 import arrowIcon from '../../assets/images/l_arrow_icon.png';
+import slackIcon from '../../assets/images/w_slack_icon.png';
+import calendarIcon from '../../assets/images/calendar_icon.png';
+import notionIcon from '../../assets/images/notion_icon.png';
+import mailIcon from '../../assets/images/w_mail_icon.png';
 
 interface IntegrationAccount {
   id: string;
   name: string;
   email: string;
-  type: 'workspace' | 'channel' | 'scheduler';
+  type: 'workspace' | 'channel' | 'scheduler' | 'Email' | 'Other';
   status: 'active' | 'inactive';
   linkingDate: string;
   [key: string]: unknown;
@@ -42,6 +46,14 @@ const IntegrationsPage: React.FC = () => {
       type: 'scheduler',
       status: 'inactive',
       linkingDate: '05-04-2025'
+    },
+    {
+      id: '4',
+      name: 'My Email',
+      email: 'apex@gmail.com',
+      type: 'Email',
+      status: 'inactive',
+      linkingDate: '05-04-2025'
     }
   ]);
 
@@ -68,9 +80,11 @@ const IntegrationsPage: React.FC = () => {
       render: (account) => (
         <div className="account-cell">
           <div className="account-icon">
-            {account.type === 'workspace' && '🏢'}
-            {account.type === 'channel' && '📢'}
-            {account.type === 'scheduler' && '📅'}
+            {account.type === 'workspace' && <img src={slackIcon} width={18} height={18} alt="Workspace" />}
+            {account.type === 'channel' && <img src={slackIcon} width={18} height={18} alt="Channel" />}
+            {account.type === 'scheduler' && <img src={calendarIcon} width={18} height={18} alt="Scheduler" />}
+            {account.type === 'Email' && <img src={mailIcon} width={18} height={18} alt="Email" />}
+            {account.type === 'Other' && <img src={notionIcon} width={18} height={18} alt="Other" />}
           </div>
           <div className="account-info">
             <div className="account-name">{account.name}</div>
