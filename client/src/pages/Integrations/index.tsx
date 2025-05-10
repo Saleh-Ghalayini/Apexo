@@ -80,11 +80,11 @@ const IntegrationsPage: React.FC = () => {
       render: (account) => (
         <div className="account-cell">
           <div className="account-icon">
-            {account.type === 'workspace' && <img src={slackIcon} width={18} height={18} alt="Workspace" />}
-            {account.type === 'channel' && <img src={notionIcon} width={18} height={18} alt="Channel" />}
-            {account.type === 'scheduler' && <img src={calendarIcon} width={18} height={18} alt="Scheduler" />}
-            {account.type === 'Email' && <img src={mailIcon} width={18} height={18} alt="Email" />}
-            {account.type === 'Other' && <img src={notionIcon} width={18} height={18} alt="Other" />}
+            {account.type === 'workspace' && <img src={slackIcon} width={24} height={24} alt="Workspace" />}
+            {account.type === 'channel' && <img src={notionIcon} width={24} height={24} alt="Channel" />}
+            {account.type === 'scheduler' && <img src={calendarIcon} width={24} height={24} alt="Scheduler" />}
+            {account.type === 'Email' && <img src={mailIcon} width={24} height={24} alt="Email" />}
+            {account.type === 'Other' && <img src={notionIcon} width={24} height={24} alt="Other" />}
           </div>
           <div className="account-info">
             <div className="account-name">{account.name}</div>
