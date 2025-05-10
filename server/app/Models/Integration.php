@@ -7,17 +7,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class Integration extends Model
 {
-    /** @use HasFactory<\Database\Factories\IntegrationFactory> */
     use HasFactory;
 
     protected $fillable = [
         'company_id',
+        'name',
+        'email',
         'provider',
+        'status',
         'settings',
+        'connected_at',
+        'disconnected_at',
     ];
 
     protected $casts = [
-        'settings' => 'array'
+        'settings' => 'array',
+        'connected_at' => 'datetime',
+        'disconnected_at' => 'datetime'
     ];
 
     public function company()
