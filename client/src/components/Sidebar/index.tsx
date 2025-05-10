@@ -1,5 +1,6 @@
 import './Sidebar.css';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import addIcon from '../../assets/images/add_icon.png';
 import helpIcon from '../../assets/images/help_icon.png';
 import linesIcon from '../../assets/images/lines_icon.png';
@@ -10,9 +11,14 @@ import integrationIcon from '../../assets/images/integrations_icon.png';
 
 const Sidebar: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
+  };
+  
+  const navigateToIntegrations = () => {
+    navigate('/integrations');
   };
 
   // Sample chat data grouped by date
@@ -88,13 +94,12 @@ const Sidebar: React.FC = () => {
           </div>
         </>
       )}
-      
-      <div className="sidebar-bottom">
+        <div className="sidebar-bottom">
         <button className="sidebar-icon-btn">
           <img src={helpIcon} alt="Help" />
           {isExpanded && <span>Help</span>}
         </button>
-        <button className="sidebar-icon-btn">
+        <button className="sidebar-icon-btn" onClick={navigateToIntegrations}>
           <img src={integrationIcon} alt="Integrations" />
           {isExpanded && <span>Integrations</span>}
         </button>
