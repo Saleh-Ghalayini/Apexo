@@ -21,4 +21,16 @@ class ChatSession extends Model
         'status',
         'last_activity_at',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'last_activity_at' => 'datetime',
+        ];
+    }
 }
