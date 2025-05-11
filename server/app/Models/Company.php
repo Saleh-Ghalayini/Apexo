@@ -57,4 +57,9 @@ class Company extends Model
     {
         return $this->hasManyThrough(Meeting::class, User::class);
     }
+
+    public function tasks()
+    {
+        return $this->hasManyThrough(Task::class, User::class);
+    }
 }
