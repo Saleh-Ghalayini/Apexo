@@ -33,4 +33,9 @@ class ChatSession extends Model
             'last_activity_at' => 'datetime',
         ];
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
