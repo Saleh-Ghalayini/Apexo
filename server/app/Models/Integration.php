@@ -26,4 +26,15 @@ class Integration extends Model
         'expires_at',
         'metadata',
     ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'credentials',
+        'access_token',
+        'refresh_token',
+    ];
 }
