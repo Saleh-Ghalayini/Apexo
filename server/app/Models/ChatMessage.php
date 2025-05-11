@@ -22,4 +22,16 @@ class ChatMessage extends Model
         'metadata',
         'status',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'metadata' => 'json',
+        ];
+    }
 }
