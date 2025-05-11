@@ -37,4 +37,18 @@ class Integration extends Model
         'access_token',
         'refresh_token',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'credentials' => 'encrypted:json',
+            'metadata' => 'json',
+            'expires_at' => 'datetime',
+        ];
+    }
 }
