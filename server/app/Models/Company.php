@@ -62,4 +62,9 @@ class Company extends Model
     {
         return $this->hasManyThrough(Task::class, User::class);
     }
+
+    public function integrations()
+    {
+        return $this->hasManyThrough(Integration::class, User::class);
+    }
 }
