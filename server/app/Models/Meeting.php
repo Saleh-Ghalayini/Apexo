@@ -27,4 +27,19 @@ class Meeting extends Model
         'attendees',
         'metadata',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'scheduled_at' => 'datetime',
+            'ended_at' => 'datetime',
+            'attendees' => 'json',
+            'metadata' => 'json',
+        ];
+    }
 }
