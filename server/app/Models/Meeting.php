@@ -42,4 +42,9 @@ class Meeting extends Model
             'metadata' => 'json',
         ];
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
