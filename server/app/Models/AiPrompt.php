@@ -24,4 +24,18 @@ class AiPrompt extends Model
         'result',
         'error',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'intent' => 'json',
+            'parameters' => 'json',
+            'result' => 'json',
+        ];
+    }
 }
