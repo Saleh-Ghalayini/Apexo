@@ -8,7 +8,6 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -53,19 +52,18 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the company that the user belongs to.
-     */
     public function company()
     {
         return $this->belongsTo(Company::class);
     }
 
-    /**
-     * Get the integrations for the user.
-     */
     public function integrations()
     {
         return $this->hasMany(Integration::class);
+    }
+
+    public function aiPrompts()
+    {
+        return $this->hasMany(AiPrompt::class);
     }
 }
