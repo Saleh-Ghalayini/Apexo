@@ -9,4 +9,17 @@ class ChatMessage extends Model
 {
     /** @use HasFactory<\Database\Factories\ChatMessageFactory> */
     use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'chat_session_id',
+        'role',
+        'content',
+        'metadata',
+        'status',
+    ];
 }
