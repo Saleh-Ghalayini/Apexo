@@ -33,4 +33,18 @@ class Company extends Model
         'subscription_plan',
         'active',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'subscription_ends_at' => 'datetime',
+            'active' => 'boolean',
+            'size' => 'integer',
+        ];
+    }
 }
