@@ -39,8 +39,16 @@ class AiPrompt extends Model
         ];
     }
 
+    /**
+     * Get the user that owns the prompt.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function tasks()
+    {
+        return $this->morphMany(Task::class, 'source');
     }
 }
