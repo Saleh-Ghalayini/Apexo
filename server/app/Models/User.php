@@ -66,4 +66,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(AiPrompt::class);
     }
+
+    public function chatSessions()
+    {
+        return $this->hasMany(ChatSession::class);
+    }
 }
