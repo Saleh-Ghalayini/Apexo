@@ -47,4 +47,9 @@ class Company extends Model
             'size' => 'integer',
         ];
     }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }
