@@ -60,4 +60,12 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Company::class);
     }
+
+    /**
+     * Get the integrations for the user.
+     */
+    public function integrations()
+    {
+        return $this->hasMany(Integration::class);
+    }
 }
