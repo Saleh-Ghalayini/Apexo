@@ -38,4 +38,9 @@ class AiPrompt extends Model
             'result' => 'json',
         ];
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
