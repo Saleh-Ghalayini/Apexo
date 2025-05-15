@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import api from '../../services/api';
 
 interface Integration {
@@ -14,7 +14,7 @@ export default function SlackStatus() {
   const [connected, setConnected] = useState(false);
   const [workspace, setWorkspace] = useState<string | null>(null);
 
-  useEffect(() => {
+  const checkStatus = useCallback(() => {
     api.get('/user')
       .then(res => {
         const integrations = res.data?.payload?.integrations || [];
@@ -32,6 +32,14 @@ export default function SlackStatus() {
         setWorkspace(null);
       });
   }, []);
+
+  useEffect(() => {
+    checkStatus();
+    const intervalId = setInterval(() => {
+      checkStatus();
+    }, 5000);
+    return () => clearInterval(intervalId);
+  }, [checkStatus]);
 
   if (!connected) return <span style={{ color: 'red' }}>Slack: Not Connected</span>;
   return <span style={{ color: 'green' }}>Slack Connected{workspace ? ` (${workspace})` : ''}</span>;
