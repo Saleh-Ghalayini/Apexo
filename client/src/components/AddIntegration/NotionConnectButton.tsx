@@ -19,11 +19,60 @@ export default function NotionConnectButton({ onSuccess }: NotionConnectButtonPr
       .catch(() => setUserId(null));
   }, []);
 
+  const handleClick = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      localStorage.setItem('notion_auth_initiated', 'true');
+      const response = await api.post(`/integrations/connect/notion`);
+      if (response?.data?.success && response?.data?.payload?.url) {
+        let redirectUrl = response.data.payload.url;
+        if (redirectUrl.startsWith('/')) {
+          redirectUrl = `http://localhost:8000${redirectUrl}`;
+        }
+        if (userId) {
+          const separator = redirectUrl.includes('?') ? '&' : '?';
+          redirectUrl += `${separator}user_id=${userId}`;
+        }
+        const popupWindow = window.open(redirectUrl, '_blank');
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('message', handleMessageEvent);
+        if (!popupWindow || popupWindow.closed || typeof popupWindow.closed === 'undefined') {
+          setError('Popup was blocked. Please allow popups for this site.');
+          setLoading(false);
+        }
+      } else {
+        throw new Error('Failed to get Notion redirect URL');
+      }
+    } catch (err) {
+      setError('Failed to connect to Notion. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMessageEvent = (event: MessageEvent) => {
+    if (event.data === 'notion_auth_completed') {
+      if (onSuccess) onSuccess();
+      window.removeEventListener('message', handleMessageEvent);
+      window.removeEventListener('storage', handleStorageChange);
+    }
+  };
+
+  const handleStorageChange = (event: StorageEvent) => {
+    if (event.key === 'notion_auth_completed' && event.newValue === 'true') {
+      if (onSuccess) onSuccess();
+      localStorage.removeItem('notion_auth_completed');
+      window.removeEventListener('storage', handleStorageChange);
+    }
+  };
+
   return (
     <>
       <button
         type="button"
         className="modal-button primary"
+        onClick={handleClick}
         disabled={!userId || loading}
       >
         {loading ? 'Connecting...' : 'Connect Notion'}
