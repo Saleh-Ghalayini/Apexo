@@ -59,8 +59,13 @@ const AddIntegration: React.FC<AddIntegrationProps> = ({ isOpen, onClose, onAddI
     try {
       setIsLoading(true);
       const apiProviders = await IntegrationService.getProviders();
+      interface ApiProvider {
+        id: string;
+        name: string;
+        type: 'workspace' | 'channel' | 'scheduler' | 'Email' | 'Other';
+      }
       if (apiProviders && apiProviders.length > 0) {
-        const mappedProviders = apiProviders.map((p: any) => ({
+        const mappedProviders = apiProviders.map((p: ApiProvider) => ({
           id: p.id,
           name: p.name,
           icon: getIconForType(p.type),
