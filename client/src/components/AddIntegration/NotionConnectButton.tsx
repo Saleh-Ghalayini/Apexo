@@ -74,8 +74,28 @@ export default function NotionConnectButton({ onSuccess }: NotionConnectButtonPr
         className="modal-button primary"
         onClick={handleClick}
         disabled={!userId || loading}
+        style={{
+          backgroundColor: '#000000',
+          color: '#ffffff',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          padding: '8px 16px',
+          borderRadius: '4px',
+          fontWeight: 500,
+          cursor: !userId || loading ? 'not-allowed' : 'pointer',
+          opacity: !userId || loading ? 0.7 : 1
+        }}
       >
-        {loading ? 'Connecting...' : 'Connect Notion'}
+        {loading ? (
+          <span>Connecting...</span>
+        ) : (
+          <>
+            <span style={{ fontSize: '16px' }}>N</span>
+            <span>Connect Notion</span>
+          </>
+        )}
       </button>
       {error && (
         <div style={{ color: 'red', marginTop: '8px', fontSize: '14px' }}>
