@@ -1,6 +1,6 @@
-import './ArrowDown.css';
 import React from 'react';
-import arrow from '../../assets/images/down-arrow.png';
+ import './ArrowDown.css';
+ import arrow from '../../assets/images/down-arrow.png';
 
 const ArrowDown: React.FC = () => {
 
