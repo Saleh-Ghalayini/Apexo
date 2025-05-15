@@ -43,6 +43,15 @@ const AIPromptPanel: React.FC = () => {
     setLoading(false);
   };
 
+  const handleRetry = async (promptId: number) => {
+    setLoading(true);
+    try {
+      await api.post(`/ai/notion/retry/${promptId}`);
+      setRefreshKey(prev => prev + 1);
+    } catch {}
+    setLoading(false);
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
@@ -96,6 +105,11 @@ const AIPromptPanel: React.FC = () => {
             {promptHistory.map((item) => (
               <li key={item.id}>
                 {getStatusBadge(item.status)} {getOperationBadge(item.operation_type)} {item.prompt} - {item.created_at}
+                {item.status === 'failed' && (
+                  <button onClick={() => handleRetry(item.id)} disabled={loading}>
+                    Retry
+                  </button>
+                )}
               </li>
             ))}
           </ul>
