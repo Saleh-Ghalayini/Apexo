@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApi } from '../../hooks/useApi';
+import Toast from '../../components/Toast/Toast';
 
 interface AIPromptStatus {
   id: number;
@@ -14,6 +15,9 @@ const AIPromptPanel: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [promptHistory, setPromptHistory] = useState<AIPromptStatus[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'error'>('success');
   const api = useApi();
 
   useEffect(() => {
@@ -37,9 +41,16 @@ const AIPromptPanel: React.FC = () => {
     setLoading(true);
     try {
       await api.post('/ai/notion/prompt', { prompt });
+      setToastMessage('Prompt submitted successfully!');
+      setToastType('success');
+      setShowToast(true);
       setPrompt('');
       setRefreshKey(prev => prev + 1);
-    } catch {}
+    } catch {
+      setToastMessage('Failed to submit prompt. Please try again.');
+      setToastType('error');
+      setShowToast(true);
+    }
     setLoading(false);
   };
 
@@ -47,8 +58,15 @@ const AIPromptPanel: React.FC = () => {
     setLoading(true);
     try {
       await api.post(`/ai/notion/retry/${promptId}`);
+      setToastMessage('Retrying prompt...');
+      setToastType('success');
+      setShowToast(true);
       setRefreshKey(prev => prev + 1);
-    } catch {}
+    } catch {
+      setToastMessage('Failed to retry prompt. Please try again.');
+      setToastType('error');
+      setShowToast(true);
+    }
     setLoading(false);
   };
 
@@ -115,6 +133,15 @@ const AIPromptPanel: React.FC = () => {
           </ul>
         )}
       </div>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+          autoClose={true}
+          autoCloseTime={3000}
+        />
+      )}
     </div>
   );
 };
