@@ -1,4 +1,5 @@
 import React from 'react';
+import Modal from '../Modal';
 
 interface AddIntegrationProps {
   isOpen: boolean;
@@ -10,8 +11,13 @@ interface AddIntegrationProps {
   }) => void;
 }
 
-const AddIntegration: React.FC<AddIntegrationProps> = ({ isOpen, onClose, onAddIntegration }) => {
-  return null;
+const AddIntegration: React.FC<AddIntegrationProps> = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Add New Integration">
+    </Modal>
+  );
 };
 
 export default AddIntegration;
