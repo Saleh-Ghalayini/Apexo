@@ -5,6 +5,7 @@ interface AIPromptStatus {
   id: number;
   prompt: string;
   status: string;
+  operation_type: string;
   created_at: string;
 }
 
@@ -42,6 +43,36 @@ const AIPromptPanel: React.FC = () => {
     setLoading(false);
   };
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <span className="badge badge-pending">Pending</span>;
+      case 'processing':
+        return <span className="badge badge-processing">Processing</span>;
+      case 'completed':
+        return <span className="badge badge-completed">Completed</span>;
+      case 'failed':
+        return <span className="badge badge-failed">Failed</span>;
+      default:
+        return <span className="badge">{status}</span>;
+    }
+  };
+
+  const getOperationBadge = (type: string) => {
+    switch (type) {
+      case 'create':
+        return <span className="badge badge-create">Create</span>;
+      case 'update':
+        return <span className="badge badge-update">Update</span>;
+      case 'delete':
+        return <span className="badge badge-delete">Delete</span>;
+      case 'query':
+        return <span className="badge badge-query">Query</span>;
+      default:
+        return <span className="badge">{type}</span>;
+    }
+  };
+
   return (
     <div>
       <h2>AI Assistant for Notion</h2>
@@ -64,7 +95,7 @@ const AIPromptPanel: React.FC = () => {
           <ul>
             {promptHistory.map((item) => (
               <li key={item.id}>
-                {item.prompt} - {item.status} - {item.created_at}
+                {getStatusBadge(item.status)} {getOperationBadge(item.operation_type)} {item.prompt} - {item.created_at}
               </li>
             ))}
           </ul>
