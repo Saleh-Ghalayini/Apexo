@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useApi } from '../../hooks/useApi';
+import Button from '../../components/Button/Button';
 import Toast from '../../components/Toast/Toast';
+import './AIPromptPanel.css';
 
 interface AIPromptStatus {
   id: number;
   prompt: string;
-  status: string;
-  operation_type: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  operation_type: 'create' | 'update' | 'delete' | 'query';
   created_at: string;
+  ai_response?: any;
+  notion_response?: any;
+  error_message?: string;
 }
 
 const AIPromptPanel: React.FC = () => {
@@ -18,12 +23,14 @@ const AIPromptPanel: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
+
   const api = useApi();
 
   useEffect(() => {
     fetchPromptHistory();
     const interval = setInterval(fetchPromptHistory, 5000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line
   }, [refreshKey]);
 
   const fetchPromptHistory = async () => {
@@ -32,7 +39,12 @@ const AIPromptPanel: React.FC = () => {
       if (response.data?.prompts) {
         setPromptHistory(response.data.prompts);
       }
-    } catch {}
+    } catch (error) {
+      console.error('Error fetching prompt history:', error);
+      setToastMessage('Failed to fetch prompt history.');
+      setToastType('error');
+      setShowToast(true);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,12 +58,14 @@ const AIPromptPanel: React.FC = () => {
       setShowToast(true);
       setPrompt('');
       setRefreshKey(prev => prev + 1);
-    } catch {
+    } catch (error) {
+      console.error('Error submitting prompt:', error);
       setToastMessage('Failed to submit prompt. Please try again.');
       setToastType('error');
       setShowToast(true);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleRetry = async (promptId: number) => {
@@ -62,12 +76,14 @@ const AIPromptPanel: React.FC = () => {
       setToastType('success');
       setShowToast(true);
       setRefreshKey(prev => prev + 1);
-    } catch {
+    } catch (error) {
+      console.error('Error retrying prompt:', error);
       setToastMessage('Failed to retry prompt. Please try again.');
       setToastType('error');
       setShowToast(true);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const getStatusBadge = (status: string) => {
@@ -101,36 +117,72 @@ const AIPromptPanel: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="ai-prompt-panel">
       <h2>AI Assistant for Notion</h2>
-      <form onSubmit={handleSubmit}>
+      <p>Ask me to create, update, or delete tasks in Notion</p>
+      <form onSubmit={handleSubmit} className="prompt-form">
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Type your prompt..."
+          placeholder="e.g., Create a task to write documentation by Friday"
+          rows={3}
           disabled={loading}
         />
-        <button type="submit" disabled={loading || !prompt.trim()}>
-          {loading ? 'Submitting...' : 'Submit'}
-        </button>
+        <Button
+          type="submit"
+          disabled={loading || !prompt.trim()}
+          loading={loading}
+        >
+          Submit
+        </Button>
       </form>
-      <div>
+      <div className="history-section">
         <h3>Recent Prompts</h3>
         {promptHistory.length === 0 ? (
-          <div>No prompts yet.</div>
+          <div className="empty-state">No prompts yet. Try creating one!</div>
         ) : (
-          <ul>
+          <div className="prompt-history">
             {promptHistory.map((item) => (
-              <li key={item.id}>
-                {getStatusBadge(item.status)} {getOperationBadge(item.operation_type)} {item.prompt} - {item.created_at}
-                {item.status === 'failed' && (
-                  <button onClick={() => handleRetry(item.id)} disabled={loading}>
-                    Retry
-                  </button>
+              <div key={item.id} className="history-item">
+                <div className="history-header">
+                  <div className="badge-container">
+                    {getStatusBadge(item.status)}
+                    {getOperationBadge(item.operation_type)}
+                  </div>
+                  <span className="timestamp">
+                    {new Date(item.created_at).toLocaleString()}
+                  </span>
+                </div>
+                <div className="prompt-text">{item.prompt}</div>
+                {item.error_message && (
+                  <div className="error-message">
+                    <strong>Error:</strong> {item.error_message}
+                  </div>
                 )}
-              </li>
+                <div className="history-actions">
+                  {item.status === 'failed' && (
+                    <Button
+                      onClick={() => handleRetry(item.id)}
+                      size="small"
+                      variant="secondary"
+                      disabled={loading}
+                    >
+                      Retry
+                    </Button>
+                  )}
+                  <Button
+                    size="small"
+                    variant="text"
+                    onClick={() => {
+                      // View details logic
+                    }}
+                  >
+                    View Details
+                  </Button>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
       {showToast && (
