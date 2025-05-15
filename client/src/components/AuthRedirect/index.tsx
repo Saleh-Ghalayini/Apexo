@@ -12,7 +12,7 @@ const AuthRedirect: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   }
 
   if (isAuthenticated && ['/login', '/signup'].includes(location.pathname)) {
-    const from = (location.state as any)?.from?.pathname || '/dashboard';
+    const from = location.state?.from?.pathname || '/dashboard';
     return <Navigate to={from} replace />;
   }
 
