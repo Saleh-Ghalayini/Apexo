@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import api from '../../services/api';
 
 interface NotionConnectButtonProps {
@@ -18,6 +18,30 @@ export default function NotionConnectButton({ onSuccess }: NotionConnectButtonPr
       })
       .catch(() => setUserId(null));
   }, []);
+
+  // Memoize handlers to avoid unnecessary re-registrations
+  const handleMessageEvent = useCallback((event: MessageEvent) => {
+    if (event.data === 'notion_auth_completed') {
+      if (onSuccess) onSuccess();
+      window.removeEventListener('message', handleMessageEvent);
+      window.removeEventListener('storage', handleStorageChange);
+    }
+  }, [onSuccess]);
+
+  const handleStorageChange = useCallback((event: StorageEvent) => {
+    if (event.key === 'notion_auth_completed' && event.newValue === 'true') {
+      if (onSuccess) onSuccess();
+      localStorage.removeItem('notion_auth_completed');
+      window.removeEventListener('storage', handleStorageChange);
+    }
+  }, [onSuccess]);
+
+  useEffect(() => {
+    return () => {
+      window.removeEventListener('message', handleMessageEvent);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [handleMessageEvent, handleStorageChange]);
 
   const handleClick = async () => {
     try {
@@ -48,22 +72,6 @@ export default function NotionConnectButton({ onSuccess }: NotionConnectButtonPr
       setError('Failed to connect to Notion. Please try again.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleMessageEvent = (event: MessageEvent) => {
-    if (event.data === 'notion_auth_completed') {
-      if (onSuccess) onSuccess();
-      window.removeEventListener('message', handleMessageEvent);
-      window.removeEventListener('storage', handleStorageChange);
-    }
-  };
-
-  const handleStorageChange = (event: StorageEvent) => {
-    if (event.key === 'notion_auth_completed' && event.newValue === 'true') {
-      if (onSuccess) onSuccess();
-      localStorage.removeItem('notion_auth_completed');
-      window.removeEventListener('storage', handleStorageChange);
     }
   };
 
