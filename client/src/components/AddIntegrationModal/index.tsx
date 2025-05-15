@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface AddIntegrationModalProps {
   show: boolean;
@@ -7,6 +7,10 @@ interface AddIntegrationModalProps {
 }
 
 const AddIntegrationModal: React.FC<AddIntegrationModalProps> = ({ show, onClose }) => {
+  const [providers, setProviders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   if (!show) return null;
   return (
     <div>
@@ -15,6 +19,8 @@ const AddIntegrationModal: React.FC<AddIntegrationModalProps> = ({ show, onClose
         <button onClick={onClose}>Close</button>
       </div>
       <div>
+        {loading && <div>Loading...</div>}
+        {error && <div>{error}</div>}
       </div>
     </div>
   );
