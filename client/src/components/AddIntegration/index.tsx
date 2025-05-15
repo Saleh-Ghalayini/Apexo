@@ -22,10 +22,26 @@ const providers = [
   { id: 'email', name: 'Email', icon: mailIcon, type: 'Email' }
 ];
 
-const AddIntegration: React.FC<AddIntegrationProps> = ({ isOpen, onClose }) => {
+const AddIntegration: React.FC<AddIntegrationProps> = ({ isOpen, onClose, onAddIntegration }) => {
   const [selectedType, setSelectedType] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+
+  const handleSubmit = () => {
+    if (!selectedType || !name || !email) return;
+    const selectedProvider = providers.find(p => p.id === selectedType);
+    if (selectedProvider) {
+      onAddIntegration({
+        name,
+        email,
+        type: selectedProvider.type
+      });
+      setSelectedType('');
+      setName('');
+      setEmail('');
+      onClose();
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -41,6 +57,15 @@ const AddIntegration: React.FC<AddIntegrationProps> = ({ isOpen, onClose }) => {
             </button>
           ))}
         </div>
+        <div>
+          <label>Name</label>
+          <input value={name} onChange={e => setName(e.target.value)} />
+        </div>
+        <div>
+          <label>Email</label>
+          <input value={email} onChange={e => setEmail(e.target.value)} />
+        </div>
+        <button onClick={handleSubmit}>Connect</button>
       </div>
     </Modal>
   );
