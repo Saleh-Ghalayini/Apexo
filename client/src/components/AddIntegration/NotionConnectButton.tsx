@@ -68,7 +68,7 @@ export default function NotionConnectButton({ onSuccess }: NotionConnectButtonPr
       } else {
         throw new Error('Failed to get Notion redirect URL');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to connect to Notion. Please try again.');
     } finally {
       setLoading(false);
