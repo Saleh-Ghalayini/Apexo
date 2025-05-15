@@ -33,11 +33,33 @@ export default function NotionStatus() {
 
   if (status === 'connected') {
     return (
-      <div>
-        Connected to <strong>{workspaceName || 'Notion'}</strong>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div
+          style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: '#36B37E',
+          }}
+        ></div>
+        <span>
+          Connected to <strong>{workspaceName || 'Notion'}</strong>
+        </span>
       </div>
     );
   }
 
-  return <div>Not connected to Notion</div>;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div
+        style={{
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          backgroundColor: '#FF5630',
+        }}
+      ></div>
+      <span>Not connected to Notion</span>
+    </div>
+  );
 }
