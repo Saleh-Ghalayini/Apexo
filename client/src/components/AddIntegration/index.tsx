@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Modal from '../Modal';
 
 interface AddIntegrationProps {
@@ -12,6 +12,10 @@ interface AddIntegrationProps {
 }
 
 const AddIntegration: React.FC<AddIntegrationProps> = ({ isOpen, onClose }) => {
+  const [selectedType, setSelectedType] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
   if (!isOpen) return null;
 
   return (
