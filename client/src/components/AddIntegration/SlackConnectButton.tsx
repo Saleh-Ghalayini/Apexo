@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import api from '../../services/api';
 
 const NGROK_BASE = 'https://e5b9-93-126-210-243.ngrok-free.app';
@@ -20,15 +20,18 @@ export default function SlackConnectButton({ onSuccess }: SlackConnectButtonProp
       .catch(() => setUserId(null));
   }, []);
 
+  const handleStorage = useCallback((event: StorageEvent) => {
+    if (event.key === 'slack_auth_completed' && event.newValue === 'true') {
+      if (onSuccess) onSuccess();
+      localStorage.removeItem('slack_auth_completed');
+      window.removeEventListener('storage', handleStorage);
+    }
+  }, [onSuccess]);
+
   const handleClick = () => {
     localStorage.setItem('slack_auth_initiated', 'true');
     if (onSuccess) {
-      window.addEventListener('storage', (event) => {
-        if (event.key === 'slack_auth_completed' && event.newValue === 'true') {
-          onSuccess();
-          localStorage.removeItem('slack_auth_completed');
-        }
-      });
+      window.addEventListener('storage', handleStorage);
     }
   };
 
