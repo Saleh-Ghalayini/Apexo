@@ -8,7 +8,12 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-const Sidebar = () => <div style={{ width: 200, background: '#eee' }}>Sidebar</div>;
+const Sidebar = ({ onSelectSession, onNewChat }: { onSelectSession: (id: string) => void; onNewChat: () => void }) => (
+  <div style={{ width: 200, background: '#eee' }}>
+    <button onClick={onNewChat}>New Chat</button>
+    <button onClick={() => onSelectSession('session-1')}>Session 1</button>
+  </div>
+);
 const Message = ({ text, isUser }: { text: string; isUser: boolean }) => (
   <div style={{ textAlign: isUser ? 'right' : 'left' }}>{text}</div>
 );
@@ -19,6 +24,7 @@ const Dashboard: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
@@ -36,8 +42,17 @@ const Dashboard: React.FC = () => {
   };
 
   const handleLogout = () => {
-    // Placeholder for logout logic
     navigate('/login');
+  };
+
+  const handleNewChat = () => {
+    setSessionId(null);
+    setMessages([]);
+  };
+
+  const handleSelectSession = (selectedSessionId: string) => {
+    setSessionId(selectedSessionId);
+    setMessages([]);
   };
 
   useEffect(() => {
@@ -46,7 +61,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div style={{ display: 'flex' }}>
-      <Sidebar />
+      <Sidebar onSelectSession={handleSelectSession} onNewChat={handleNewChat} />
       <div style={{ flex: 1 }}>
         <div onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
           {profilePicture ? (
