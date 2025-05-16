@@ -13,6 +13,7 @@ export interface TableProps<T> {
   keyExtractor: (item: T) => string;
   emptyMessage?: string;
   className?: string;
+  addButton?: React.ReactNode;
 }
 
 const Table = <T extends Record<string, unknown>>({
@@ -21,6 +22,7 @@ const Table = <T extends Record<string, unknown>>({
   keyExtractor,
   emptyMessage = 'No data available',
   className = '',
+  addButton,
 }: TableProps<T>) => {
   return (
     <div className={`table-container ${className}`}>
@@ -54,6 +56,13 @@ const Table = <T extends Record<string, unknown>>({
             </tr>
           )}
         </tbody>
+        {addButton && (
+          <tfoot>
+            <tr>
+              <td colSpan={columns.length}>{addButton}</td>
+            </tr>
+          </tfoot>
+        )}
       </table>
     </div>
   );
