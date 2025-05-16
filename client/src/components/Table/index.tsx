@@ -9,32 +9,44 @@ export interface TableProps<T> {
   columns: TableColumn<T>[];
   data: T[];
   keyExtractor: (item: T) => string;
+  emptyMessage?: string;
+  className?: string;
 }
 
 const Table = <T extends Record<string, unknown>>({
   columns,
   data,
   keyExtractor,
+  emptyMessage = 'No data available',
+  className = '',
 }: TableProps<T>) => {
   return (
-    <table>
-      <thead>
-        <tr>
-          {columns.map((column) => (
-            <th key={column.key}>{column.header}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item) => (
-          <tr key={keyExtractor(item)}>
+    <div className={`table-container ${className}`}>
+      <table>
+        <thead>
+          <tr>
             {columns.map((column) => (
-              <td key={column.key}>{item[column.key] as React.ReactNode}</td>
+              <th key={column.key}>{column.header}</th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {data.length > 0 ? (
+            data.map((item) => (
+              <tr key={keyExtractor(item)}>
+                {columns.map((column) => (
+                  <td key={column.key}>{item[column.key] as React.ReactNode}</td>
+                ))}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={columns.length}>{emptyMessage}</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
