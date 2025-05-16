@@ -4,17 +4,37 @@ import './Integrations.css';
 import plusIcon from '../../assets/images/add_icon.png';
 import arrowIcon from '../../assets/images/l_arrow_icon.png';
 
+interface Integration {
+  id: string;
+  name: string;
+  email: string;
+  type: string;
+  status: string;
+  linkingDate: string;
+  provider: string;
+}
+
 const IntegrationsPage: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [accounts, setAccounts] = useState<any[]>([]);
+  const [accounts, setAccounts] = useState<Integration[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-      setAccounts([{ id: '1', name: 'Test Integration' }]);
+      setAccounts([
+        {
+          id: '1',
+          name: 'Test Integration',
+          email: 'test@example.com',
+          type: 'workspace',
+          status: 'active',
+          linkingDate: '2025-05-17',
+          provider: 'slack'
+        }
+      ]);
     }, 1000);
   }, []);
 
@@ -38,7 +58,7 @@ const IntegrationsPage: React.FC = () => {
       </button>
       <ul>
         {accounts.map(acc => (
-          <li key={acc.id}>{acc.name}</li>
+          <li key={acc.id}>{acc.name} ({acc.email})</li>
         ))}
       </ul>
       {isModalOpen && <div>Modal Placeholder</div>}
