@@ -152,3 +152,34 @@
 .username {
   color: var(--primary);
 }
+
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  height: 100%;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-lg) * 2);
+  margin-top: auto;
+  align-self: center;
+  scrollbar-width: thin;
+  scrollbar-color: var(--translucent-white-2) transparent;
+  padding-right: calc(var(--spacing-md) + 6px);
+}
+
+.messages-container::-webkit-scrollbar {
+  width: 6px;
+  margin-right: 5px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background-color: var(--translucent-white-2);
+  border-radius: 20px;
+}
