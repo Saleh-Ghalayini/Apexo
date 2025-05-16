@@ -37,7 +37,7 @@ export const checkAndRefreshToken = async (): Promise<boolean> => {
  * @param navigate Navigation function (e.g., from react-router).
  * @returns {boolean} True if authenticated, false otherwise.
  */
-export const redirectIfNotAuthenticated = (navigate: any): boolean => {
+export const redirectIfNotAuthenticated = (navigate: (path: string) => void): boolean => {
   if (!AuthService.isAuthenticated()) {
     navigate('/login');
     return false;
