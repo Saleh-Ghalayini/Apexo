@@ -101,4 +101,23 @@ export const ChatService = {
       return [];
     }
   },
+  async debugSendMessage(sessionId: string, message: string) {
+    const token = localStorage.getItem('auth_token');
+    const endpoint = `/chat/sessions/${sessionId}/messages`;
+    try {
+      const response = await fetch(api.defaults.baseURL + endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ message })
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
