@@ -15,6 +15,15 @@ const NotionSuccess: React.FC = () => {
     if (statusParam === 'success') {
       setStatus('success');
       setMessage('Successfully connected to Notion!');
+      localStorage.removeItem('notion_auth_completed');
+      localStorage.setItem('notion_auth_completed', 'true');
+      if (window.opener && !window.opener.closed) {
+        try {
+          window.opener.postMessage('notion_auth_completed', '*');
+        } catch (e) {
+          console.error('Could not send message to opener:', e);
+        }
+      }
       setTimeout(() => {
         navigate('/notion/databases');
       }, 3000);
