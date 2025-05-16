@@ -49,11 +49,23 @@ export const AuthService = {
     try {
       await api.post('/auth/logout');
     } catch (error) {
-      // Handle error silently
       console.error('Logout failed', error);
     } finally {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
     }
+  },
+
+  getCurrentUser(): any | null {
+    const userData = localStorage.getItem('user_data');
+    if (userData) {
+      try {
+        return JSON.parse(userData);
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+        return null;
+      }
+    }
+    return null;
   },
 };
