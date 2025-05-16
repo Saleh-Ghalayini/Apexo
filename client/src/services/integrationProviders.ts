@@ -95,10 +95,30 @@ export const IntegrationProviders = {
   },
   notion: {
     async connect(accessToken: string): Promise<boolean> {
-      return false;
+      try {
+        const response = await apiRequest<{ success: boolean }>({
+          url: '/api/v1/integrations/notion/connect',
+          method: 'POST',
+          data: { accessToken }
+        });
+        return response.success;
+      } catch (error) {
+        console.error('Failed to connect to Notion:', error);
+        return false;
+      }
     },
     async createPage(parentPageId: string, content: Record<string, unknown>): Promise<boolean> {
-      return false;
+      try {
+        const response = await apiRequest<{ success: boolean }>({
+          url: '/api/v1/integrations/notion/page',
+          method: 'POST',
+          data: { parentPageId, content }
+        });
+        return response.success;
+      } catch (error) {
+        console.error('Failed to create Notion page:', error);
+        return false;
+      }
     }
   },
   email: {
