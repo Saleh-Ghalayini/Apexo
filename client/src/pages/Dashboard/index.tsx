@@ -1,5 +1,17 @@
+import './Dashboard.css';
+import './loading.css';
+import Sidebar from '../../components/Sidebar';
+import Message from '../../components/Message';
+import addIcon from '../../assets/images/add_icon.png';
+import userIcon from '../../assets/images/user_icon.png';
+import wUserIcon from '../../assets/images/w_user_icon.png';
 import React, { useState, useRef, useEffect } from 'react';
+import arrowIcon from '../../assets/images/arrow_icon.png';
+import logoutIcon from '../../assets/images/w_logout_icon.png';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { ChatService } from '../../services/chatService';
+import type { ChatMessage as ApiChatMessage } from '../../services/chatService';
 
 interface ChatMessage {
   id: number;
@@ -8,86 +20,340 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-const Sidebar = ({ onSelectSession, onNewChat }: { onSelectSession: (id: string) => void; onNewChat: () => void }) => (
-  <div style={{ width: 200, background: '#eee' }}>
-    <button onClick={onNewChat}>New Chat</button>
-    <button onClick={() => onSelectSession('session-1')}>Session 1</button>
-  </div>
-);
-const Message = ({ text, isUser }: { text: string; isUser: boolean }) => (
-  <div style={{ textAlign: isUser ? 'right' : 'left' }}>{text}</div>
-);
-
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionId, setSessionIdState] = useState<string | null>(() => localStorage.getItem('current_session_id'));
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
-    setMessages([
-      ...messages,
-      {
-        id: Date.now(),
-        text: inputValue,
-        isUser: true,
-        timestamp: new Date()
-      }
-    ]);
-    setInputValue('');
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  // Helper to set sessionId in state and localStorage
+  const setSessionId = (id: string | null) => {
+    setSessionIdState(id);
+    if (id) {
+      localStorage.setItem('current_session_id', id);
+    } else {
+      localStorage.removeItem('current_session_id');
+    }
   };
 
-  const handleLogout = () => {
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+  
+  // Set profile picture from user data or local storage
+  useEffect(() => {
+    if (user?.avatar) {
+      setProfilePicture(user.avatar);
+    } else {
+      const savedProfilePicture = localStorage.getItem('profilePicture');
+      if (savedProfilePicture) {
+        setProfilePicture(savedProfilePicture);
+      }
+    }
+  }, [user]);
+
+  // Handle clicks outside of dropdown to close it
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowProfileDropdown(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputValue(e.target.value);
+    
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto';
+      inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 150)}px`;
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!inputValue.trim() || isLoading) return;
+
+    setIsLoading(true);
+    const userMessage: ChatMessage = {
+      id: Date.now(),
+      text: inputValue,
+      isUser: true,
+      timestamp: new Date()
+    };
+
+    const messageToSend = inputValue;
+    setInputValue('');
+    if (inputRef.current) inputRef.current.style.height = 'auto';
+
+    try {
+      if (!sessionId) {
+        // First message: create session
+        console.log('[handleSendMessage] Creating new session');
+        const res = await ChatService.createSession(messageToSend);
+        console.log('[handleSendMessage] Create session response:', res);
+        
+        if (res && res.session) {
+          setSessionId(res.session.id);
+          let newMessages: ChatMessage[] = [];
+          if (Array.isArray(res.messages) && res.messages.length > 0) {
+            newMessages = res.messages.map((msg: ApiChatMessage) => ({
+              id: Number(msg.id || Date.now()),
+              text: msg.content || '',
+              isUser: msg.user_id === user?.id,
+              timestamp: new Date(msg.created_at || Date.now())
+            }));
+          } else if (res.user_message && res.ai_message) {
+            newMessages = [
+              {
+                id: Number(res.user_message.id || Date.now()),
+                text: res.user_message.content || '',
+                isUser: true,
+                timestamp: new Date(res.user_message.created_at || Date.now())
+              },
+              {
+                id: Number(res.ai_message.id || Date.now()),
+                text: res.ai_message.content || '',
+                isUser: false,
+                timestamp: new Date(res.ai_message.created_at || Date.now())
+              }
+            ];
+          }
+          setMessages(prev => [...prev, ...newMessages]);
+        } else {
+          console.error('[handleSendMessage] Invalid response from createSession:', res);
+          setMessages(prev => [
+            ...prev,
+            {
+              id: Date.now() + 3,
+              text: 'Received an invalid response. Please try again.',
+              isUser: false,
+              timestamp: new Date()
+            }
+          ]);
+        }
+      } else {
+        // Subsequent messages: use the same sessionId
+        setMessages(prev => [...prev, userMessage]);
+        console.log('[handleSendMessage] Sending message to existing session:', sessionId);
+        const res = await ChatService.sendMessage(sessionId, messageToSend);
+        console.log('[handleSendMessage] Message sent response:', res);
+        
+        if (res && res.ai_message) {
+          setMessages(prev => [
+            ...prev,
+            {
+              id: Date.now(),
+              text: res.ai_message.content || 'No content in message',
+              isUser: false,
+              timestamp: new Date(res.ai_message.created_at || Date.now())
+            }
+          ]);
+        } else {
+          console.error('[handleSendMessage] Invalid response from sendMessage:', res);
+          setMessages(prev => [
+            ...prev,
+            {
+              id: Date.now() + 3,
+              text: 'Received an invalid response. Please try again.',
+              isUser: false,
+              timestamp: new Date()
+            }
+          ]);
+        }
+      }
+    } catch (error) {
+      console.error('[handleSendMessage] Error:', error);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now() + 2,
+          text: 'There was an error sending your message. Please try again.',
+          isUser: false,
+          timestamp: new Date()
+        }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const toggleProfileDropdown = () => {
+    setShowProfileDropdown(!showProfileDropdown);
+  };
+  
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
+  // Handle starting a new chat session
   const handleNewChat = () => {
     setSessionId(null);
     setMessages([]);
   };
 
-  const handleSelectSession = (selectedSessionId: string) => {
-    setSessionId(selectedSessionId);
-    setMessages([]);
+  // Handle selecting a session from the sidebar
+  const handleSelectSession = async (selectedSessionId: string) => {
+    if (sessionId !== selectedSessionId) {
+      setSessionId(selectedSessionId);
+      setIsLoading(true);
+      
+      // Fetch messages for the selected session
+      try {
+        console.log('[handleSelectSession] Fetching messages for session:', selectedSessionId);
+        const apiMessages = await ChatService.getMessages(selectedSessionId);
+        console.log('[handleSelectSession] Fetched messages:', apiMessages);
+        
+        if (Array.isArray(apiMessages) && apiMessages.length > 0) {
+          setMessages(
+            apiMessages.map(msg => ({
+              id: Number(msg.id || Date.now()),
+              text: msg.content || '(No content)',
+              isUser: msg.user_id === user?.id,
+              timestamp: new Date(msg.created_at || Date.now())
+            }))
+          );
+        } else {
+          console.log('[handleSelectSession] No messages found or invalid format');
+          setMessages([]);
+        }
+      } catch (error) {
+        console.error('[handleSelectSession] Error fetching messages:', error);
+        setMessages([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }
   };
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
   return (
-    <div style={{ display: 'flex' }}>
+    <div className="dashboard-container">
       <Sidebar onSelectSession={handleSelectSession} onNewChat={handleNewChat} />
-      <div style={{ flex: 1 }}>
-        <div onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-          {profilePicture ? (
-            <img src={profilePicture} alt="Profile" />
+      
+      <div className="dashboard-content">
+        <div className="dashboard-header">
+          <div className="user-avatar-container" ref={dropdownRef}>
+            <div className="user-avatar" onClick={toggleProfileDropdown}>
+              {profilePicture ? (
+                <img 
+                  src={profilePicture} 
+                  className="profile-picture" 
+                  alt="Profile" 
+                />
+              ) : (
+                <img src={userIcon} width='20px' height='20px' alt="User" />
+              )}
+            </div>
+            {showProfileDropdown && (
+              <div className="profile-dropdown">
+                <div className="profile-header">
+                  <div className="profile-name">{user?.name || 'User'}</div>
+                  <div className="profile-email">{user?.email || 'user@example.com'}</div>
+                </div>
+                
+                <div className="dropdown-section">
+                  <div className="dropdown-item">
+                    <div className="dropdown-icon">
+                      <img src={wUserIcon} width='18px' height='18px' alt="Account" />
+                    </div>
+                    Account settings
+                  </div>
+                </div>
+                
+                <div className="dropdown-divider"></div>
+                
+                <div className="dropdown-section">
+                  <div className="dropdown-item logout-item" onClick={handleLogout}>
+                    <div className="dropdown-icon">
+                      <img src={logoutIcon} width='16px' height='16px' alt="Logout" />
+                    </div>
+                    Logout
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <div className="dashboard-main">
+          {messages.length === 0 ? (
+            <h1 className="welcome-message">
+              Welcome Back, <span className="username">{user?.name || 'User'}</span>
+            </h1>
           ) : (
-            <span>User</span>
+            <div className="messages-container">
+              {messages.map((message) => (
+                <Message 
+                  key={message.id}
+                  text={message.text}
+                  isUser={message.isUser}
+                  timestamp={message.timestamp}
+                />
+              ))}
+              {isLoading && (
+                <div className="message-container ai-message">
+                  <div className="message-content">
+                    <div className="message-text">
+                      <div className="loading-dots">
+                        <span className="dot"></span>
+                        <span className="dot"></span>
+                        <span className="dot"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
           )}
         </div>
-        {showProfileDropdown && (
-          <div>
-            <div>Profile Dropdown</div>
-            <button onClick={handleLogout}>Logout</button>
+        
+        <div className="dashboard-chat">
+          <div className="chat-input-container">
+            <img src={addIcon} alt='upload' />
+            <textarea
+              ref={inputRef}
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a command or ask Apexo for assistance..."
+              className="chat-input"
+              rows={1}
+              disabled={isLoading}
+            />
+            <button 
+              className="send-button" 
+              onClick={handleSendMessage} 
+              disabled={isLoading || !inputValue.trim()}
+            >
+              <img src={arrowIcon} alt='send' />
+            </button>
           </div>
-        )}
-        <div>
-          {messages.map((msg) => (
-            <Message key={msg.id} text={msg.text} isUser={msg.isUser} />
-          ))}
-          <div ref={messagesEndRef} />
         </div>
-        <input
-          value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
-          placeholder="Type a message"
-        />
-        <button onClick={handleSend}>Send</button>
       </div>
     </div>
   );
