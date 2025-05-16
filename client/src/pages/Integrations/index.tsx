@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Table from '../../components/Table';
+import type { TableColumn } from '../../components/Table';
 import './Integrations.css';
 import plusIcon from '../../assets/images/add_icon.png';
 import arrowIcon from '../../assets/images/l_arrow_icon.png';
@@ -13,6 +15,19 @@ interface Integration {
   linkingDate: string;
   provider: string;
 }
+
+const columns: TableColumn<Integration>[] = [
+  {
+    key: 'name',
+    header: 'Name',
+    render: (account) => <span>{account.name}</span>
+  },
+  {
+    key: 'email',
+    header: 'Email',
+    render: (account) => <span>{account.email}</span>
+  }
+];
 
 const IntegrationsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -56,11 +71,12 @@ const IntegrationsPage: React.FC = () => {
       <button onClick={() => setIsModalOpen(true)}>
         <img src={plusIcon} width={18} height={18} alt="Add Account" />
       </button>
-      <ul>
-        {accounts.map(acc => (
-          <li key={acc.id}>{acc.name} ({acc.email})</li>
-        ))}
-      </ul>
+      <Table<Integration>
+        columns={columns}
+        data={accounts}
+        keyExtractor={(item) => item.id}
+        emptyMessage="No integrations found."
+      />
       {isModalOpen && <div>Modal Placeholder</div>}
     </div>
   );
