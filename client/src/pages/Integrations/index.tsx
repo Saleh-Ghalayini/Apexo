@@ -5,6 +5,8 @@ import type { TableColumn } from '../../components/Table';
 import './Integrations.css';
 import plusIcon from '../../assets/images/add_icon.png';
 import arrowIcon from '../../assets/images/l_arrow_icon.png';
+import { IntegrationService } from '../../services/integrationService';
+import Loading from '../../components/Loading';
 
 interface Integration {
   id: string;
@@ -37,27 +39,27 @@ const IntegrationsPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-      setAccounts([
-        {
-          id: '1',
-          name: 'Test Integration',
-          email: 'test@example.com',
-          type: 'workspace',
-          status: 'active',
-          linkingDate: '2025-05-17',
-          provider: 'slack'
-        }
-      ]);
-    }, 1000);
+    loadIntegrations();
   }, []);
+
+  const loadIntegrations = async () => {
+    try {
+      setLoading(true);
+      const fetchedIntegrations = await IntegrationService.getIntegrations();
+      setAccounts(fetchedIntegrations);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load integrations.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGoBack = () => {
     navigate('/dashboard');
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
   if (error) return <div>Error: {error}</div>;
 
   return (
