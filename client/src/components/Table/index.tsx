@@ -3,6 +3,8 @@ import React from 'react';
 export interface TableColumn<T> {
   key: string;
   header: string;
+  render?: (item: T) => React.ReactNode;
+  width?: string;
 }
 
 export interface TableProps<T> {
@@ -26,7 +28,12 @@ const Table = <T extends Record<string, unknown>>({
         <thead>
           <tr>
             {columns.map((column) => (
-              <th key={column.key}>{column.header}</th>
+              <th
+                key={column.key}
+                style={column.width ? { width: column.width } : undefined}
+              >
+                {column.header}
+              </th>
             ))}
           </tr>
         </thead>
@@ -35,7 +42,9 @@ const Table = <T extends Record<string, unknown>>({
             data.map((item) => (
               <tr key={keyExtractor(item)}>
                 {columns.map((column) => (
-                  <td key={column.key}>{item[column.key] as React.ReactNode}</td>
+                  <td key={`${keyExtractor(item)}-${column.key}`}>
+                    {column.render ? column.render(item) : (item[column.key] as React.ReactNode)}
+                  </td>
                 ))}
               </tr>
             ))
