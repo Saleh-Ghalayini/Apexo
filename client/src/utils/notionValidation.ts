@@ -4,13 +4,24 @@
 
 import { IntegrationService } from '../services/integrationService';
 
+/**
+ * Types for validation results
+ */
 export interface ValidationResult {
   isValid: boolean;
   message: string;
   details?: Record<string, unknown>;
 }
 
+/**
+ * Provides static methods to validate Notion integration configuration,
+ * database access, and storage functionality.
+ */
 export class NotionValidation {
+  /**
+   * Validate that the Notion OAuth integration is configured properly.
+   * Checks backend endpoint for OAuth client and redirect URI configuration.
+   */
   static async validateOAuthConfig(): Promise<ValidationResult> {
     try {
       const response = await fetch('/api/integrations/notion/authorize/info');
@@ -41,6 +52,10 @@ export class NotionValidation {
     }
   }
 
+  /**
+   * Validate that we can fetch databases from Notion.
+   * Calls IntegrationService.getNotionDatabases and checks for results.
+   */
   static async validateDatabaseAccess(): Promise<ValidationResult> {
     try {
       const databases = await IntegrationService.getNotionDatabases();
@@ -67,6 +82,10 @@ export class NotionValidation {
     }
   }
 
+  /**
+   * Validate that we can save and retrieve Notion databases.
+   * Attempts to save the first database and then retrieve it.
+   */
   static async validateDatabaseStorage(): Promise<ValidationResult> {
     try {
       const databases = await IntegrationService.getNotionDatabases();
