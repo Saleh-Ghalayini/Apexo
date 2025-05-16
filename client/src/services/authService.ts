@@ -56,21 +56,29 @@ export interface AuthResponse {
 
 export const AuthService = {
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/login', credentials);
-    if (response.data.payload.token) {
-      localStorage.setItem('auth_token', response.data.payload.token);
-      localStorage.setItem('user_data', JSON.stringify(response.data.payload.user));
+    try {
+      const response = await api.post<AuthResponse>('/auth/login', credentials);
+      if (response.data.payload.token) {
+        localStorage.setItem('auth_token', response.data.payload.token);
+        localStorage.setItem('user_data', JSON.stringify(response.data.payload.user));
+      }
+      return response.data;
+    } catch (error) {
+      throw error;
     }
-    return response.data;
   },
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/register', userData);
-    if (response.data.payload.token) {
-      localStorage.setItem('auth_token', response.data.payload.token);
-      localStorage.setItem('user_data', JSON.stringify(response.data.payload.user));
+    try {
+      const response = await api.post<AuthResponse>('/auth/register', userData);
+      if (response.data.payload.token) {
+        localStorage.setItem('auth_token', response.data.payload.token);
+        localStorage.setItem('user_data', JSON.stringify(response.data.payload.user));
+      }
+      return response.data;
+    } catch (error) {
+      throw error;
     }
-    return response.data;
   },
 
   async logout(): Promise<void> {
