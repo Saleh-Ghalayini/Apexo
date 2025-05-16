@@ -4,6 +4,12 @@ const Dashboard: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
 
+  const handleSend = () => {
+    if (!inputValue.trim()) return;
+    setMessages([...messages, inputValue]);
+    setInputValue('');
+  };
+
   return (
     <div>
       <div>
@@ -16,6 +22,7 @@ const Dashboard: React.FC = () => {
         onChange={e => setInputValue(e.target.value)}
         placeholder="Type a message"
       />
+      <button onClick={handleSend}>Send</button>
     </div>
   );
 };
