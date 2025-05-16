@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 const Dashboard: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
     if (!inputValue.trim()) return;
@@ -10,12 +11,17 @@ const Dashboard: React.FC = () => {
     setInputValue('');
   };
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   return (
     <div>
       <div>
         {messages.map((msg, idx) => (
           <div key={idx}>{msg}</div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       <input
         value={inputValue}
