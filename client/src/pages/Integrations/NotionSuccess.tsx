@@ -7,16 +7,20 @@ const NotionSuccess: React.FC = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
-
   useEffect(() => {
+    // Parse the query parameters 
     const params = new URLSearchParams(location.search);
     const statusParam = params.get('status');
     const errorMessage = params.get('message');
     if (statusParam === 'success') {
       setStatus('success');
       setMessage('Successfully connected to Notion!');
-      localStorage.removeItem('notion_auth_completed');
+      
+      // Signal to the parent window that the auth was successful
+      localStorage.removeItem('notion_auth_completed');  // Remove first to ensure event fires even if value doesn't change
       localStorage.setItem('notion_auth_completed', 'true');
+      
+      // Try to notify the opener window directly if available
       if (window.opener && !window.opener.closed) {
         try {
           window.opener.postMessage('notion_auth_completed', '*');
@@ -24,12 +28,16 @@ const NotionSuccess: React.FC = () => {
           console.error('Could not send message to opener:', e);
         }
       }
+      
+      // Redirect after a delay
       setTimeout(() => {
         navigate('/notion/databases');
       }, 3000);
     } else {
       setStatus('error');
       setMessage(errorMessage || 'Failed to connect to Notion. Please try again.');
+      
+      // Redirect after a delay
       setTimeout(() => {
         navigate('/integrations');
       }, 5000);
