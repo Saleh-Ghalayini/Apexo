@@ -15,3 +15,16 @@ export interface ChatMessage {
   content: string;
   created_at: string;
 }
+
+export interface CreateSessionResponse {
+  session: ChatSession;
+  user_message?: ChatMessage;
+  ai_message?: ChatMessage;
+  messages?: ChatMessage[];
+}
+
+export interface SendMessageResponse {
+  session: ChatSession;
+  user_message: ChatMessage;
+  ai_message: ChatMessage;
+}
