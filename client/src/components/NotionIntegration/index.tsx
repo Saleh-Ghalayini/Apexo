@@ -33,12 +33,21 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!selectedDbId) {
       setError('Please select a database first');
       return;
     }
-    onSave(selectedDbId);
+    setLoading(true);
+    setError(null);
+    try {
+      await IntegrationService.saveNotionDatabase(selectedDbId);
+      onSave(selectedDbId);
+    } catch (err) {
+      setError('Failed to save database selection. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {
