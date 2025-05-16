@@ -32,7 +32,16 @@ export const IntegrationService = {
     }
   },
   async getIntegrations(): Promise<Integration[]> {
-    return [];
+    try {
+      const response = await apiRequest<{ success: boolean, payload: Integration[] }>({
+        url: '/integrations',
+        method: 'GET',
+      });
+      return response.payload || [];
+    } catch (error) {
+      console.error('Failed to fetch integrations:', error);
+      return [];
+    }
   },
   async connect(providerId: string): Promise<{ url: string }> {
     return { url: '' };
