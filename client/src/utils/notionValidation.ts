@@ -42,7 +42,29 @@ export class NotionValidation {
   }
 
   static async validateDatabaseAccess(): Promise<ValidationResult> {
-    return { isValid: false, message: 'Not implemented' };
+    try {
+      const databases = await IntegrationService.getNotionDatabases();
+
+      if (databases && databases.length > 0) {
+        return {
+          isValid: true,
+          message: `Successfully fetched ${databases.length} databases from Notion`,
+          details: { count: databases.length }
+        };
+      } else {
+        return {
+          isValid: false,
+          message: 'No databases found in the connected Notion workspace',
+          details: { databases }
+        };
+      }
+    } catch (error) {
+      return {
+        isValid: false,
+        message: 'Failed to fetch databases from Notion',
+        details: { error }
+      };
+    }
   }
 
   static async validateDatabaseStorage(): Promise<ValidationResult> {
