@@ -7,4 +7,5 @@ export function cleanAIResponse(text: string): string {
     .replace(/`/g, '')      // Remove backticks
     .replace(/---+/g, '')   // Remove horizontal rules
     .replace(/\n{2,}/g, '\n') // Collapse multiple newlines
+    .trim();
 }
