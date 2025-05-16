@@ -52,10 +52,30 @@ export interface GoogleCalendarEvent {
 export const IntegrationProviders = {
   slack: {
     async connect(workspaceId: string): Promise<boolean> {
-      return false;
+      try {
+        const response = await apiRequest<{ success: boolean }>({
+          url: '/api/v1/integrations/slack/connect',
+          method: 'POST',
+          data: { workspaceId }
+        });
+        return response.success;
+      } catch (error) {
+        console.error('Failed to connect to Slack:', error);
+        return false;
+      }
     },
     async sendMessage(channelId: string, message: string): Promise<boolean> {
-      return false;
+      try {
+        const response = await apiRequest<{ success: boolean }>({
+          url: '/api/v1/integrations/slack/message',
+          method: 'POST',
+          data: { channelId, message }
+        });
+        return response.success;
+      } catch (error) {
+        console.error('Failed to send Slack message:', error);
+        return false;
+      }
     }
   },
   googleCalendar: {
