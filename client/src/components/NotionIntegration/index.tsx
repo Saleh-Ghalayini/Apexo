@@ -9,6 +9,7 @@ interface NotionConfigProps {
 const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave }) => {
   const [loading, setLoading] = useState(true);
   const [databases, setDatabases] = useState<NotionDatabase[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDatabases();
@@ -16,15 +17,31 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
 
   const fetchDatabases = async () => {
     setLoading(true);
-    const dbs = await IntegrationService.getNotionDatabases();
-    setDatabases(dbs);
-    setLoading(false);
+    setError(null);
+    try {
+      const dbs = await IntegrationService.getNotionDatabases();
+      setDatabases(dbs);
+    } catch (err) {
+      setError('Failed to load Notion databases.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {
     return (
       <div className="loading-container">
         <div className="spinner"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        <h2>Notion Integration</h2>
+        <div className="error-message">{error}</div>
+        <button onClick={fetchDatabases}>Retry</button>
       </div>
     );
   }
