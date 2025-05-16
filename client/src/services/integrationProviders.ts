@@ -123,10 +123,30 @@ export const IntegrationProviders = {
   },
   email: {
     async connect(config: EmailConfig): Promise<boolean> {
-      return false;
+      try {
+        const response = await apiRequest<{ success: boolean }>({
+          url: '/api/v1/integrations/email/connect',
+          method: 'POST',
+          data: config
+        });
+        return response.success;
+      } catch (error) {
+        console.error('Failed to configure email service:', error);
+        return false;
+      }
     },
     async sendEmail(to: string, subject: string, body: string): Promise<boolean> {
-      return false;
+      try {
+        const response = await apiRequest<{ success: boolean }>({
+          url: '/api/v1/integrations/email/send',
+          method: 'POST',
+          data: { to, subject, body }
+        });
+        return response.success;
+      } catch (error) {
+        console.error('Failed to send email:', error);
+        return false;
+      }
     }
   }
 };
