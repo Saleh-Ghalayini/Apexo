@@ -49,10 +49,13 @@ export const IntegrationService = {
         url: `/integrations/connect/${providerId}`,
         method: 'POST',
       });
+      if (!response.success || !response.payload?.url) {
+        throw new Error('Failed to get integration connect URL');
+      }
       return response.payload;
     } catch (error) {
       console.error('Failed to initiate integration connection:', error);
-      throw error;
+      throw error instanceof Error ? error : new Error('Unknown error during integration connect');
     }
   },
   async disconnect(integrationId: string): Promise<boolean> {
@@ -61,7 +64,7 @@ export const IntegrationService = {
         url: `/integrations/${integrationId}`,
         method: 'DELETE',
       });
-      return response.success;
+      return !!response.success;
     } catch (error) {
       console.error('Failed to disconnect integration:', error);
       return false;
@@ -74,7 +77,7 @@ export const IntegrationService = {
         method: 'PATCH',
         data: { status }
       });
-      return response.success;
+      return !!response.success;
     } catch (error) {
       console.error('Failed to update integration status:', error);
       return false;
