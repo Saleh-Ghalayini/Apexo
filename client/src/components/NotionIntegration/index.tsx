@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface NotionConfigProps {
   integrationId: string;
@@ -6,6 +6,16 @@ interface NotionConfigProps {
 }
 
 const NotionIntegration: React.FC<NotionConfigProps> = () => {
+  const [loading, setLoading] = useState(true);
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h2>Notion Integration</h2>
