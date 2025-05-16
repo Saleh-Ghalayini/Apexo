@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { AuthService } from '../services/authService';
 import type { User, RegisterRequest } from '../services/authService';
@@ -10,22 +10,43 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const currentUser = AuthService.getCurrentUser();
+        setUser(currentUser);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, []);
 
   const login = async (email: string, password: string) => {
+    setLoading(true);
     const response = await AuthService.login({ email, password });
     setUser(response.payload.user);
+    setLoading(false);
     return response;
   };
 
   const register = async (userData: RegisterRequest) => {
+    setLoading(true);
     const response = await AuthService.register(userData);
     setUser(response.payload.user);
+    setLoading(false);
     return response;
   };
 
   const logout = async () => {
+    setLoading(true);
     await AuthService.logout();
     setUser(null);
+    setLoading(false);
   };
 
   const value = {
@@ -34,6 +55,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     register,
     logout,
+    loading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
