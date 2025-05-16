@@ -30,6 +30,29 @@ const NotionTestComponent: React.FC = () => {
       data: oauthResult.integrationId
     });
 
+    // Test 2: Databases
+    addResult({ name: 'Fetch Databases', status: 'pending', message: 'Fetching Notion databases...' });
+    const databasesResult = await NotionTest.testDatabasesFetch();
+    addResult({
+      name: 'Fetch Databases',
+      status: databasesResult.success ? 'success' : 'error',
+      message: databasesResult.message,
+      data: databasesResult.databases
+    });
+
+    // Test 3: Save Database (only if we have databases)
+    if (databasesResult.success && databasesResult.databases && databasesResult.databases.length > 0) {
+      const firstDbId = databasesResult.databases[0].id;
+      addResult({ name: 'Save Database', status: 'pending', message: `Saving database ${firstDbId.substring(0, 8)}...` });
+      const saveResult = await NotionTest.testSaveDatabase(firstDbId);
+      addResult({
+        name: 'Save Database',
+        status: saveResult.success ? 'success' : 'error',
+        message: saveResult.message,
+        data: saveResult.savedDatabase
+      });
+    }
+
     setIsRunning(false);
   };
 
