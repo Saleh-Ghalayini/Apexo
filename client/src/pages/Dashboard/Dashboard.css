@@ -12,3 +12,45 @@
   position: relative;
   height: 100vh;
 }
+
+.dashboard-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) var(--spacing-lg);
+  gap: var(--spacing-md);
+}
+
+.user-avatar {
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #333;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-avatar img {
+  width: 60%;
+  height: 60%;
+}
+
+.user-avatar-container {
+  position: relative;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 2px;
+  width: 260px;
+  background: var(--text-muted);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease-out;
+}
