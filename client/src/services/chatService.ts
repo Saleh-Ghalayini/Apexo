@@ -58,19 +58,15 @@ export const ChatService = {
   async createSession(firstMessage: string) {
     const token = localStorage.getItem('auth_token');
     const endpoint = '/chat/sessions';
-    try {
-      const response = await api.post<ApiResponse<CreateSessionResponse> | CreateSessionResponse>(
-        endpoint,
-        { initial_message: firstMessage },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (response.data && 'success' in response.data && 'payload' in response.data) {
-        return response.data.payload;
-      }
-      return response.data as CreateSessionResponse;
-    } catch (error) {
-      throw error;
+    const response = await api.post<ApiResponse<CreateSessionResponse> | CreateSessionResponse>(
+      endpoint,
+      { initial_message: firstMessage },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (response.data && 'success' in response.data && 'payload' in response.data) {
+      return response.data.payload;
     }
+    return response.data as CreateSessionResponse;
   },
 
   /**
@@ -79,19 +75,15 @@ export const ChatService = {
   async sendMessage(sessionId: string, message: string) {
     const token = localStorage.getItem('auth_token');
     const endpoint = `/chat/sessions/${sessionId}/messages`;
-    try {
-      const response = await api.post<ApiResponse<SendMessageResponse> | SendMessageResponse>(
-        endpoint,
-        { message },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (response.data && 'success' in response.data && 'payload' in response.data) {
-        return response.data.payload;
-      }
-      return response.data as SendMessageResponse;
-    } catch (error) {
-      throw error;
+    const response = await api.post<ApiResponse<SendMessageResponse> | SendMessageResponse>(
+      endpoint,
+      { message },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (response.data && 'success' in response.data && 'payload' in response.data) {
+      return response.data.payload;
     }
+    return response.data as SendMessageResponse;
   },
 
   /**
@@ -99,18 +91,14 @@ export const ChatService = {
    */
   async getSessions() {
     const token = localStorage.getItem('auth_token');
-    try {
-      const response = await api.get<ApiResponse<ChatSession[]> | ChatSession[]>(
-        '/chat/sessions',
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (response.data && 'success' in response.data && 'payload' in response.data) {
-        return response.data.payload;
-      }
-      return response.data as ChatSession[];
-    } catch (error) {
-      return [];
+    const response = await api.get<ApiResponse<ChatSession[]> | ChatSession[]>(
+      '/chat/sessions',
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (response.data && 'success' in response.data && 'payload' in response.data) {
+      return response.data.payload;
     }
+    return response.data as ChatSession[];
   },
 
   /**
@@ -118,18 +106,14 @@ export const ChatService = {
    */
   async getMessages(sessionId: string) {
     const token = localStorage.getItem('auth_token');
-    try {
-      const response = await api.get<ApiResponse<ChatMessage[]> | ChatMessage[]>(
-        `/chat/sessions/${sessionId}/messages`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (response.data && 'success' in response.data && 'payload' in response.data) {
-        return response.data.payload;
-      }
-      return response.data as ChatMessage[];
-    } catch (error) {
-      return [];
+    const response = await api.get<ApiResponse<ChatMessage[]> | ChatMessage[]>(
+      `/chat/sessions/${sessionId}/messages`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (response.data && 'success' in response.data && 'payload' in response.data) {
+      return response.data.payload;
     }
+    return response.data as ChatMessage[];
   },
 
   /**
@@ -138,20 +122,16 @@ export const ChatService = {
   async debugSendMessage(sessionId: string, message: string) {
     const token = localStorage.getItem('auth_token');
     const endpoint = `/chat/sessions/${sessionId}/messages`;
-    try {
-      const response = await fetch(api.defaults.baseURL + endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ message })
-      });
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await fetch(api.defaults.baseURL + endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ message })
+    });
+    const data = await response.json();
+    return data;
   },
 };
