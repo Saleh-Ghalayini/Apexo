@@ -1,7 +1,8 @@
+// Auth service for handling login, signup, and token management
+
 import api from './api';
 
-// Types for authentication requests and responses
-
+// Types
 export interface LoginRequest {
   email: string;
   password: string;
@@ -19,6 +20,18 @@ export interface RegisterRequest {
   department?: string;
   phone?: string;
   avatar?: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  payload: {
+    message: string;
+    user: User;
+    token: string;
+    token_type: string;
+    expires_in: number;
+    company?: Company;
+  };
 }
 
 export interface User {
@@ -44,57 +57,43 @@ export interface Company {
   updated_at: string;
 }
 
-export interface AuthResponse {
-  success: boolean;
-  payload: {
-    message: string;
-    user: User;
-    token: string;
-    token_type: string;
-    expires_in: number;
-    company?: Company;
-  };
-}
-
-// AuthService provides authentication-related API calls and localStorage management
+// Service methods
 export const AuthService = {
+  // Login user
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    try {
-      const response = await api.post<AuthResponse>('/auth/login', credentials);
-      if (response.data.payload.token) {
-        localStorage.setItem('auth_token', response.data.payload.token);
-        localStorage.setItem('user_data', JSON.stringify(response.data.payload.user));
-      }
-      return response.data;
-    } catch (error) {
-      throw error;
+    const response = await api.post<AuthResponse>('/auth/login', credentials);
+    if (response.data.payload.token) {
+      localStorage.setItem('auth_token', response.data.payload.token);
+      localStorage.setItem('user_data', JSON.stringify(response.data.payload.user));
     }
+    return response.data;
   },
 
+  // Register user
   async register(userData: RegisterRequest): Promise<AuthResponse> {
-    try {
-      const response = await api.post<AuthResponse>('/auth/register', userData);
-      if (response.data.payload.token) {
-        localStorage.setItem('auth_token', response.data.payload.token);
-        localStorage.setItem('user_data', JSON.stringify(response.data.payload.user));
-      }
-      return response.data;
-    } catch (error) {
-      throw error;
+    const response = await api.post<AuthResponse>('/auth/register', userData);
+    if (response.data.payload.token) {
+      localStorage.setItem('auth_token', response.data.payload.token);
+      localStorage.setItem('user_data', JSON.stringify(response.data.payload.user));
     }
+    return response.data;
   },
 
+  // Logout user
   async logout(): Promise<void> {
     try {
       await api.post('/auth/logout');
     } catch (error) {
+      // Handle error silently
       console.error('Logout failed', error);
     } finally {
+      // Clean up local storage regardless of API success
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
     }
   },
 
+  // Get current user from localStorage
   getCurrentUser(): User | null {
     const userData = localStorage.getItem('user_data');
     if (userData) {
@@ -108,6 +107,7 @@ export const AuthService = {
     return null;
   },
 
+  // Refresh auth token
   async refreshToken(): Promise<AuthResponse> {
     const response = await api.post<AuthResponse>('/auth/refresh');
     if (response.data.payload.token) {
@@ -116,6 +116,7 @@ export const AuthService = {
     return response.data;
   },
 
+  // Check if user is logged in
   isAuthenticated(): boolean {
     return !!localStorage.getItem('auth_token');
   },
