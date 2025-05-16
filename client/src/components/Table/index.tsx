@@ -1,4 +1,5 @@
 import React from 'react';
+import './Table.css';
 
 export interface TableColumn<T> {
   key: string;
@@ -26,12 +27,12 @@ const Table = <T extends Record<string, unknown>>({
 }: TableProps<T>) => {
   return (
     <div className={`table-container ${className}`}>
-      <table>
+      <table className="custom-table">
         <thead>
           <tr>
             {columns.map((column) => (
-              <th
-                key={column.key}
+              <th 
+                key={column.key} 
                 style={column.width ? { width: column.width } : undefined}
               >
                 {column.header}
@@ -49,17 +50,20 @@ const Table = <T extends Record<string, unknown>>({
                   </td>
                 ))}
               </tr>
-            ))
-          ) : (
+            ))          ) : (
             <tr>
-              <td colSpan={columns.length}>{emptyMessage}</td>
+              <td colSpan={columns.length} className="empty-table-message">
+                {emptyMessage}
+              </td>
             </tr>
           )}
         </tbody>
         {addButton && (
           <tfoot>
             <tr>
-              <td colSpan={columns.length}>{addButton}</td>
+              <td colSpan={columns.length} className="table-footer-cell">
+                {addButton}
+              </td>
             </tr>
           </tfoot>
         )}
