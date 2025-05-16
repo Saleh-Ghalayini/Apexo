@@ -68,6 +68,16 @@ export const IntegrationService = {
     }
   },
   async updateStatus(integrationId: string, status: 'active' | 'inactive'): Promise<boolean> {
-    return false;
+    try {
+      const response = await apiRequest<{ success: boolean }>({
+        url: `/integrations/${integrationId}/status`,
+        method: 'PATCH',
+        data: { status }
+      });
+      return response.success;
+    } catch (error) {
+      console.error('Failed to update integration status:', error);
+      return false;
+    }
   }
 };
