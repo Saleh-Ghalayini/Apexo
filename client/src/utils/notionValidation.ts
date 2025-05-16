@@ -68,6 +68,58 @@ export class NotionValidation {
   }
 
   static async validateDatabaseStorage(): Promise<ValidationResult> {
-    return { isValid: false, message: 'Not implemented' };
+    try {
+      const databases = await IntegrationService.getNotionDatabases();
+
+      if (!databases || databases.length === 0) {
+        return {
+          isValid: false,
+          message: 'No databases available to test storage',
+        };
+      }
+
+      const firstDb = databases[0];
+      const saved = await IntegrationService.saveNotionDatabase(firstDb.id);
+
+      if (!saved) {
+        return {
+          isValid: false,
+          message: 'Failed to save database',
+          details: { database: firstDb }
+        };
+      }
+
+      const savedDatabases = await IntegrationService.getSavedNotionDatabases();
+
+      if (savedDatabases && savedDatabases.length > 0) {
+        const savedDb = savedDatabases.find(db => db.database_id === firstDb.id);
+
+        if (savedDb) {
+          return {
+            isValid: true,
+            message: 'Successfully saved and retrieved database',
+            details: { savedDb }
+          };
+        } else {
+          return {
+            isValid: false,
+            message: 'Database was saved but not found in retrieved list',
+            details: { savedDatabases }
+          };
+        }
+      } else {
+        return {
+          isValid: false,
+          message: 'Failed to retrieve saved databases',
+          details: { savedDatabases }
+        };
+      }
+    } catch (error) {
+      return {
+        isValid: false,
+        message: 'Error during database storage validation',
+        details: { error }
+      };
+    }
   }
 }
