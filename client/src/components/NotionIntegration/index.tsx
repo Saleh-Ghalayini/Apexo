@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { IntegrationService, type NotionDatabase } from '../../services/integrationService';
+import './NotionIntegration.css';
 
 interface NotionConfigProps {
   integrationId: string;
@@ -50,9 +51,11 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
 
   if (databases.length === 0) {
     return (
-      <div>
-        <h2>Notion Integration</h2>
-        <div className="empty-state">
+      <div className="notion-integration-container">
+        <div className="notion-integration-header">
+          <h2>Notion Integration</h2>
+        </div>
+        <div className="notion-integration-content empty-state">
           <p>No databases found in your Notion workspace.</p>
           <button onClick={fetchDatabases} disabled={loading}>Retry</button>
         </div>
@@ -61,23 +64,36 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
   }
 
   return (
-    <div>
-      <h2>Notion Integration</h2>
-      {error && <div className="error-message">{error}</div>}
-      <select
-        value={selectedDbId}
-        onChange={(e) => setSelectedDbId(e.target.value)}
-        disabled={loading}
-      >
-        {databases.map((db) => (
-          <option key={db.id} value={db.id}>
-            {db.title || 'Untitled Database'}
-          </option>
-        ))}
-      </select>
-      <button onClick={handleSave} disabled={loading}>
-        Save Configuration
-      </button>
+    <div className="notion-integration-container">
+      <div className="notion-integration-header">
+        <h2>Notion Integration</h2>
+      </div>
+      <div className="notion-integration-content">
+        {error && <div className="error-message">{error}</div>}
+        <div className="form-control">
+          <label htmlFor="notion-database-select">Select a Notion Database</label>
+          <select
+            id="notion-database-select"
+            value={selectedDbId}
+            onChange={(e) => setSelectedDbId(e.target.value)}
+            disabled={loading}
+          >
+            {databases.map((db) => (
+              <option key={db.id} value={db.id}>
+                {db.title || 'Untitled Database'}
+              </option>
+            ))}
+          </select>
+          <span className="caption">
+            This database will be used for data integration with Apexo
+          </span>
+        </div>
+        <div className="button-container">
+          <button onClick={handleSave} disabled={loading}>
+            Save Configuration
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
