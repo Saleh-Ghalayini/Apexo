@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './Toast.css';
 
 interface ToastProps {
   message: string;
@@ -13,7 +14,9 @@ const Toast: React.FC<ToastProps> = ({ message, type, duration = 3000, onClose }
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(false);
-      setTimeout(onClose, 300); // wait for fade out
+      setTimeout(() => {
+        onClose();
+      }, 300);
     }, duration);
 
     return () => clearTimeout(timer);
@@ -21,8 +24,13 @@ const Toast: React.FC<ToastProps> = ({ message, type, duration = 3000, onClose }
 
   return (
     <div className={`toast ${type} ${visible ? 'visible' : 'hidden'}`}>
-      <span>{message}</span>
-      <button onClick={() => setVisible(false)}>×</button>
+      <div className="toast-content">
+        {type === 'success' && <span className="toast-icon">✓</span>}
+        {type === 'error' && <span className="toast-icon">✕</span>}
+        {type === 'info' && <span className="toast-icon">ℹ</span>}
+        <span className="toast-message">{message}</span>
+      </div>
+      <button className="toast-close" onClick={() => setVisible(false)}>×</button>
     </div>
   );
 };
