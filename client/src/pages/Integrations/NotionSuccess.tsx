@@ -39,8 +39,30 @@ const NotionSuccess: React.FC = () => {
   return (
     <div className="notion-success-container">
       <div className="notion-success-card">
-        <h2>{status === 'loading' ? 'Loading...' : status === 'success' ? 'Success!' : 'Error'}</h2>
-        <p>{message}</p>
+        {status === 'loading' && (
+          <div className="notion-success-content loading">
+            <div className="spinner"></div>
+            <h2>Processing Notion Connection...</h2>
+          </div>
+        )}
+
+        {status === 'success' && (
+          <div className="notion-success-content success">
+            <div className="status-icon success">✓</div>
+            <h2>Success!</h2>
+            <p>{message}</p>
+            <p className="redirect-message">Redirecting to Notion Databases...</p>
+          </div>
+        )}
+
+        {status === 'error' && (
+          <div className="notion-success-content error">
+            <div className="status-icon error">✗</div>
+            <h2>Connection Error</h2>
+            <p>{message}</p>
+            <p className="redirect-message">Redirecting to Integrations page...</p>
+          </div>
+        )}
       </div>
     </div>
   );
