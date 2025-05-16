@@ -6,7 +6,6 @@ import Dashboard from './pages/Dashboard';
 import IntegrationsPage from './pages/Integrations';
 import SlackSuccess from './pages/Integrations/SlackSuccess';
 import NotionSuccess from './pages/Integrations/NotionSuccess';
-import NotionDatabasesPage from './pages/NotionDatabases';
 import NotionTestComponent from './components/NotionTest';
 import PrivateRoute from './components/PrivateRoute';
 import AuthRedirect from './components/AuthRedirect';
@@ -53,14 +52,6 @@ function App() {
           />          
           <Route path="/integrations/slack/success" element={<SlackSuccess />} />
           <Route path="/integrations/notion/success" element={<NotionSuccess />} />
-          <Route 
-            path="/notion/databases" 
-            element={
-              <PrivateRoute>
-                <NotionDatabasesPage />
-              </PrivateRoute>
-            } 
-          />
           <Route 
             path="/notion/test" 
             element={
