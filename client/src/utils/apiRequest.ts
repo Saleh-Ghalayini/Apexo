@@ -1,6 +1,21 @@
 import { AuthService } from '../services/authService';
 
 /**
+ * Gets the expiration timestamp from a JWT token.
+ * @param token JWT token string.
+ * @returns {number | null} Expiration timestamp in ms, or null if invalid.
+ */
+export const getTokenExpiration = (token: string): number | null => {
+  try {
+    const tokenData = JSON.parse(atob(token.split('.')[1]));
+    return typeof tokenData.exp === 'number' ? tokenData.exp * 1000 : null;
+  } catch (e) {
+    console.error('Invalid token format:', e);
+    return null;
+  }
+};
+
+/**
  * Checks if the JWT token is valid and refreshes it if expired or about to expire.
  * @returns {Promise<boolean>} True if token is valid or refreshed, false otherwise.
  */
@@ -9,15 +24,11 @@ export const checkAndRefreshToken = async (): Promise<boolean> => {
   if (!token) {
     return false;
   }
-  let tokenData: { exp: number };
-  try {
-    tokenData = JSON.parse(atob(token.split('.')[1]));
-  } catch (e) {
-    console.error('Invalid token format:', e);
+  const expiration = getTokenExpiration(token);
+  if (!expiration) {
     AuthService.logout();
     return false;
   }
-  const expiration = tokenData.exp * 1000;
   const now = Date.now();
   if (expiration < now || expiration - now < 60000) {
     try {
