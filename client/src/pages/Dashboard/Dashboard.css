@@ -130,3 +130,25 @@
   height: 100%;
   object-fit: cover;
 }
+
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: var(--spacing-lg) var(--spacing-xl) calc(var(--spacing-lg) + 90px);
+  color: var(--text-light);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.welcome-message {
+  font-size: 42px;
+  font-weight: 600;
+}
+
+.username {
+  color: var(--primary);
+}
