@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { NotionTest } from '../../utils/notionTest';
 
 interface TestResult {
   name: string;
@@ -18,7 +19,17 @@ const NotionTestComponent: React.FC = () => {
   const runAllTests = async () => {
     setIsRunning(true);
     setResults([]);
-    // ...test logic here
+
+    // Test 1: OAuth Flow
+    addResult({ name: 'OAuth Flow', status: 'pending', message: 'Testing OAuth connection...' });
+    const oauthResult = await NotionTest.testOAuthFlow();
+    addResult({
+      name: 'OAuth Flow',
+      status: oauthResult.success ? 'success' : 'error',
+      message: oauthResult.message,
+      data: oauthResult.integrationId
+    });
+
     setIsRunning(false);
   };
 
@@ -35,6 +46,7 @@ const NotionTestComponent: React.FC = () => {
             <span>{result.name}</span>
             <span>{result.status}</span>
             <span>{result.message}</span>
+            {result.data && <pre>{JSON.stringify(result.data, null, 2)}</pre>}
           </div>
         ))}
       </div>
