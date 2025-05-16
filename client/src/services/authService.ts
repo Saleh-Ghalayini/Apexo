@@ -68,4 +68,12 @@ export const AuthService = {
     }
     return null;
   },
+
+  async refreshToken(): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>('/auth/refresh');
+    if (response.data.payload.token) {
+      localStorage.setItem('auth_token', response.data.payload.token);
+    }
+    return response.data;
+  },
 };
