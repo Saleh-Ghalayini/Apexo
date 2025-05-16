@@ -28,3 +28,9 @@ export interface SendMessageResponse {
   user_message: ChatMessage;
   ai_message: ChatMessage;
 }
+
+// API response wrapper structure
+interface ApiResponse<T> {
+  success: boolean;
+  payload: T;
+}
