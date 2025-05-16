@@ -17,7 +17,9 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const useToast = () => {
   const context = useContext(ToastContext);
-  if (!context) throw new Error('useToast must be used within a ToastProvider');
+  if (!context) {
+    throw new Error('useToast must be used within a ToastProvider');
+  }
   return context;
 };
 
@@ -30,11 +32,11 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
 
   const showToast = (message: string, type: ToastType) => {
     const id = Math.random().toString(36).substring(2, 9);
-    setToasts(prev => [...prev, { id, message, type }]);
+    setToasts(prevToasts => [...prevToasts, { id, message, type }]);
   };
 
   const removeToast = (id: string) => {
-    setToasts(toasts.filter(toast => toast.id !== id));
+    setToasts(toasts => toasts.filter(toast => toast.id !== id));
   };
 
   return (
