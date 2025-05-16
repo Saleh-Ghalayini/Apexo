@@ -8,7 +8,7 @@ interface NotionConfigProps {
 }
 
 const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave }) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [databases, setDatabases] = useState<NotionDatabase[]>([]);
   const [selectedDbId, setSelectedDbId] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +27,8 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
         setSelectedDbId(dbs[0].id);
       }
     } catch (err) {
-      setError('Failed to load Notion databases. Please check your integration settings.');
+      console.error("Error fetching Notion databases", err);
+      setError("Failed to load Notion databases. Please check your integration settings.");
     } finally {
       setLoading(false);
     }
@@ -35,16 +36,19 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
 
   const handleSave = async () => {
     if (!selectedDbId) {
-      setError('Please select a database first');
+      setError("Please select a database first");
       return;
     }
+
     setLoading(true);
     setError(null);
+
     try {
       await IntegrationService.saveNotionDatabase(selectedDbId);
       onSave(selectedDbId);
     } catch (err) {
-      setError('Failed to save database selection. Please try again.');
+      console.error("Error saving Notion database selection", err);
+      setError("Failed to save database selection. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -65,8 +69,16 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
           <h2>Notion Integration</h2>
         </div>
         <div className="notion-integration-content empty-state">
-          <p>No databases found in your Notion workspace.</p>
-          <button onClick={fetchDatabases} disabled={loading}>Retry</button>
+          <p>
+            No databases found in your Notion workspace. Please make sure you have access to databases in your Notion account.
+          </p>
+          <button 
+            className="retry-button" 
+            onClick={fetchDatabases} 
+            disabled={loading}
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -78,25 +90,32 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
         <h2>Notion Integration</h2>
       </div>
       <div className="notion-integration-content">
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
+
         <div className="form-control">
           <label htmlFor="notion-database-select">Select a Notion Database</label>
-          <select
+          
+          <select 
             id="notion-database-select"
             value={selectedDbId}
             onChange={(e) => setSelectedDbId(e.target.value)}
-            disabled={loading}
           >
             {databases.map((db) => (
               <option key={db.id} value={db.id}>
-                {db.title || 'Untitled Database'}
+                {db.title || "Untitled Database"}
               </option>
             ))}
           </select>
+          
           <span className="caption">
             This database will be used for data integration with Apexo
           </span>
         </div>
+
         <div className="button-container">
           <button onClick={handleSave} disabled={loading}>
             Save Configuration
