@@ -17,6 +17,7 @@ export interface RegisterRequest {
   department?: string;
   phone?: string;
   avatar?: string;
+  company?: Company;
 }
 
 export interface User {
