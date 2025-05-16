@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface ChatMessage {
   id: number;
@@ -13,6 +14,7 @@ const Message = ({ text, isUser }: { text: string; isUser: boolean }) => (
 );
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -33,6 +35,11 @@ const Dashboard: React.FC = () => {
     setInputValue('');
   };
 
+  const handleLogout = () => {
+    // Placeholder for logout logic
+    navigate('/login');
+  };
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -51,6 +58,7 @@ const Dashboard: React.FC = () => {
         {showProfileDropdown && (
           <div>
             <div>Profile Dropdown</div>
+            <button onClick={handleLogout}>Logout</button>
           </div>
         )}
         <div>
