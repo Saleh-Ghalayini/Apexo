@@ -55,7 +55,21 @@ export const ChatService = {
     }
   },
   async sendMessage(sessionId: string, message: string) {
-    // TODO: Implement
+    const token = localStorage.getItem('auth_token');
+    const endpoint = `/chat/sessions/${sessionId}/messages`;
+    try {
+      const response = await api.post<ApiResponse<SendMessageResponse> | SendMessageResponse>(
+        endpoint,
+        { message },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.data && 'success' in response.data && 'payload' in response.data) {
+        return response.data.payload;
+      }
+      return response.data as SendMessageResponse;
+    } catch (error) {
+      throw error;
+    }
   },
   async getSessions() {
     // TODO: Implement
