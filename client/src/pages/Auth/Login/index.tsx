@@ -1,18 +1,22 @@
 import './Login.css';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../../assets/images/apexo_logo.svg';
 import mailIcon from '../../../assets/images/mail_icon.png';
 import lockIcon from '../../../assets/images/lock_icon.png';
 import illustration from '../../../assets/images/illustration.png';
+import { useAuth } from '../../../hooks/useAuth';
 
 const Login: React.FC = () => {
-
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false,
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -20,13 +24,32 @@ const Login: React.FC = () => {
       ...prevState,
       [name]: type === 'checkbox' ? checked : value,
     }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+    // Clear error when user starts typing again
+    if (error) setError(null);
+  };  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-    // logic will be implemented later, focusing on UI for now
-    console.log('Login form submitted:', formData);
+    try {
+      await login(formData.email, formData.password);
+      
+      // Redirect to dashboard after successful login
+      navigate('/dashboard');
+      
+    } catch (err: unknown) {
+      console.error('Login failed:', err);
+      const error = err as { response?: { data?: { error?: string, errors?: { email?: string[] } } } };
+      if (error.response?.data?.error) {
+        setError(error.response.data.error);
+      } else if (error.response?.data?.errors?.email) {
+        setError(error.response.data.errors.email[0]);
+      } else {
+        setError('Login failed. Please check your credentials and try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,9 +113,19 @@ const Login: React.FC = () => {
               Forgot password
             </Link>
           </div>
+            {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
           
-          <button type="submit" className="sign-in-button" onClick={handleSubmit}>
-            Sign in
+          <button 
+            type="submit" 
+            className="sign-in-button" 
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? 'Signing in...' : 'Sign in'}
           </button>
           
           {/* Mobile-only display for create an account link */}
