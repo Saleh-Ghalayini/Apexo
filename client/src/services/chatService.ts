@@ -38,7 +38,21 @@ interface ApiResponse<T> {
 // Service methods
 export const ChatService = {
   async createSession(firstMessage: string) {
-    // TODO: Implement
+    const token = localStorage.getItem('auth_token');
+    const endpoint = '/chat/sessions';
+    try {
+      const response = await api.post<ApiResponse<CreateSessionResponse> | CreateSessionResponse>(
+        endpoint,
+        { initial_message: firstMessage },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.data && 'success' in response.data && 'payload' in response.data) {
+        return response.data.payload;
+      }
+      return response.data as CreateSessionResponse;
+    } catch (error) {
+      throw error;
+    }
   },
   async sendMessage(sessionId: string, message: string) {
     // TODO: Implement
