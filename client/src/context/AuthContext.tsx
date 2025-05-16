@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { AuthService } from '../services/authService';
 import type { User, RegisterRequest } from '../services/authService';
+import { checkAndRefreshToken } from '../utils/auth';
 import { AuthContext } from './AuthContextDefinition';
 
 interface AuthProviderProps {
@@ -15,6 +16,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        await checkAndRefreshToken();
         const currentUser = AuthService.getCurrentUser();
         setUser(currentUser);
       } catch {
@@ -49,12 +51,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(false);
   };
 
+  const refreshToken = async (): Promise<void> => {
+    setLoading(true);
+    try {
+      await AuthService.refreshToken();
+      const currentUser = AuthService.getCurrentUser();
+      setUser(currentUser);
+    } catch {
+      await logout();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     user,
     isAuthenticated: !!user,
     login,
     register,
     logout,
+    refreshToken,
     loading,
   };
 
