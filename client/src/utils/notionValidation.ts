@@ -4,23 +4,13 @@
 
 import { IntegrationService } from '../services/integrationService';
 
-/**
- * Types for validation results
- */
 export interface ValidationResult {
   isValid: boolean;
   message: string;
   details?: Record<string, unknown>;
 }
 
-/**
- * NotionValidation class provides methods to validate various aspects
- * of the Notion integration
- */
 export class NotionValidation {
-  /**
-   * Validate that the Notion OAuth integration is configured properly
-   */
   static async validateOAuthConfig(): Promise<ValidationResult> {
     try {
       const response = await fetch('/api/integrations/notion/authorize/info');
@@ -39,7 +29,7 @@ export class NotionValidation {
         return {
           isValid: false,
           message: 'Notion OAuth configuration is incomplete or invalid',
-          details: data
+          details: data || {}
         };
       }
     } catch (error) {
@@ -51,9 +41,6 @@ export class NotionValidation {
     }
   }
 
-  /**
-   * Validate that we can fetch databases from Notion
-   */
   static async validateDatabaseAccess(): Promise<ValidationResult> {
     try {
       const databases = await IntegrationService.getNotionDatabases();
@@ -68,7 +55,7 @@ export class NotionValidation {
         return {
           isValid: false,
           message: 'No databases found in the connected Notion workspace',
-          details: { databases }
+          details: { databases: databases || [] }
         };
       }
     } catch (error) {
@@ -80,9 +67,6 @@ export class NotionValidation {
     }
   }
 
-  /**
-   * Validate that we can save and retrieve Notion databases
-   */
   static async validateDatabaseStorage(): Promise<ValidationResult> {
     try {
       const databases = await IntegrationService.getNotionDatabases();
@@ -91,6 +75,7 @@ export class NotionValidation {
         return {
           isValid: false,
           message: 'No databases available to test storage',
+          details: {}
         };
       }
 
@@ -127,7 +112,7 @@ export class NotionValidation {
         return {
           isValid: false,
           message: 'Failed to retrieve saved databases',
-          details: { savedDatabases }
+          details: { savedDatabases: savedDatabases || [] }
         };
       }
     } catch (error) {
