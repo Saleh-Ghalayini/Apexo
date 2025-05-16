@@ -7,6 +7,11 @@ interface ChatMessage {
   timestamp: Date;
 }
 
+const Sidebar = () => <div style={{ width: 200, background: '#eee' }}>Sidebar</div>;
+const Message = ({ text, isUser }: { text: string; isUser: boolean }) => (
+  <div style={{ textAlign: isUser ? 'right' : 'left' }}>{text}</div>
+);
+
 const Dashboard: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -31,21 +36,22 @@ const Dashboard: React.FC = () => {
   }, [messages]);
 
   return (
-    <div>
-      <div>
-        {messages.map((msg) => (
-          <div key={msg.id} style={{ textAlign: msg.isUser ? 'right' : 'left' }}>
-            {msg.text}
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
+    <div style={{ display: 'flex' }}>
+      <Sidebar />
+      <div style={{ flex: 1 }}>
+        <div>
+          {messages.map((msg) => (
+            <Message key={msg.id} text={msg.text} isUser={msg.isUser} />
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+        <input
+          value={inputValue}
+          onChange={e => setInputValue(e.target.value)}
+          placeholder="Type a message"
+        />
+        <button onClick={handleSend}>Send</button>
       </div>
-      <input
-        value={inputValue}
-        onChange={e => setInputValue(e.target.value)}
-        placeholder="Type a message"
-      />
-      <button onClick={handleSend}>Send</button>
     </div>
   );
 };
