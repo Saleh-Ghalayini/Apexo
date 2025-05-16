@@ -1,13 +1,28 @@
 import React, { useState, useRef, useEffect } from 'react';
 
+interface ChatMessage {
+  id: number;
+  text: string;
+  isUser: boolean;
+  timestamp: Date;
+}
+
 const Dashboard: React.FC = () => {
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
     if (!inputValue.trim()) return;
-    setMessages([...messages, inputValue]);
+    setMessages([
+      ...messages,
+      {
+        id: Date.now(),
+        text: inputValue,
+        isUser: true,
+        timestamp: new Date()
+      }
+    ]);
     setInputValue('');
   };
 
@@ -18,8 +33,10 @@ const Dashboard: React.FC = () => {
   return (
     <div>
       <div>
-        {messages.map((msg, idx) => (
-          <div key={idx}>{msg}</div>
+        {messages.map((msg) => (
+          <div key={msg.id} style={{ textAlign: msg.isUser ? 'right' : 'left' }}>
+            {msg.text}
+          </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
