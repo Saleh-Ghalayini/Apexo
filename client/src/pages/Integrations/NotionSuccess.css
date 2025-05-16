@@ -61,3 +61,20 @@
   color: #888;
   font-size: 14px;
 }
+
+/* Loading spinner */
+.spinner {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 20px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #4285f4;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
