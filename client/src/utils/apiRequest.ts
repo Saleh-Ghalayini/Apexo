@@ -1,44 +1,40 @@
-import api from '../services/api';
-import type { AxiosRequestConfig } from 'axios';
+import { AuthService } from '../services/authService';
 
-/**
- * RequestConfig can be a standard AxiosRequestConfig or a simplified config object.
- */
-type RequestConfig = AxiosRequestConfig | {
-  url: string;
-  method: string;
-  data?: unknown;
-  params?: Record<string, unknown>;
-  headers?: Record<string, string>;
+// Function to check token validity and refresh if needed
+export const checkAndRefreshToken = async (): Promise<boolean> => {
+  const token = localStorage.getItem('auth_token');
+  
+  // If no token exists, user is not authenticated
+  if (!token) {
+    return false;
+  }
+  
+  // Check token expiration
+  const tokenData = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
+  const expiration = tokenData.exp * 1000; // Convert to milliseconds
+  const now = Date.now();
+  
+  // If token is expired or about to expire within next minute, refresh it
+  if (expiration < now || expiration - now < 60000) {
+    try {
+      await AuthService.refreshToken();
+      return true;
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      // Token refresh failed, log user out
+      AuthService.logout();
+      return false;
+    }
+  }
+  
+  return true; // Token is valid
 };
 
-/**
- * Wrapper function for API requests that handles standard response format
- * with success flag and payload. Throws a normalized error object on failure.
- */
-export async function apiRequest<T = unknown>(config: RequestConfig): Promise<T> {
-  try {
-    const response = await api.request<T>(config);
-    return response.data as T;
-  } catch (error: unknown) {
-    console.error('API Request Failed:', error);
-
-    if (
-      typeof error === 'object' && 
-      error !== null && 
-      'response' in error && 
-      error.response && 
-      typeof error.response === 'object' && 
-      'data' in error.response
-    ) {
-      throw error.response.data;
-    }
-
-    const err = error as Error;
-    throw {
-      success: false,
-      message: err.message || 'An unknown error occurred',
-      error: err
-    };
+// Function to redirect unauthenticated users
+export const redirectIfNotAuthenticated = (navigate: any): boolean => {
+  if (!AuthService.isAuthenticated()) {
+    navigate('/login');
+    return false;
   }
-}
+  return true;
+};
