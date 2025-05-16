@@ -21,6 +21,21 @@
   gap: var(--spacing-md);
 }
 
+.try-advanced-btn {
+  background-color: var(--teal);
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color var(--transition-speed);
+}
+
+.try-advanced-btn:hover {
+  background-color: var(--teal-dark);
+}
+
 .user-avatar {
   width: var(--avatar-size);
   height: var(--avatar-size);
