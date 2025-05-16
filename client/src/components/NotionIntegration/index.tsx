@@ -26,7 +26,7 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
         setSelectedDbId(dbs[0].id);
       }
     } catch (err) {
-      setError('Failed to load Notion databases.');
+      setError('Failed to load Notion databases. Please check your integration settings.');
     } finally {
       setLoading(false);
     }
@@ -48,12 +48,14 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
     );
   }
 
-  if (error) {
+  if (databases.length === 0) {
     return (
       <div>
         <h2>Notion Integration</h2>
-        <div className="error-message">{error}</div>
-        <button onClick={fetchDatabases}>Retry</button>
+        <div className="empty-state">
+          <p>No databases found in your Notion workspace.</p>
+          <button onClick={fetchDatabases} disabled={loading}>Retry</button>
+        </div>
       </div>
     );
   }
@@ -61,9 +63,11 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
   return (
     <div>
       <h2>Notion Integration</h2>
+      {error && <div className="error-message">{error}</div>}
       <select
         value={selectedDbId}
         onChange={(e) => setSelectedDbId(e.target.value)}
+        disabled={loading}
       >
         {databases.map((db) => (
           <option key={db.id} value={db.id}>
@@ -71,7 +75,9 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
           </option>
         ))}
       </select>
-      <button onClick={handleSave}>Save Configuration</button>
+      <button onClick={handleSave} disabled={loading}>
+        Save Configuration
+      </button>
     </div>
   );
 };
