@@ -80,7 +80,17 @@ export const IntegrationProviders = {
   },
   googleCalendar: {
     async createEvent(calendarId: string, event: GoogleCalendarEvent): Promise<boolean> {
-      return false;
+      try {
+        const response = await apiRequest<{ success: boolean }>({
+          url: '/api/v1/integrations/gcalendar/event',
+          method: 'POST',
+          data: { calendarId, event }
+        });
+        return response.success;
+      } catch (error) {
+        console.error('Failed to create calendar event:', error);
+        return false;
+      }
     }
   },
   notion: {
