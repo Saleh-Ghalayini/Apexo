@@ -14,22 +14,22 @@
 <!-- System Design -->
 <img src="./readme/title3.svg"/>
 
-### Add Title Here
+### ER Diagram
 
-- To be decided on later on.
+<img src="./readme/ERDiagram.png" heigh="1024" width="1024">
 
 <br><br>
 
 <!-- Project Highlights -->
 <img src="./readme/title4.svg"/>
  
-- ### Real-time Meeting Participation:
+- ### Real-time Meeting Participation
   Transcribing discussions, summarizing key points, and automatically extracting actionable tasks.
-- ### Task Management Assistance:
+- ### Task Management Assistance
   Empowering employees to track, update, and query their tasks seamlessly through AI interactions.
-- ### Workflow Automation:
+- ### Workflow Automation
   Handling repetitive administrative duties like reminders, reporting, and follow-ups with minimal human input.
-- ### Future-Proof Expansion:
+- ### Future-Proof Expansion
   Designed with modularity to integrate advanced AI capabilities such as AI-driven hiring assistance and internal knowledge querying.
 
 <br><br>
