@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LandingPage from './pages/LandingPage/LandingPage';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
+import LandingPage from './pages/LandingPage/LandingPage';
 import Dashboard from './pages/Dashboard';
 import IntegrationsPage from './pages/Integrations';
 import SlackSuccess from './pages/Integrations/SlackSuccess';
@@ -11,67 +11,68 @@ import NotionTestComponent from './components/NotionTest';
 import PrivateRoute from './components/PrivateRoute';
 import AuthRedirect from './components/AuthRedirect';
 import { AuthProvider } from './context/AuthContext';
+import './index.css';
 
-function App() {
+function App() {  
   return (
     <AuthProvider>
       <Router>
-        <Routes>
+        <Routes>          
           <Route path="/" element={<LandingPage />} />
-          <Route
-            path="/login"
+          <Route 
+            path="/login" 
             element={
               <AuthRedirect>
                 <Login />
               </AuthRedirect>
-            }
+            } 
           />
-          <Route
-            path="/signup"
+          <Route 
+            path="/signup" 
             element={
               <AuthRedirect>
                 <Signup />
               </AuthRedirect>
-            }
+            } 
           />
-          <Route
-            path="/dashboard"
+          <Route 
+            path="/dashboard" 
             element={
               <PrivateRoute>
                 <Dashboard />
               </PrivateRoute>
-            }
+            } 
           />
-          <Route
-            path="/integrations"
+          <Route 
+            path="/integrations" 
             element={
               <PrivateRoute>
                 <IntegrationsPage />
               </PrivateRoute>
-            }
-          />
+            } 
+          />          
           <Route path="/integrations/slack/success" element={<SlackSuccess />} />
           <Route path="/integrations/notion/success" element={<NotionSuccess />} />
-          <Route
-            path="/notion/databases"
+          <Route 
+            path="/notion/databases" 
             element={
               <PrivateRoute>
                 <NotionDatabasesPage />
               </PrivateRoute>
-            }
+            } 
           />
-          <Route
-            path="/notion/test"
+          <Route 
+            path="/notion/test" 
             element={
               <PrivateRoute>
                 <NotionTestComponent />
               </PrivateRoute>
-            }
+            } 
           />
         </Routes>
       </Router>
     </AuthProvider>
-  );
+  )
 }
 
 export default App;
