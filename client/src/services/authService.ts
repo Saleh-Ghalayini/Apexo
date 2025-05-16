@@ -76,4 +76,8 @@ export const AuthService = {
     }
     return response.data;
   },
+
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('auth_token');
+  },
 };
