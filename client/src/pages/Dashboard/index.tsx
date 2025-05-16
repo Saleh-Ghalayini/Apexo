@@ -15,6 +15,8 @@ const Message = ({ text, isUser }: { text: string; isUser: boolean }) => (
 const Dashboard: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
@@ -39,6 +41,18 @@ const Dashboard: React.FC = () => {
     <div style={{ display: 'flex' }}>
       <Sidebar />
       <div style={{ flex: 1 }}>
+        <div onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+          {profilePicture ? (
+            <img src={profilePicture} alt="Profile" />
+          ) : (
+            <span>User</span>
+          )}
+        </div>
+        {showProfileDropdown && (
+          <div>
+            <div>Profile Dropdown</div>
+          </div>
+        )}
         <div>
           {messages.map((msg) => (
             <Message key={msg.id} text={msg.text} isUser={msg.isUser} />
