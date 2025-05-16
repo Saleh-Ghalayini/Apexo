@@ -26,6 +26,24 @@ const Sidebar: React.FC<SidebarProps> = ({ onSelectSession, onNewChat }) => {
     fetchSessions();
   }, [fetchSessions]);
 
+  const groupSessionsByDate = (sessions: ChatSession[]) => {
+    if (!Array.isArray(sessions)) return {};
+    const groups: { [key: string]: ChatSession[] } = {};
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    sessions.forEach(session => {
+      const sessionDate = new Date(session.created_at).toDateString();
+      let group = 'Previous 7 Days';
+      if (sessionDate === today) group = 'Today';
+      else if (sessionDate === yesterday) group = 'Yesterday';
+      if (!groups[group]) groups[group] = [];
+      groups[group].push(session);
+    });
+    return groups;
+  };
+
+  const grouped = groupSessionsByDate(sessions);
+
   return (
     <div className={`sidebar ${isExpanded ? 'expanded' : ''}`}>
       <button onClick={() => setIsExpanded(!isExpanded)}>
@@ -38,15 +56,16 @@ const Sidebar: React.FC<SidebarProps> = ({ onSelectSession, onNewChat }) => {
             <img src={addIcon} alt="New Chat" />
             New Chat
           </button>
-          <ul>
-            {sessions.map((session) => (
-              <li key={session.id}>
-                <button onClick={() => onSelectSession?.(session.id)}>
-                  {session.title}
+          {Object.entries(grouped).map(([date, chats]) => (
+            <div key={date}>
+              <div>{date}</div>
+              {chats.map((chat) => (
+                <button key={chat.id} onClick={() => onSelectSession?.(chat.id)}>
+                  {chat.title}
                 </button>
-              </li>
-            ))}
-          </ul>
+              ))}
+            </div>
+          ))}
         </div>
       )}
     </div>
