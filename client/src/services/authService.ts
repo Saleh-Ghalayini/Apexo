@@ -44,4 +44,16 @@ export const AuthService = {
     }
     return response.data;
   },
+
+  async logout(): Promise<void> {
+    try {
+      await api.post('/auth/logout');
+    } catch (error) {
+      // Handle error silently
+      console.error('Logout failed', error);
+    } finally {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+    }
+  },
 };
