@@ -9,6 +9,7 @@ interface NotionConfigProps {
 const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave }) => {
   const [loading, setLoading] = useState(true);
   const [databases, setDatabases] = useState<NotionDatabase[]>([]);
+  const [selectedDbId, setSelectedDbId] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -21,11 +22,22 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
     try {
       const dbs = await IntegrationService.getNotionDatabases();
       setDatabases(dbs);
+      if (dbs.length > 0) {
+        setSelectedDbId(dbs[0].id);
+      }
     } catch (err) {
       setError('Failed to load Notion databases.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSave = () => {
+    if (!selectedDbId) {
+      setError('Please select a database first');
+      return;
+    }
+    onSave(selectedDbId);
   };
 
   if (loading) {
@@ -49,11 +61,17 @@ const NotionIntegration: React.FC<NotionConfigProps> = ({ integrationId, onSave 
   return (
     <div>
       <h2>Notion Integration</h2>
-      <ul>
+      <select
+        value={selectedDbId}
+        onChange={(e) => setSelectedDbId(e.target.value)}
+      >
         {databases.map((db) => (
-          <li key={db.id}>{db.title || 'Untitled Database'}</li>
+          <option key={db.id} value={db.id}>
+            {db.title || 'Untitled Database'}
+          </option>
         ))}
-      </ul>
+      </select>
+      <button onClick={handleSave}>Save Configuration</button>
     </div>
   );
 };
