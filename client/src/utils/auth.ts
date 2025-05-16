@@ -9,7 +9,14 @@ export const checkAndRefreshToken = async (): Promise<boolean> => {
   if (!token) {
     return false;
   }
-  const tokenData = JSON.parse(atob(token.split('.')[1]));
+  let tokenData: { exp: number };
+  try {
+    tokenData = JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    console.error('Invalid token format:', e);
+    AuthService.logout();
+    return false;
+  }
   const expiration = tokenData.exp * 1000;
   const now = Date.now();
   if (expiration < now || expiration - now < 60000) {
