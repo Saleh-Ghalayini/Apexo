@@ -72,9 +72,33 @@ export const ChatService = {
     }
   },
   async getSessions() {
-    // TODO: Implement
+    const token = localStorage.getItem('auth_token');
+    try {
+      const response = await api.get<ApiResponse<ChatSession[]> | ChatSession[]>(
+        '/chat/sessions',
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.data && 'success' in response.data && 'payload' in response.data) {
+        return response.data.payload;
+      }
+      return response.data as ChatSession[];
+    } catch (error) {
+      return [];
+    }
   },
   async getMessages(sessionId: string) {
-    // TODO: Implement
+    const token = localStorage.getItem('auth_token');
+    try {
+      const response = await api.get<ApiResponse<ChatMessage[]> | ChatMessage[]>(
+        `/chat/sessions/${sessionId}/messages`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.data && 'success' in response.data && 'payload' in response.data) {
+        return response.data.payload;
+      }
+      return response.data as ChatMessage[];
+    } catch (error) {
+      return [];
+    }
   },
 };
