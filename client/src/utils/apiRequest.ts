@@ -1,4 +1,46 @@
+import api from '../services/api';
+import type { AxiosRequestConfig } from 'axios';
 import { AuthService } from '../services/authService';
+
+// Define the RequestConfig type using the imported AxiosRequestConfig
+export type RequestConfig = AxiosRequestConfig | {
+  url: string;
+  method: string;
+  data?: unknown;
+  params?: Record<string, unknown>;
+  headers?: Record<string, string>;
+};
+
+/**
+ * Wrapper function for API requests that handles standard response format
+ * with success flag and payload
+ */
+export async function apiRequest<T = unknown>(config: RequestConfig): Promise<T> {
+  try {
+    const response = await api.request<T>(config);
+    return response.data as T;
+  } catch (error: unknown) {
+    console.error('API Request Failed:', error);
+    // Check if error is an Axios error with response
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'response' in error &&
+      error.response &&
+      typeof error.response === 'object' &&
+      'data' in error.response
+    ) {
+      throw error.response.data;
+    }
+    // Otherwise throw a generic error
+    const err = error as Error;
+    throw {
+      success: false,
+      message: err.message || 'An unknown error occurred',
+      error: err
+    };
+  }
+}
 
 /**
  * Gets the expiration timestamp from a JWT token.
