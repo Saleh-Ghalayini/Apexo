@@ -1,14 +1,18 @@
 import './Signup.css';
+import '../Auth.css';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../../assets/images/apexo_logo.svg';
 import mailIcon from '../../../assets/images/mail_icon.png';
 import lockIcon from '../../../assets/images/lock_icon.png';
 import userIcon from '../../../assets/images/user_icon.png';
 import companyIcon from '../../../assets/images/company_icon.png';
 import illustration from '../../../assets/images/illustration.png';
+import { useAuth } from '../../../hooks/useAuth';
 
 const Signup: React.FC = () => {
+  const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,8 +20,14 @@ const Signup: React.FC = () => {
     password_confirmation: '',
     company_name: '',
     company_domain: '',
-    role: 'employee',
+    role: 'employee' as 'employee' | 'manager' | 'hr',
+    job_title: '',
+    department: '',
+    phone: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -25,13 +35,50 @@ const Signup: React.FC = () => {
       ...prevState,
       [name]: value,
     }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
     
-    // logic will be implemented later, focusing on UI for now
-    console.log('Signup form submitted:', formData);
+    // Clear specific field error when the field is modified
+    if (validationErrors[name]) {
+      setValidationErrors(prevErrors => {
+        const newErrors = { ...prevErrors };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+    
+    // Clear general error message
+    if (error) setError(null);
+  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setValidationErrors({});
+    
+    try {
+      await register(formData);
+      // Redirect to dashboard after successful registration
+      navigate('/dashboard');
+    } catch (err: unknown) {
+      console.error('Registration failed:', err);
+      const error = err as { response?: { data?: { error?: string, errors?: Record<string, string[]> } } };
+      
+      if (error.response?.data?.errors) {
+        // Handle validation errors
+        const fieldErrors: Record<string, string> = {};
+        Object.entries(error.response.data.errors).forEach(([field, messages]) => {
+          fieldErrors[field] = Array.isArray(messages) ? messages[0] : messages as unknown as string;
+        });
+        setValidationErrors(fieldErrors);
+      } else if (error.response?.data?.error) {
+        // Handle general error
+        setError(error.response.data.error);
+      } else {
+        // Handle unknown errors
+        setError('Registration failed. Please try again later.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,8 +107,10 @@ const Signup: React.FC = () => {
                 onChange={handleChange}
                 placeholder="John Doe"
                 required
+                className={validationErrors.name ? 'input-error' : ''}
               />
             </div>
+            {validationErrors.name && <div className="field-error">{validationErrors.name}</div>}
           </div>
           
           <div className="form-field">
@@ -76,8 +125,10 @@ const Signup: React.FC = () => {
                 onChange={handleChange}
                 placeholder="example@company.com"
                 required
+                className={validationErrors.email ? 'input-error' : ''}
               />
             </div>
+            {validationErrors.email && <div className="field-error">{validationErrors.email}</div>}
           </div>
 
           <div className="form-field">
@@ -92,8 +143,10 @@ const Signup: React.FC = () => {
                 onChange={handleChange}
                 placeholder="Acme Inc."
                 required
+                className={validationErrors.company_name ? 'input-error' : ''}
               />
             </div>
+            {validationErrors.company_name && <div className="field-error">{validationErrors.company_name}</div>}
           </div>
 
           <div className="form-field">
@@ -106,10 +159,12 @@ const Signup: React.FC = () => {
                 name="company_domain"
                 value={formData.company_domain}
                 onChange={handleChange}
-                placeholder="https://acme.com"
+                placeholder="acme.com"
                 required
+                className={validationErrors.company_domain ? 'input-error' : ''}
               />
             </div>
+            {validationErrors.company_domain && <div className="field-error">{validationErrors.company_domain}</div>}
           </div>
           
           <div className="form-field">
@@ -124,8 +179,10 @@ const Signup: React.FC = () => {
                 onChange={handleChange}
                 placeholder="Min. 8 characters"
                 required
+                className={validationErrors.password ? 'input-error' : ''}
               />
             </div>
+            {validationErrors.password && <div className="field-error">{validationErrors.password}</div>}
           </div>
 
           <div className="form-field">
@@ -142,9 +199,7 @@ const Signup: React.FC = () => {
                 required
               />
             </div>
-          </div>
-
-          <div className="form-field">
+          </div>          <div className="form-field">
             <label htmlFor="role">Role</label>
             <div className="select-wrapper">
               <select
@@ -160,9 +215,69 @@ const Signup: React.FC = () => {
               </select>
             </div>
           </div>
+
+          {/* Optional fields */}
+          <div className="optional-fields-section">
+            <h3>Optional Information</h3>
+            <div className="form-field">
+              <label htmlFor="job_title">Job Title</label>
+              <div className="input-wrapper">
+                <img src={userIcon} alt="Job" className="input-icon" />
+                <input
+                  type="text"
+                  id="job_title"
+                  name="job_title"
+                  value={formData.job_title}
+                  onChange={handleChange}
+                  placeholder="Software Engineer"
+                />
+              </div>
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="department">Department</label>
+              <div className="input-wrapper">
+                <img src={companyIcon} alt="Department" className="input-icon" />
+                <input
+                  type="text"
+                  id="department"
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  placeholder="Engineering"
+                />
+              </div>
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="phone">Phone Number</label>
+              <div className="input-wrapper">
+                <img src={companyIcon} alt="Phone" className="input-icon" />
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="(123) 456-7890"
+                />
+              </div>
+            </div>
+          </div>
           
-          <button type="submit" className="sign-up-button" onClick={handleSubmit}>
-            Create Account
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
+          
+          <button 
+            type="submit" 
+            className="sign-up-button" 
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? 'Creating Account...' : 'Create Account'}
           </button>
           
           <div className="terms-policy">
