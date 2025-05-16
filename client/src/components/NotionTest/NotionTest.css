@@ -1,0 +1,104 @@
+.notion-test-container {
+  padding: var(--spacing-lg);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.notion-test-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.notion-test-header h2 {
+  margin: 0;
+  color: var(--text-light);
+}
+
+.notion-test-button {
+  background-color: var(--primary);
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color var(--transition-speed);
+}
+
+.notion-test-button:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+}
+
+.notion-test-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.notion-test-results {
+  background-color: var(--dark-bg-2);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+.notion-test-empty {
+  padding: var(--spacing-lg);
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.notion-test-result {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--translucent-white-1);
+}
+
+.notion-test-result:last-child {
+  border-bottom: none;
+}
+
+.notion-test-result.pending {
+  background-color: rgba(255, 204, 0, 0.05);
+}
+
+.notion-test-result.success {
+  background-color: rgba(72, 199, 142, 0.05);
+}
+
+.notion-test-result.error {
+  background-color: rgba(235, 87, 87, 0.05);
+}
+
+.test-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.test-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-light);
+}
+
+.test-message {
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-sm);
+}
+
+.test-data {
+  background-color: var(--dark-bg);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm);
+  overflow-x: auto;
+}
+
+.test-data pre {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-light);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
