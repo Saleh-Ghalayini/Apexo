@@ -111,3 +111,31 @@ p {
         --spacing-xl: 30px;
     }
 }
+
+@font-face {
+    font-family: 'Lato';
+    src: url('./assets/fonts/Lato/Lato-Regular.ttf') format('trueType');
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('./assets/fonts/Montserrat/Montserrat-Regular.ttf') format('trueType');
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Montserrat-bold';
+    src: url('./assets/fonts/Montserrat/Montserrat-SemiBold.ttf') format('trueType');
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('./assets/fonts/Poppins/Poppins-Regular.ttf') format('trueType');
+    font-style: normal;
+    font-display: swap;
+}
