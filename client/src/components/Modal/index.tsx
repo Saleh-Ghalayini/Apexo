@@ -1,4 +1,5 @@
 import React from 'react';
+import './Modal.css';
 
 interface ModalProps {
   isOpen: boolean;
@@ -10,9 +11,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div>
-      <div>
-        <button onClick={onClose}>Close</button>
+    <div className="modal-backdrop">
+      <div className="modal-container">
+        <button className="modal-close-button" onClick={onClose}>×</button>
         {children}
       </div>
     </div>
