@@ -4,22 +4,41 @@
 
 import { IntegrationService } from '../services/integrationService';
 
-/**
- * Types for validation results
- */
 export interface ValidationResult {
   isValid: boolean;
   message: string;
   details?: Record<string, unknown>;
 }
 
-/**
- * NotionValidation class provides methods to validate various aspects
- * of the Notion integration
- */
 export class NotionValidation {
   static async validateOAuthConfig(): Promise<ValidationResult> {
-    return { isValid: false, message: 'Not implemented' };
+    try {
+      const response = await fetch('/api/integrations/notion/authorize/info');
+      const data = await response.json();
+
+      if (data.success) {
+        return {
+          isValid: true,
+          message: 'Notion OAuth configuration is valid',
+          details: {
+            clientId: data.clientIdConfigured,
+            redirectUri: data.redirectUriConfigured
+          }
+        };
+      } else {
+        return {
+          isValid: false,
+          message: 'Notion OAuth configuration is incomplete or invalid',
+          details: data
+        };
+      }
+    } catch (error) {
+      return {
+        isValid: false,
+        message: 'Failed to validate Notion OAuth configuration',
+        details: { error }
+      };
+    }
   }
 
   static async validateDatabaseAccess(): Promise<ValidationResult> {
