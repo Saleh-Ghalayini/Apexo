@@ -52,3 +52,23 @@ body {
     background-color: var(--background-light);
     overflow-x: hidden;
 }
+
+a {
+    text-decoration: none;
+    transition: all var(--transition-speed) ease;
+}
+
+button {
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat-bold', sans-serif;
+    margin-bottom: var(--spacing-md);
+    line-height: 1.2;
+}
+
+p {
+    margin-bottom: var(--spacing-md);
+}
