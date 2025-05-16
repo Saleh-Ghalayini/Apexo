@@ -56,7 +56,16 @@ export const IntegrationService = {
     }
   },
   async disconnect(integrationId: string): Promise<boolean> {
-    return false;
+    try {
+      const response = await apiRequest<{ success: boolean }>({
+        url: `/integrations/${integrationId}`,
+        method: 'DELETE',
+      });
+      return response.success;
+    } catch (error) {
+      console.error('Failed to disconnect integration:', error);
+      return false;
+    }
   },
   async updateStatus(integrationId: string, status: 'active' | 'inactive'): Promise<boolean> {
     return false;
