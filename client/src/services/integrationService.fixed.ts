@@ -20,7 +20,16 @@ export interface Integration {
 
 export const IntegrationService = {
   async getProviders(): Promise<IntegrationProvider[]> {
-    return [];
+    try {
+      const response = await apiRequest<{ success: boolean, payload: IntegrationProvider[] }>({
+        url: '/integrations/providers',
+        method: 'GET',
+      });
+      return response.payload || [];
+    } catch (error) {
+      console.error('Failed to fetch integration providers:', error);
+      return [];
+    }
   },
   async getIntegrations(): Promise<Integration[]> {
     return [];
