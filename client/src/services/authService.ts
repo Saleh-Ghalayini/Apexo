@@ -19,7 +19,6 @@ export interface RegisterRequest {
   department?: string;
   phone?: string;
   avatar?: string;
-  company?: Company;
 }
 
 export interface User {
@@ -59,10 +58,6 @@ export interface AuthResponse {
 
 // AuthService provides authentication-related API calls and localStorage management
 export const AuthService = {
-  /**
-   * Login user with credentials.
-   * Stores token and user data in localStorage on success.
-   */
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     try {
       const response = await api.post<AuthResponse>('/auth/login', credentials);
@@ -76,10 +71,6 @@ export const AuthService = {
     }
   },
 
-  /**
-   * Register a new user.
-   * Stores token and user data in localStorage on success.
-   */
   async register(userData: RegisterRequest): Promise<AuthResponse> {
     try {
       const response = await api.post<AuthResponse>('/auth/register', userData);
@@ -93,10 +84,6 @@ export const AuthService = {
     }
   },
 
-  /**
-   * Logout the current user.
-   * Removes token and user data from localStorage.
-   */
   async logout(): Promise<void> {
     try {
       await api.post('/auth/logout');
@@ -108,9 +95,6 @@ export const AuthService = {
     }
   },
 
-  /**
-   * Get the current user from localStorage.
-   */
   getCurrentUser(): User | null {
     const userData = localStorage.getItem('user_data');
     if (userData) {
@@ -124,10 +108,6 @@ export const AuthService = {
     return null;
   },
 
-  /**
-   * Refresh the authentication token.
-   * Updates token in localStorage.
-   */
   async refreshToken(): Promise<AuthResponse> {
     const response = await api.post<AuthResponse>('/auth/refresh');
     if (response.data.payload.token) {
@@ -136,9 +116,6 @@ export const AuthService = {
     return response.data;
   },
 
-  /**
-   * Check if the user is authenticated.
-   */
   isAuthenticated(): boolean {
     return !!localStorage.getItem('auth_token');
   },
