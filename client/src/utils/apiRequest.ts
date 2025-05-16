@@ -16,7 +16,6 @@ export async function apiRequest<T = unknown>(config: RequestConfig): Promise<T>
   } catch (error: unknown) {
     console.error('API Request Failed:', error);
 
-    // Check if error is an Axios error with response
     if (
       typeof error === 'object' && 
       error !== null && 
@@ -28,6 +27,11 @@ export async function apiRequest<T = unknown>(config: RequestConfig): Promise<T>
       throw error.response.data;
     }
 
-    throw error;
+    const err = error as Error;
+    throw {
+      success: false,
+      message: err.message || 'An unknown error occurred',
+      error: err
+    };
   }
 }
