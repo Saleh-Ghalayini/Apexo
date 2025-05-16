@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import Toast from '../Toast';
 
 type ToastType = 'success' | 'error' | 'info';
 
@@ -32,9 +33,23 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
     setToasts(prev => [...prev, { id, message, type }]);
   };
 
+  const removeToast = (id: string) => {
+    setToasts(toasts.filter(toast => toast.id !== id));
+  };
+
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
+      <div className="toast-container">
+        {toasts.map(toast => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
+      </div>
     </ToastContext.Provider>
   );
 };
