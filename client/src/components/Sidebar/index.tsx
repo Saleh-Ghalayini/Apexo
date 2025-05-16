@@ -108,7 +108,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onSelectSession, onNewChat }) => {
           </div>
         </>
       )}
-        <div className="sidebar-bottom">
+      <div className="sidebar-bottom">
         <button className="sidebar-icon-btn">
           <img src={helpIcon} alt="Help" />
           {isExpanded && <span>Help</span>}
