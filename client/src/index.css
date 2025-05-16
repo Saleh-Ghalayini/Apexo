@@ -72,3 +72,42 @@ h1, h2, h3, h4, h5, h6 {
 p {
     margin-bottom: var(--spacing-md);
 }
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+@media (max-width: 1200px) {
+    :root {
+        --spacing-xl: 60px;
+    }
+}
+
+@media (max-width: 992px) {
+    :root {
+        --spacing-lg: 30px;
+        --spacing-xl: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --spacing-md: 15px;
+        --spacing-lg: 25px;
+        --spacing-xl: 40px;
+    }
+    h1, h2 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    :root {
+        --spacing-md: 10px;
+        --spacing-lg: 20px;
+        --spacing-xl: 30px;
+    }
+}
