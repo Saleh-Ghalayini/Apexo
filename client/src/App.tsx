@@ -1,5 +1,14 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from './pages/LandingPage/LandingPage';
+
 function App() {
-  return <div>Hello, Apexo!</div>;
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
