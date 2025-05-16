@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { NotionTest } from '../../utils/notionTest';
+import './NotionTest.css';
 
 interface TestResult {
   name: string;
@@ -57,19 +58,42 @@ const NotionTestComponent: React.FC = () => {
   };
 
   return (
-    <div>
-      <h2>Notion Integration Test</h2>
-      <button onClick={runAllTests} disabled={isRunning}>
-        {isRunning ? 'Running Tests...' : 'Run Tests'}
-      </button>
-      <div>
-        {results.length === 0 && !isRunning && <div>No test results yet.</div>}
-        {results.map((result, idx) => (
-          <div key={idx}>
-            <span>{result.name}</span>
-            <span>{result.status}</span>
-            <span>{result.message}</span>
-            {result.data && <pre>{JSON.stringify(result.data, null, 2)}</pre>}
+    <div className="notion-test-container">
+      <div className="notion-test-header">
+        <h2>Notion Integration Test</h2>
+        <button
+          onClick={runAllTests}
+          disabled={isRunning}
+          className="notion-test-button"
+        >
+          {isRunning ? 'Running Tests...' : 'Run Tests'}
+        </button>
+      </div>
+      <div className="notion-test-results">
+        {results.length === 0 && !isRunning && (
+          <div className="notion-test-empty">
+            No test results yet. Click "Run Tests" to start testing.
+          </div>
+        )}
+        {results.map((result, index) => (
+          <div
+            key={`${result.name}-${index}`}
+            className={`notion-test-result ${result.status}`}
+          >
+            <div className="test-result-header">
+              <span className="test-name">{result.name}</span>
+              <span className="test-status">
+                {result.status === 'pending' && '⏳'}
+                {result.status === 'success' && '✅'}
+                {result.status === 'error' && '❌'}
+              </span>
+            </div>
+            <div className="test-message">{result.message}</div>
+            {result.data && (
+              <div className="test-data">
+                <pre>{JSON.stringify(result.data, null, 2)}</pre>
+              </div>
+            )}
           </div>
         ))}
       </div>
