@@ -44,7 +44,16 @@ export const IntegrationService = {
     }
   },
   async connect(providerId: string): Promise<{ url: string }> {
-    return { url: '' };
+    try {
+      const response = await apiRequest<{ success: boolean, payload: { url: string } }>({
+        url: `/integrations/connect/${providerId}`,
+        method: 'POST',
+      });
+      return response.payload;
+    } catch (error) {
+      console.error('Failed to initiate integration connection:', error);
+      throw error;
+    }
   },
   async disconnect(integrationId: string): Promise<boolean> {
     return false;
