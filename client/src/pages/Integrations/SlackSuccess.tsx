@@ -9,7 +9,12 @@ const SlackSuccess: React.FC = () => {
     }, 500);
   }, []);
 
-
+  return (
+    <div style={{ padding: 40, textAlign: 'center' }}>
+      <h2>Slack Connected!</h2>
+      <p>You can close this window and return to Apexo.</p>
+    </div>
+  );
 };
 
 export default SlackSuccess;
