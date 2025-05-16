@@ -1,36 +1,35 @@
 import { AuthService } from '../services/authService';
 
-// Function to check token validity and refresh if needed
+/**
+ * Checks if the JWT token is valid and refreshes it if expired or about to expire.
+ * @returns {Promise<boolean>} True if token is valid or refreshed, false otherwise.
+ */
 export const checkAndRefreshToken = async (): Promise<boolean> => {
   const token = localStorage.getItem('auth_token');
-  
-  // If no token exists, user is not authenticated
   if (!token) {
     return false;
   }
-  
-  // Check token expiration
-  const tokenData = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
-  const expiration = tokenData.exp * 1000; // Convert to milliseconds
+  const tokenData = JSON.parse(atob(token.split('.')[1]));
+  const expiration = tokenData.exp * 1000;
   const now = Date.now();
-  
-  // If token is expired or about to expire within next minute, refresh it
   if (expiration < now || expiration - now < 60000) {
     try {
       await AuthService.refreshToken();
       return true;
     } catch (error) {
       console.error('Error refreshing token:', error);
-      // Token refresh failed, log user out
       AuthService.logout();
       return false;
     }
   }
-  
-  return true; // Token is valid
+  return true;
 };
 
-// Function to redirect unauthenticated users
+/**
+ * Redirects to login if user is not authenticated.
+ * @param navigate Navigation function (e.g., from react-router).
+ * @returns {boolean} True if authenticated, false otherwise.
+ */
 export const redirectIfNotAuthenticated = (navigate: any): boolean => {
   if (!AuthService.isAuthenticated()) {
     navigate('/login');
