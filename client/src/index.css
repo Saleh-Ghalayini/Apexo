@@ -292,3 +292,20 @@ p {
     background-color: var(--text-light);
     padding: 2rem;
 }
+
+.loading-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background-color: var(--secondary);
+    color: var(--text-light);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+    display: none;
+}
