@@ -1,0 +1,19 @@
+.sidebar {
+  background-color: var(--teal);
+  color: var(--text-light);
+  width: var(--sidebar-width);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  transition: width var(--transition-speed);
+  overflow-x: hidden;
+}
+
+.sidebar.expanded {
+  width: 280px;
+}
