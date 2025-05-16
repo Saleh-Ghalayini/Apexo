@@ -34,3 +34,19 @@ interface ApiResponse<T> {
   success: boolean;
   payload: T;
 }
+
+// Service methods
+export const ChatService = {
+  async createSession(firstMessage: string) {
+    // TODO: Implement
+  },
+  async sendMessage(sessionId: string, message: string) {
+    // TODO: Implement
+  },
+  async getSessions() {
+    // TODO: Implement
+  },
+  async getMessages(sessionId: string) {
+    // TODO: Implement
+  },
+};
