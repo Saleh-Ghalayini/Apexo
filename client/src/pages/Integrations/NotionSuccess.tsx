@@ -9,8 +9,22 @@ const NotionSuccess: React.FC = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    setStatus('loading');
-    setMessage('Processing...');
+    const params = new URLSearchParams(location.search);
+    const statusParam = params.get('status');
+    const errorMessage = params.get('message');
+    if (statusParam === 'success') {
+      setStatus('success');
+      setMessage('Successfully connected to Notion!');
+      setTimeout(() => {
+        navigate('/notion/databases');
+      }, 3000);
+    } else {
+      setStatus('error');
+      setMessage(errorMessage || 'Failed to connect to Notion. Please try again.');
+      setTimeout(() => {
+        navigate('/integrations');
+      }, 5000);
+    }
   }, [location.search, navigate]);
 
   return (
