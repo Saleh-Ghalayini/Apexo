@@ -50,12 +50,12 @@ const Table = <T extends Record<string, unknown>>({
                   </td>
                 ))}
               </tr>
-            ))
-          ) : (
+            ))          ) : (
             <tr>
               <td colSpan={columns.length} className="empty-table-message">
                 {emptyMessage}
-              </td>            </tr>
+              </td>
+            </tr>
           )}
         </tbody>
         {addButton && (

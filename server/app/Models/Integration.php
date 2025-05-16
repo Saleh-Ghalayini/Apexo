@@ -10,18 +10,50 @@ class Integration extends Model
     /** @use HasFactory<\Database\Factories\IntegrationFactory> */
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
     protected $fillable = [
-        'company_id',
+        'user_id',
         'provider',
-        'settings',
+        'credentials',
+        'status',
+        'token_type',
+        'access_token',
+        'refresh_token',
+        'expires_at',
+        'metadata',
     ];
 
-    protected $casts = [
-        'settings' => 'array'
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'credentials',
+        'access_token',
+        'refresh_token',
     ];
 
-    public function company()
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
     {
-        return $this->belongsTo(Company::class);
+        return [
+            'credentials' => 'encrypted:json',
+            'metadata' => 'json',
+            'expires_at' => 'datetime',
+        ];
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

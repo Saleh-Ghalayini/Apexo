@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Meeting extends Model
+class Task extends Model
 {
+    /** @use HasFactory<\Database\Factories\TaskFactory> */
     use HasFactory;
 
     /**
@@ -16,16 +17,16 @@ class Meeting extends Model
      */
     protected $fillable = [
         'user_id',
+        'assignee_id',
         'title',
-        'scheduled_at',
-        'ended_at',
-        'transcript',
-        'summary',
+        'description',
+        'deadline',
         'status',
+        'priority',
         'external_id',
-        'meeting_url',
-        'attendees',
-        'metadata',
+        'external_url',
+        'external_system',
+        'external_data',
     ];
 
     /**
@@ -36,20 +37,29 @@ class Meeting extends Model
     protected function casts(): array
     {
         return [
-            'scheduled_at' => 'datetime',
-            'ended_at' => 'datetime',
-            'attendees' => 'json',
-            'metadata' => 'json',
+            'deadline' => 'datetime',
+            'external_data' => 'json',
         ];
     }
 
+    /**
+     * Get the user that created the task.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function tasks()
+    public function assignee()
     {
-        return $this->morphMany(Task::class, 'source');
+        return $this->belongsTo(User::class, 'assignee_id');
+    }
+
+    /**
+     * Get the source model (meeting or prompt) that generated this task.
+     */
+    public function source()
+    {
+        return $this->morphTo();
     }
 }

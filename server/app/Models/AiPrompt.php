@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Meeting extends Model
+class AiPrompt extends Model
 {
+    /** @use HasFactory<\Database\Factories\AiPromptFactory> */
     use HasFactory;
 
     /**
@@ -16,16 +17,12 @@ class Meeting extends Model
      */
     protected $fillable = [
         'user_id',
-        'title',
-        'scheduled_at',
-        'ended_at',
-        'transcript',
-        'summary',
+        'content',
         'status',
-        'external_id',
-        'meeting_url',
-        'attendees',
-        'metadata',
+        'intent',
+        'parameters',
+        'result',
+        'error',
     ];
 
     /**
@@ -36,13 +33,15 @@ class Meeting extends Model
     protected function casts(): array
     {
         return [
-            'scheduled_at' => 'datetime',
-            'ended_at' => 'datetime',
-            'attendees' => 'json',
-            'metadata' => 'json',
+            'intent' => 'json',
+            'parameters' => 'json',
+            'result' => 'json',
         ];
     }
 
+    /**
+     * Get the user that owns the prompt.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);

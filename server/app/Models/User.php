@@ -2,26 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
-
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
 
     /**
      * The attributes that are mass assignable.
@@ -34,6 +21,11 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'role',
+        'job_title',
+        'department',
+        'phone',
+        'avatar',
+        'active',
     ];
 
     /**
@@ -56,6 +48,7 @@ class User extends Authenticatable implements JWTSubject
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'active' => 'boolean',
         ];
     }
 
@@ -64,13 +57,18 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Company::class);
     }
 
+    public function integrations()
+    {
+        return $this->hasMany(Integration::class);
+    }
+
+    public function aiPrompts()
+    {
+        return $this->hasMany(AiPrompt::class);
+    }
+
     public function chatSessions()
     {
         return $this->hasMany(ChatSession::class);
-    }
-
-    public function slackAnnouncements()
-    {
-        return $this->hasMany(SlackAnnouncement::class);
     }
 }

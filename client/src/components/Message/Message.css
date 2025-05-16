@@ -34,6 +34,9 @@
 
 .ai-message .message-text {
   color: var(--text-light);
+  text-align: left;
+  white-space: pre-line;
+  font-family: inherit;
 }
 
 .message-time {

@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Meeting extends Model
+class ChatMessage extends Model
 {
+    /** @use HasFactory<\Database\Factories\ChatMessageFactory> */
     use HasFactory;
 
     /**
@@ -15,17 +16,11 @@ class Meeting extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'user_id',
-        'title',
-        'scheduled_at',
-        'ended_at',
-        'transcript',
-        'summary',
-        'status',
-        'external_id',
-        'meeting_url',
-        'attendees',
+        'chat_session_id',
+        'role',
+        'content',
         'metadata',
+        'status',
     ];
 
     /**
@@ -36,20 +31,12 @@ class Meeting extends Model
     protected function casts(): array
     {
         return [
-            'scheduled_at' => 'datetime',
-            'ended_at' => 'datetime',
-            'attendees' => 'json',
             'metadata' => 'json',
         ];
     }
 
-    public function user()
+    public function chatSession()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function tasks()
-    {
-        return $this->morphMany(Task::class, 'source');
+        return $this->belongsTo(ChatSession::class);
     }
 }
