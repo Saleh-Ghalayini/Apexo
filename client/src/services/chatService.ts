@@ -1,8 +1,5 @@
 import api from './api';
 
-/**
- * Represents a chat session.
- */
 export interface ChatSession {
   id: string;
   title: string;
@@ -10,9 +7,6 @@ export interface ChatSession {
   updated_at: string;
 }
 
-/**
- * Represents a chat message.
- */
 export interface ChatMessage {
   id: string;
   session_id: string;
@@ -21,9 +15,6 @@ export interface ChatMessage {
   created_at: string;
 }
 
-/**
- * Response structure for creating a session.
- */
 export interface CreateSessionResponse {
   session: ChatSession;
   user_message?: ChatMessage;
@@ -31,30 +22,19 @@ export interface CreateSessionResponse {
   messages?: ChatMessage[];
 }
 
-/**
- * Response structure for sending a message.
- */
 export interface SendMessageResponse {
   session: ChatSession;
   user_message: ChatMessage;
   ai_message: ChatMessage;
 }
 
-/**
- * Generic API response wrapper.
- */
 interface ApiResponse<T> {
   success: boolean;
   payload: T;
 }
 
-/**
- * Service for chat-related API calls.
- */
 export const ChatService = {
-  /**
-   * Create a new chat session with the first message.
-   */
+
   async createSession(firstMessage: string) {
     const token = localStorage.getItem('auth_token');
     const endpoint = '/chat/sessions';
@@ -69,9 +49,7 @@ export const ChatService = {
     return response.data as CreateSessionResponse;
   },
 
-  /**
-   * Send a message to an existing chat session.
-   */
+
   async sendMessage(sessionId: string, message: string) {
     const token = localStorage.getItem('auth_token');
     const endpoint = `/chat/sessions/${sessionId}/messages`;
@@ -86,9 +64,7 @@ export const ChatService = {
     return response.data as SendMessageResponse;
   },
 
-  /**
-   * Fetch all chat sessions for the current user.
-   */
+ 
   async getSessions() {
     const token = localStorage.getItem('auth_token');
     const response = await api.get<ApiResponse<ChatSession[]> | ChatSession[]>(
@@ -101,24 +77,22 @@ export const ChatService = {
     return response.data as ChatSession[];
   },
 
-  /**
-   * Fetch all messages for a given session.
-   */
   async getMessages(sessionId: string) {
     const token = localStorage.getItem('auth_token');
-    const response = await api.get<ApiResponse<ChatMessage[]> | ChatMessage[]>(
-      `/chat/sessions/${sessionId}/messages`,
+    const response = await api.get<ApiResponse<ChatSession & { messages: ChatMessage[] }> | (ChatSession & { messages: ChatMessage[] })>(
+      `/chat/sessions/${sessionId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    if (response.data && 'success' in response.data && 'payload' in response.data) {
-      return response.data.payload;
+    let session = response.data;
+    if ('success' in session && 'payload' in session) {
+      session = session.payload;
     }
-    return response.data as ChatMessage[];
+    if (session && Array.isArray(session.messages)) {
+      return session.messages;
+    }
+    return [];
   },
 
-  /**
-   * Debug: Send a message using fetch (bypasses Axios interceptors).
-   */
   async debugSendMessage(sessionId: string, message: string) {
     const token = localStorage.getItem('auth_token');
     const endpoint = `/chat/sessions/${sessionId}/messages`;
