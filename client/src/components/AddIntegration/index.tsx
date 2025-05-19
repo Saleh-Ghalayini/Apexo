@@ -10,6 +10,7 @@ import SlackConnectButton from './SlackConnectButton';
 import SlackStatus from './SlackStatus';
 import NotionConnectButton from './NotionConnectButton';
 import NotionStatus from './NotionStatus';
+import GoogleCalendarConnectButton from './GoogleCalendarConnectButton';
 
 interface AddIntegrationProps {
   isOpen: boolean;
@@ -280,6 +281,14 @@ const AddIntegration: React.FC<AddIntegrationProps> = ({ isOpen, onClose, onAddI
                 </button>
               </>
             )}
+          </div>
+        ) : selectedType === 'calendar' ? (
+          <div style={{ margin: '24px 0' }}>
+            <GoogleCalendarConnectButton onSuccess={onClose} />
+            <div style={{ marginTop: 8, color: '#888', fontSize: 13 }}>
+              Click "Connect Google Calendar" to authorize this application with your Google account.<br />
+              The window will open in a new tab. After connecting, close this dialog and refresh integrations.
+            </div>
           </div>
         ) : (
           <>
