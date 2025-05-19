@@ -2,7 +2,6 @@ import api from '../services/api';
 import type { AxiosRequestConfig } from 'axios';
 import { AuthService } from '../services/authService';
 
-// Define the RequestConfig type using the imported AxiosRequestConfig
 export type RequestConfig = AxiosRequestConfig | {
   url: string;
   method: string;
@@ -11,17 +10,14 @@ export type RequestConfig = AxiosRequestConfig | {
   headers?: Record<string, string>;
 };
 
-/**
- * Wrapper function for API requests that handles standard response format
- * with success flag and payload
- */
+
 export async function apiRequest<T = unknown>(config: RequestConfig): Promise<T> {
   try {
     const response = await api.request<T>(config);
     return response.data as T;
   } catch (error: unknown) {
     console.error('API Request Failed:', error);
-    // Check if error is an Axios error with response
+
     if (
       typeof error === 'object' &&
       error !== null &&
@@ -32,7 +28,6 @@ export async function apiRequest<T = unknown>(config: RequestConfig): Promise<T>
     ) {
       throw error.response.data;
     }
-    // Otherwise throw a generic error
     const err = error as Error;
     throw {
       success: false,
@@ -42,11 +37,6 @@ export async function apiRequest<T = unknown>(config: RequestConfig): Promise<T>
   }
 }
 
-/**
- * Gets the expiration timestamp from a JWT token.
- * @param token JWT token string.
- * @returns {number | null} Expiration timestamp in ms, or null if invalid.
- */
 export const getTokenExpiration = (token: string): number | null => {
   try {
     const tokenData = JSON.parse(atob(token.split('.')[1]));
@@ -57,10 +47,6 @@ export const getTokenExpiration = (token: string): number | null => {
   }
 };
 
-/**
- * Checks if the JWT token is valid and refreshes it if expired or about to expire.
- * @returns {Promise<boolean>} True if token is valid or refreshed, false otherwise.
- */
 export const checkAndRefreshToken = async (): Promise<boolean> => {
   const token = localStorage.getItem('auth_token');
   if (!token) {
@@ -85,11 +71,6 @@ export const checkAndRefreshToken = async (): Promise<boolean> => {
   return true;
 };
 
-/**
- * Redirects to login if user is not authenticated.
- * @param navigate Navigation function (e.g., from react-router).
- * @returns {boolean} True if authenticated, false otherwise.
- */
 export const redirectIfNotAuthenticated = (navigate: (path: string) => void): boolean => {
   if (!AuthService.isAuthenticated()) {
     navigate('/login');
@@ -97,3 +78,32 @@ export const redirectIfNotAuthenticated = (navigate: (path: string) => void): bo
   }
   return true;
 };
+
+
+export async function autoDownloadFile(url: string, filename?: string) {
+  const token = localStorage.getItem('auth_token');
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+ 
+  const fullUrl = url.startsWith('http') ? url : apiBase.replace(/\/$/, '') + (url.startsWith('/') ? url : '/' + url);
+  const res = await fetch(fullUrl, {
+    headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+  });
+  if (!res.ok) throw new Error('Failed to download file');
+  const blob = await res.blob();
+  const contentDisposition = res.headers.get('Content-Disposition');
+  let suggestedName = filename;
+  if (!suggestedName && contentDisposition) {
+    const match = contentDisposition.match(/filename="?([^";]+)"?/);
+    if (match) suggestedName = match[1];
+  }
+  if (!suggestedName) suggestedName = 'report_' + Date.now();
+  const link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+  link.download = suggestedName;
+  document.body.appendChild(link);
+  link.click();
+  setTimeout(() => {
+    window.URL.revokeObjectURL(link.href);
+    link.remove();
+  }, 1000);
+}
