@@ -18,6 +18,7 @@ interface ChatMessage {
   text: string;
   isUser: boolean;
   timestamp: Date;
+  metadata?: Record<string, unknown>;
 }
 
 const Dashboard: React.FC = () => {
@@ -33,7 +34,6 @@ const Dashboard: React.FC = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
-  // Helper to set sessionId in state and localStorage
   const setSessionId = (id: string | null) => {
     setSessionIdState(id);
     if (id) {
@@ -43,12 +43,10 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
   
-  // Set profile picture from user data or local storage
   useEffect(() => {
     if (user?.avatar) {
       setProfilePicture(user.avatar);
@@ -60,7 +58,6 @@ const Dashboard: React.FC = () => {
     }
   }, [user]);
 
-  // Handle clicks outside of dropdown to close it
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -104,7 +101,6 @@ const Dashboard: React.FC = () => {
 
     try {
       if (!sessionId) {
-        // First message: create session
         console.log('[handleSendMessage] Creating new session');
         const res = await ChatService.createSession(messageToSend);
         console.log('[handleSendMessage] Create session response:', res);
@@ -116,7 +112,7 @@ const Dashboard: React.FC = () => {
             newMessages = res.messages.map((msg: ApiChatMessage) => ({
               id: Number(msg.id || Date.now()),
               text: msg.content || '',
-              isUser: msg.user_id === user?.id,
+              isUser: user && msg.user_id === user?.id ? true : false,
               timestamp: new Date(msg.created_at || Date.now())
             }));
           } else if (res.user_message && res.ai_message) {
@@ -149,24 +145,75 @@ const Dashboard: React.FC = () => {
           ]);
         }
       } else {
-        // Subsequent messages: use the same sessionId
         setMessages(prev => [...prev, userMessage]);
-        console.log('[handleSendMessage] Sending message to existing session:', sessionId);
         const res = await ChatService.sendMessage(sessionId, messageToSend);
-        console.log('[handleSendMessage] Message sent response:', res);
-        
-        if (res && res.ai_message) {
+        // Check for direct file download in AI response
+        if (res && res.ai_message && res.ai_message.content) {
+          let aiContent = res.ai_message.content;
+          let fileMeta: { base64: string; name?: string; mime?: string } | null = null;
+          // Try to parse file info if present in metadata or content
+          if ('metadata' in res.ai_message && res.ai_message.metadata) {
+            try {
+              const metaRaw = (res.ai_message as { metadata?: unknown }).metadata;
+              const meta = typeof metaRaw === 'string' ? JSON.parse(metaRaw) : metaRaw;
+              if (meta && typeof meta === 'object' && Array.isArray((meta as { tool_results?: unknown[] }).tool_results)) {
+                for (const toolResult of (meta as { tool_results?: { file?: { base64: string; name?: string; mime?: string } }[] }).tool_results || []) {
+                  if (toolResult && toolResult.file && toolResult.file.base64) {
+                    fileMeta = toolResult.file;
+                    break;
+                  }
+                }
+              }
+            } catch {
+              // ignore
+            }
+          }
+          if (!fileMeta && aiContent.includes('base64')) {
+            try {
+              const match = aiContent.match(/\{[^}]*base64[^}]*\}/);
+              if (match) fileMeta = JSON.parse(match[0]);
+            } catch (e) { /* ignore */ }
+          }
+          if (fileMeta && fileMeta.base64) {
+            
+            const byteCharacters = atob(fileMeta.base64);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: fileMeta.mime || 'application/octet-stream' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = fileMeta.name || 'report.pdf';
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+              window.URL.revokeObjectURL(link.href);
+              link.remove();
+            }, 1000);
+            aiContent = 'The report got generated and downloaded on your machine.';
+          }
           setMessages(prev => [
             ...prev,
             {
               id: Date.now(),
-              text: res.ai_message.content || 'No content in message',
+              text: aiContent,
               isUser: false,
-              timestamp: new Date(res.ai_message.created_at || Date.now())
+              timestamp: new Date()
+            }
+          ]);
+        } else if (res && typeof (res as object & { error?: string }).error === 'string') {
+          setMessages(prev => [
+            ...prev,
+            {
+              id: Date.now() + 3,
+              text: ((res as { error?: string }).error) || 'Received an invalid response. Please try again.',
+              isUser: false,
+              timestamp: new Date()
             }
           ]);
         } else {
-          console.error('[handleSendMessage] Invalid response from sendMessage:', res);
           setMessages(prev => [
             ...prev,
             {
@@ -210,19 +257,16 @@ const Dashboard: React.FC = () => {
     navigate('/login');
   };
 
-  // Handle starting a new chat session
   const handleNewChat = () => {
     setSessionId(null);
     setMessages([]);
   };
 
-  // Handle selecting a session from the sidebar
   const handleSelectSession = async (selectedSessionId: string) => {
     if (sessionId !== selectedSessionId) {
       setSessionId(selectedSessionId);
       setIsLoading(true);
       
-      // Fetch messages for the selected session
       try {
         console.log('[handleSelectSession] Fetching messages for session:', selectedSessionId);
         const apiMessages = await ChatService.getMessages(selectedSessionId);
@@ -230,12 +274,20 @@ const Dashboard: React.FC = () => {
         
         if (Array.isArray(apiMessages) && apiMessages.length > 0) {
           setMessages(
-            apiMessages.map(msg => ({
-              id: Number(msg.id || Date.now()),
-              text: msg.content || '(No content)',
-              isUser: msg.user_id === user?.id,
-              timestamp: new Date(msg.created_at || Date.now())
-            }))
+            apiMessages.map((msg, idx) => {
+              let isUser = false;
+              if (user && typeof msg.user_id !== 'undefined') {
+                isUser = msg.user_id === user.id;
+              } else {
+                isUser = idx % 2 === 0;
+              }
+              return {
+                id: Number(msg.id || Date.now() + idx),
+                text: msg.content || '(No content)',
+                isUser,
+                timestamp: new Date(msg.created_at || Date.now())
+              };
+            })
           );
         } else {
           console.log('[handleSelectSession] No messages found or invalid format');
