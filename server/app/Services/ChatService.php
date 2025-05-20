@@ -32,5 +32,7 @@ class ChatService
     public function sendMessage(array $session, string $message, string $sender): array
     {
         $msg = [];
+        $msg['content'] = $message;
+        $msg['sender'] = $sender;
     }
 }
