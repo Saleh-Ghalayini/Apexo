@@ -6,7 +6,17 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-    public function up(): void {}
+    public function up(): void
+    {
+        Schema::table('meetings', function (Blueprint $table) {
+            $table->json('analytics')->nullable()->after('action_items');
+        });
+    }
 
-    public function down(): void {}
+    public function down(): void
+    {
+        Schema::table('meetings', function (Blueprint $table) {
+            $table->dropColumn('analytics');
+        });
+    }
 };
