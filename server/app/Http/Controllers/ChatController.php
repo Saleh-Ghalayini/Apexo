@@ -25,6 +25,11 @@ class ChatController extends Controller
 
     public function getMessages($sessionId)
     {
-        // To be implemented
+        try {
+            $messages = $this->chatService->getMessages($sessionId);
+            return response()->json($messages);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
     }
 }
