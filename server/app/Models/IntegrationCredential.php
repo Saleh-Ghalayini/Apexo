@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class IntegrationCredential extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'integration_id',
+        'user_id',
+        'type',
+        'access_token',
+        'refresh_token',
+        'expires_at',
+        'metadata',
+    ];
 }
