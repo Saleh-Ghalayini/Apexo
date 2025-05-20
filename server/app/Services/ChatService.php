@@ -28,4 +28,9 @@ class ChatService
         $session['participants'] = $participants;
         return $session;
     }
+
+    public function sendMessage(array $session, string $message, string $sender): array
+    {
+        $msg = [];
+    }
 }
