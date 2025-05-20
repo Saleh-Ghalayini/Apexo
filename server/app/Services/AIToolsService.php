@@ -59,6 +59,40 @@ class AIToolsService
                         'error' => 'Access denied. Insufficient permissions.'
                     ];
                 return $this->dataAccessService->getDepartmentAnalytics($user, $arguments);
+            case 'list_company_employees':
+                return $this->dataAccessService->listCompanyEmployees($user);
+            case 'create_google_calendar_event': {
+                    $event = $arguments['event'] ?? [];
+                    $token = $user->google_calendar_token;
+                    if (!$token)    return ['success' => false, 'error' => 'Google Calendar not connected'];
+
+                    try {
+                        $calendarService = app(\App\Services\GoogleCalendarService::class);
+                        $calendarService->setAccessToken($token);
+
+                        $userTimezone = $event['timeZone'] ?? 'Asia/Beirut';
+                        $eventData = [
+                            'summary' => $event['summary'] ?? '',
+                            'start' => ['dateTime' => $event['start'] ?? '', 'timeZone' => $userTimezone],
+                            'end' => ['dateTime' => $event['end'] ?? '', 'timeZone' => $userTimezone],
+                        ];
+                        if (!empty($event['description']))
+                            $eventData['description'] = $event['description'];
+                        if (!empty($event['attendees'])) {
+                            $emails = array_filter(array_map('trim', explode(',', $event['attendees'])), function ($email) {
+                                return filter_var($email, FILTER_VALIDATE_EMAIL);
+                            });
+                            if (!empty($emails))
+                                $eventData['attendees'] = array_map(function ($email) {
+                                    return ['email' => $email];
+                                }, $emails);
+                        }
+                        $created = $calendarService->createEvent($eventData);
+                        return ['success' => true, 'event' => $created];
+                    } catch (\Throwable $e) {
+                        return ['success' => false, 'error' => 'Exception: ' . $e->getMessage()];
+                    }
+                }
         }
     }
 }
