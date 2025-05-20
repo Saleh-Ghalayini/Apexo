@@ -12,7 +12,11 @@ class AuthService
 {
     public function register(array $data)
     {
-        // To be implemented
+        try {
+            // Implementation coming next
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     public function login(array $credentials)
