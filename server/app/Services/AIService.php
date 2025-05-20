@@ -123,4 +123,6 @@ class AIService
             'email' => $email,
         ];
     }
+
+    public function analyzeMeetingTranscript(string $transcript, array $meetingData = []): array {}
 }
