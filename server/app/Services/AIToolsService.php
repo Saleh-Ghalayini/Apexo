@@ -116,6 +116,16 @@ class AIToolsService
                 return $this->dataAccessService->getReport($user, $arguments);
             case 'email_report':
                 return $this->dataAccessService->emailReport($user, $arguments['report_id'] ?? null, $arguments['to'] ?? null);
+            case 'announce_meeting_with_email':
+                return $this->dataAccessService->announceMeetingWithEmail($user, $arguments);
+            case 'send_email':
+                $params = $arguments['params'] ?? $arguments;
+                return $this->dataAccessService->sendEmail(
+                    $user,
+                    $params['to'] ?? null,
+                    $params['subject'] ?? '',
+                    $params['body'] ?? ''
+                );
         }
     }
 }
