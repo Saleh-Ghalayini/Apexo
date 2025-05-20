@@ -261,5 +261,9 @@ class AIService
         return $path;
     }
 
-    public function generateEmployeeReport(EmployeeAnalytics $employeeAnalytics, string $format = 'pdf'): string {}
+    public function generateEmployeeReport(EmployeeAnalytics $employeeAnalytics, string $format = 'pdf'): string
+    {
+        $user = $employeeAnalytics->user;
+        $analytics = $employeeAnalytics->analytics ?? [];
+    }
 }
