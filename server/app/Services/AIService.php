@@ -268,5 +268,13 @@ class AIService
 
         $filename = 'employee_report_' . $user->id . '_' . now()->timestamp . '.' . $format;
         $path = 'reports/' . $filename;
+
+        if ($format === 'pdf') {
+            $pdf = Pdf::loadView('reports.employee', ['user' => $user, 'analytics' => $analytics, 'employeeAnalytics' => $employeeAnalytics]);
+            Storage::put($path, $pdf->output());
+        } elseif ($format === 'xlsx' || $format === 'excel')
+            Excel::store(new \App\Exports\EmployeeReportExport($user, $analytics, $employeeAnalytics), $path);
+        else
+            throw new \Exception('Unsupported format');
     }
 }
