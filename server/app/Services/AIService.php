@@ -172,6 +172,7 @@ class AIService
         $analytics['success'] = true;
         return $analytics;
     }
+
     public function analyzeEmployeePerformance($user, $meetings, $tasks, $periodStart, $periodEnd): array
     {
         $meetingCount = $meetings->count();
@@ -179,5 +180,11 @@ class AIService
         $completedTasks = $tasks->where('status', 'completed')->count();
         $meetingTitles = $meetings->pluck('title')->implode(', ');
         $taskTitles = $tasks->pluck('title')->implode(', ');
+        $prompt = "Analyze the following employee's performance for the period $periodStart to $periodEnd.\n" .
+            "Employee: {$user->name}\n" .
+            "Meetings attended ($meetingCount): $meetingTitles\n" .
+            "Tasks assigned ($taskCount): $taskTitles\n" .
+            "Tasks completed: $completedTasks\n" .
+            "Provide a summary, notable achievements, areas for improvement, and overall sentiment. Return a JSON object with keys: summary, meetings_attended, tasks_completed, tasks_assigned, sentiment, notable_achievements (array), areas_for_improvement (array).";
     }
 }
