@@ -19,4 +19,9 @@ class AuthService
     {
         // To be implemented
     }
+
+    public function logout()
+    {
+        // To be implemented
+    }
 }
