@@ -23,4 +23,9 @@ class IntegrationCredential extends Model
         'metadata' => 'array',
         'expires_at' => 'datetime',
     ];
+
+    public function integration()
+    {
+        return $this->belongsTo(Integration::class);
+    }
 }
