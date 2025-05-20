@@ -36,6 +36,12 @@ class ChatService
         $msg['sender'] = $sender;
         $msg['timestamp'] = time();
         $this->chatMessageService->saveMessage($session['id'], $msg);
+
+        if ($sender !== 'ai') {
+            $aiResponse = $this->chatAiService->generateResponse($session, $message, $sender);
+            $this->chatMessageService->saveMessage($session['id'], $aiResponse);
+        }
+
         return $msg;
     }
 }
