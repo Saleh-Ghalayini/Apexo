@@ -34,7 +34,9 @@ class TestUserSeeder extends Seeder
 
         foreach ($testUsers as $userData) {
             User::updateOrCreate(
-                ['email' => $userData['email']],
+                [
+                    'email' => $userData['email']
+                ],
                 [
                     'name' => $userData['name'],
                     'password' => Hash::make('password'),
