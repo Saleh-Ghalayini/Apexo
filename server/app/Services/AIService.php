@@ -171,8 +171,13 @@ class AIService
 
         $analytics['success'] = true;
         return $analytics;
-
-    public function analyzeEmployeePerformance($user, $meetings, $tasks, $periodStart, $periodEnd): array {
     }
+    public function analyzeEmployeePerformance($user, $meetings, $tasks, $periodStart, $periodEnd): array
+    {
+        $meetingCount = $meetings->count();
+        $taskCount = $tasks->count();
+        $completedTasks = $tasks->where('status', 'completed')->count();
+        $meetingTitles = $meetings->pluck('title')->implode(', ');
+        $taskTitles = $tasks->pluck('title')->implode(', ');
     }
 }
