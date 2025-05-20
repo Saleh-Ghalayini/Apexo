@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ChatSession extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'title',
+        'status',
+        'last_activity_at',
+    ];
 }
