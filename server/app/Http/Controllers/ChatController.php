@@ -15,7 +15,12 @@ class ChatController extends Controller
 
     public function sendMessage(Request $request)
     {
-        // To be implemented
+        $validated = $request->validate([
+            'session_id' => 'required|integer',
+            'message' => 'required|string',
+        ]);
+        $result = $this->chatService->sendMessage($validated['session_id'], $validated['message']);
+        return response()->json($result);
     }
 
     public function getMessages($sessionId)
