@@ -26,5 +26,6 @@ class ChatService
         $session = [];
         $session['id'] = uniqid('chat_', true);
         $session['participants'] = $participants;
+        return $session;
     }
 }
