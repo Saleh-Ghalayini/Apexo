@@ -153,6 +153,27 @@ class AIToolsService
                     $meeting->save();
                 }
                 return ['success' => true, 'meeting_id' => $meeting->id];
+            case 'trigger_meeting_analytics':
+                $meetingId = $arguments['meeting_id'] ?? null;
+                \App\Jobs\ProcessMeetingAnalyticsJob::dispatch($meetingId);
+                return ['success' => true, 'message' => 'Meeting analytics job dispatched.'];
+            case 'download_meeting_report':
+                $meetingId = $arguments['meeting_id'] ?? null;
+                $format = $arguments['format'] ?? 'pdf';
+                $meeting = \App\Models\Meeting::findOrFail($meetingId);
+                if (!$meeting->report_file || $meeting->report_format !== $format || !\Illuminate\Support\Facades\Storage::exists($meeting->report_file))
+                    app(\App\Services\AIService::class)->generateMeetingReport($meeting, $format);
+
+                $filePath = $meeting->report_file;
+                $filename = basename($filePath);
+                $mime = $format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                $fileContent = \Illuminate\Support\Facades\Storage::get($filePath);
+                $base64 = base64_encode($fileContent);
+                return ['success' => true, 'file' => [
+                    'name' => $filename,
+                    'mime' => $mime,
+                    'base64' => $base64,
+                ]];
         }
     }
 }
