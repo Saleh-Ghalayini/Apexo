@@ -12,4 +12,14 @@ class ChatController extends Controller
     {
         $this->chatService = $chatService;
     }
+
+    public function sendMessage(Request $request)
+    {
+        // To be implemented
+    }
+
+    public function getMessages($sessionId)
+    {
+        // To be implemented
+    }
 }
