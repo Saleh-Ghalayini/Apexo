@@ -4,5 +4,8 @@ namespace App\Traits;
 
 trait MessageAnalysisTrait
 {
-    // empty
+    protected function messageNeedsStructuredOutput(string $message): bool
+    {
+        // method skeleton
+    }
 }
