@@ -19,4 +19,6 @@ class ToolDispatcherService
             'ai_service' => $aiService,
         ];
     }
+
+    public function dispatchTool($session, $user, $userMessage, $userChatMessage) {}
 }
