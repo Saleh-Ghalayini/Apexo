@@ -26,4 +26,13 @@ class Company extends Model
         'subscription_plan',
         'active',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'subscription_ends_at' => 'datetime',
+            'active' => 'boolean',
+            'size' => 'integer',
+        ];
+    }
 }
