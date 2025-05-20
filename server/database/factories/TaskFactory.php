@@ -9,7 +9,9 @@ class TaskFactory extends Factory
     public function definition(): array
     {
         return [
-            // empty
+            'user_id' => \App\Models\User::factory(),
+            'title' => fake()->sentence(),
+            'status' => fake()->randomElement(['todo', 'in_progress', 'completed']),
         ];
     }
 }
