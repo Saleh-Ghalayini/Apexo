@@ -56,4 +56,25 @@ class ChatService
 
         return $msg;
     }
+
+    public function getMessages(string $sessionId): array
+    {
+        return $this->chatMessageService->getMessages($sessionId);
+    }
+
+    public function getReport(string $sessionId): array
+    {
+        return $this->chatReportService->getReport($sessionId);
+    }
+
+    public function resetSession(string $sessionId): void
+    {
+        $this->chatMessageService->clearMessages($sessionId);
+        $this->chatReportService->resetReport($sessionId);
+    }
+
+    public function sessionExists(string $sessionId): bool
+    {
+        return $this->chatMessageService->sessionExists($sessionId);
+    }
 }
