@@ -40,14 +40,21 @@ class ToolDispatcherService
                 'handled' => true,
             ];
         }
+
         if (preg_match('/analyz(e|ing|ed)? (the )?meeting/i', $userMessage) && preg_match('/(report|download|pdf|excel)/i', $userMessage)) {
             Log::info('[ToolDispatcher] Analytics+report request detected');
             if (preg_match('/meeting (titled|named)?[\s\'"]*([\w\s\-]+)[\'"]*/i', $userMessage, $matches)) {
                 $meetingTitle = trim($matches[2]);
                 Log::info('[ToolDispatcher] Extracted meeting title', ['meetingTitle' => $meetingTitle]);
                 $meeting = \App\Models\Meeting::where('title', $meetingTitle)->latest()->first();
+                if ($meeting) {
+                    Log::info('[ToolDispatcher] Found meeting', ['meeting_id' => $meeting->id]);
+                } else {
+                    Log::warning('[ToolDispatcher] Meeting not found', ['meetingTitle' => $meetingTitle]);
+                }
                 if ($meeting && $meeting->analytics) {
                     $format = (stripos($userMessage, 'excel') !== false || stripos($userMessage, 'xlsx') !== false) ? 'xlsx' : 'pdf';
+
                     $path = $this->tools['ai_service']->generateMeetingReport($meeting, $format);
                     $filename = basename($path);
                     $mime = $format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
@@ -80,7 +87,26 @@ class ToolDispatcherService
                         'tool' => 'meeting_report',
                         'handled' => true,
                     ];
+                } else {
+                    Log::info('[ToolDispatcher] Analytics not ready for meeting', ['meetingTitle' => $meetingTitle]);
+                    $aiMessage = tap(new \App\Models\ChatMessage(), function ($aiChatMessage) use ($session, $meetingTitle) {
+                        $aiChatMessage->chat_session_id = $session->id;
+                        $aiChatMessage->role = 'assistant';
+                        $aiChatMessage->content = "I'm preparing the analytics for the meeting titled '$meetingTitle'. Please try again in a few moments, and I'll have your report ready for download.";
+                        $aiChatMessage->save();
+                    });
+                    return [
+                        'result' => [
+                            'user_message' => $userChatMessage,
+                            'ai_message' => $aiMessage,
+                            'session' => $session,
+                        ],
+                        'tool' => 'meeting_report_pending',
+                        'handled' => true,
+                    ];
                 }
+            } else {
+                Log::warning('[ToolDispatcher] Could not extract meeting title', ['userMessage' => $userMessage]);
             }
         }
         Log::info('[ToolDispatcher] Passing to chatAiService.handleAiMessage');
