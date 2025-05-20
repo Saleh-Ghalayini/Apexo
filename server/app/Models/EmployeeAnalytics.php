@@ -17,4 +17,10 @@ class EmployeeAnalytics extends Model
         'period_end',
         'analytics',
     ];
+
+    protected $casts = [
+        'period_start' => 'date',
+        'period_end' => 'date',
+        'analytics' => 'json',
+    ];
 }
