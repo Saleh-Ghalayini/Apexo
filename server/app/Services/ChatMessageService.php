@@ -16,4 +16,6 @@ class ChatMessageService
         $userChatMessage->save();
         return $userChatMessage;
     }
+
+    public function updateSessionTitleIfNeeded(ChatSession $session, string $userMessage, ChatMessage $userChatMessage): void {}
 }
