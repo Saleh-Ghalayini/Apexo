@@ -42,6 +42,16 @@ class AuthService
         } catch (Exception $e) {
             throw $e;
         }
+
+        $token = JWTAuth::fromUser($user);
+
+        return [
+            'user' => $user,
+            'company' => $company,
+            'token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => config('jwt.ttl') * 60,
+        ];
     }
 
     public function login(array $credentials)
