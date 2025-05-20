@@ -15,17 +15,30 @@ class ChatController extends Controller
 
     public function getSessions($request)
     {
-        // To be implemented
+        $status = $request->query('status');
+        $sessions = $this->chatService->getSessions($status);
+
+        return response()->json($sessions);
     }
 
     public function getSession($id, $request)
     {
-        // To be implemented
+        $limit = $request->query('limit');
+        $since = $request->query('since');
+
+        $session = $this->chatService->getSession($id, $limit, $since);
+
+        return response()->json($session);
     }
 
     public function createSession($request)
     {
-        // To be implemented
+        $title = $request->input('title');
+        $initialMessage = $request->input('initial_message');
+
+        $result = $this->chatService->createSession($title, $initialMessage);
+
+        return response()->json($result, 201);
     }
 
     public function sendMessage($id, $request)
