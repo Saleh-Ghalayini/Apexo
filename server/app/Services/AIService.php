@@ -2,4 +2,7 @@
 
 namespace App\Services;
 
-class AIService {}
+class AIService
+{
+    public function generateTaskReport(): string {}
+}
