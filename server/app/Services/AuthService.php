@@ -24,4 +24,9 @@ class AuthService
     {
         // To be implemented
     }
+
+    public function getAuthUserWithToken()
+    {
+        // To be implemented
+    }
 }
