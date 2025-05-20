@@ -3,6 +3,13 @@
 namespace App\Services;
 
 use App\Models\Task;
+use App\Models\Meeting;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\EmployeeAnalytics;
+use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class AIService
 {
@@ -41,6 +48,9 @@ class AIService
         $report .= "3. Prioritization Summary:\n";
         foreach ($priorityCounts as $priority => $count)
             $report .= "$priority Priority: $count tasks\n";
+
         return $report;
     }
+
+    public function sendReport(string $report, string $to): bool {}
 }
