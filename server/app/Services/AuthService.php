@@ -13,7 +13,14 @@ class AuthService
     public function register(array $data)
     {
         try {
-            // Implementation coming next
+            $company = Company::firstOrCreate(
+                ['domain' => $data['company_domain']],
+                [
+                    'name' => $data['company_name'],
+                    'domain' => $data['company_domain'],
+                    'status' => 'active',
+                ]
+            );
         } catch (Exception $e) {
             throw $e;
         }
