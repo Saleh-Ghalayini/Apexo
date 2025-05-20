@@ -38,4 +38,9 @@ class User extends Authenticatable implements JWTSubject
             'google_calendar_token' => 'array',
         ];
     }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
 }
