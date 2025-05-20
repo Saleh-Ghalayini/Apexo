@@ -16,4 +16,11 @@ class ChatMessage extends Model
         'metadata',
         'status',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'metadata' => 'json',
+        ];
+    }
 }
