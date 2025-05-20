@@ -37,5 +37,12 @@ class AIToolsService
         return $tools;
     }
 
-    public function processToolCall(\App\Models\User $user, string $toolName, array $arguments): array {}
+    public function processToolCall(\App\Models\User $user, string $toolName, array $arguments): array
+    {
+        \Illuminate\Support\Facades\Log::info('[AIToolsService] processToolCall', [
+            'user_id' => $user->id,
+            'toolName' => $toolName,
+            'arguments' => $arguments
+        ]);
+    }
 }
