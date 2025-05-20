@@ -23,5 +23,13 @@ class TestMultiCompanySeeder extends Seeder
             'role' => 'hr',
             'company_id' => $company2->id,
         ]);
+
+        $manager2 = User::factory()->create([
+            'name' => 'Manager Company 2',
+            'email' => 'manager@secondtest.com',
+            'password' => Hash::make('password'),
+            'role' => 'manager',
+            'company_id' => $company2->id,
+        ]);
     }
 }
