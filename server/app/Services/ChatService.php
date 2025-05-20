@@ -35,6 +35,7 @@ class ChatService
         $msg['content'] = $message;
         $msg['sender'] = $sender;
         $msg['timestamp'] = time();
+        $this->chatMessageService->saveMessage($session['id'], $msg);
         return $msg;
     }
 }
