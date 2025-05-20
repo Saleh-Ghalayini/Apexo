@@ -229,4 +229,6 @@ class AIService
         $analytics['success'] = true;
         return $analytics;
     }
+
+    public function generateMeetingReport(Meeting $meeting, string $format = 'pdf'): string {}
 }
