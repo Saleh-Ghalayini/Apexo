@@ -18,4 +18,12 @@ class IntegrationData extends Model
         'data',
         'is_active',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'data' => 'json',
+            'is_active' => 'boolean',
+        ];
+    }
 }
