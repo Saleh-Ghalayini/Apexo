@@ -44,4 +44,10 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'notion' => [
+        'client_id' => env('NOTION_CLIENT_ID'),
+        'client_secret' => env('NOTION_CLIENT_SECRET'),
+        'redirect' => env('NOTION_REDIRECT_URI'),
+    ],
+
 ];
