@@ -11,17 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ai_prompts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->text('content'); // The actual prompt content
-            $table->string('status')->default('pending'); // pending, processing, completed, failed
-            $table->json('intent')->nullable(); // Extracted intent from Prism
-            $table->json('parameters')->nullable(); // Extracted parameters from Prism
-            $table->json('result')->nullable(); // Result of processing the prompt
-            $table->text('error')->nullable(); // Error message if processing failed
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('ai_prompts')) {
+            Schema::create('ai_prompts', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->text('content'); // The actual prompt content
+                $table->string('status')->default('pending'); // pending, processing, completed, failed
+                $table->json('intent')->nullable(); // Extracted intent from Prism
+                $table->json('parameters')->nullable(); // Extracted parameters from Prism
+                $table->json('result')->nullable(); // Result of processing the prompt
+                $table->text('error')->nullable(); // Error message if processing failed
+                $table->timestamps();
+            });
+        }
     }
 
     /**
