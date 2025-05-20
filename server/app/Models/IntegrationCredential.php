@@ -18,4 +18,9 @@ class IntegrationCredential extends Model
         'expires_at',
         'metadata',
     ];
+
+    protected $casts = [
+        'metadata' => 'array',
+        'expires_at' => 'datetime',
+    ];
 }
