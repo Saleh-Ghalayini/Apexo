@@ -81,16 +81,48 @@ class AuthService
 
     public function logout()
     {
-        // To be implemented
+        try {
+            auth('api')->logout();
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     public function getAuthUserWithToken()
     {
-        // To be implemented
+        try {
+            $user = auth('api')->user();
+            if (!$user) throw new Exception('User not authenticated');
+
+            $token = JWTAuth::fromUser($user);
+
+            return [
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => config('jwt.ttl') * 60,
+            ];
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     public function refresh()
     {
-        // To be implemented
+        try {
+            $user = auth('api')->user();
+            if (!$user || !$user->active) throw new Exception('User is not active.');
+
+            $token = JWTAuth::parseToken()->refresh();
+
+            return [
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => config('jwt.ttl') * 60,
+            ];
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 }
