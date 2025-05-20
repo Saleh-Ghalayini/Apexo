@@ -139,5 +139,11 @@ class AIService
             'max_tokens' => 800,
             'temperature' => config('services.openai.temperature', 0.4),
         ]);
+
+        if ($response->failed())
+            return [
+                'success' => false,
+                'error' => 'AI API failed',
+            ];
     }
 }
