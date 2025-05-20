@@ -174,6 +174,11 @@ class AIToolsService
                     'mime' => $mime,
                     'base64' => $base64,
                 ]];
+            default:
+                return [
+                    'success' => false,
+                    'error' => 'Unknown tool: ' . $toolName
+                ];
         }
     }
 }
