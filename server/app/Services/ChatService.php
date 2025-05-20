@@ -24,5 +24,6 @@ class ChatService
     public function startChatSession(array $participants): array
     {
         $session = [];
+        $session['id'] = uniqid('chat_', true);
     }
 }
