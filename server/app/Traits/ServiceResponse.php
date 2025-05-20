@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+
 trait ServiceResponse
 {
     public function successResponse($data, $code = 200)
