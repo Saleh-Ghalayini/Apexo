@@ -23,4 +23,16 @@ class Report extends Model
         'schedule',
         'last_generated_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'parameters' => 'json',
+            'data' => 'json',
+            'period_start' => 'datetime',
+            'period_end' => 'datetime',
+            'is_scheduled' => 'boolean',
+            'last_generated_at' => 'datetime',
+        ];
+    }
 }
