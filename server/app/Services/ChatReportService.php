@@ -19,4 +19,19 @@ class ChatReportService
         $lowerMessage = strtolower($userMessage);
         return preg_match('/\b(generate|create|make) (a )?(task )?report\b/', $lowerMessage);
     }
+
+    public function handleTaskReportRequest(ChatSession $session, ChatMessage $userChatMessage): array
+    {
+        $report = $this->taskReportService->generateTaskReport();
+        return [
+            'user_message' => $userChatMessage,
+            'ai_message' => tap(new ChatMessage(), function ($aiChatMessage) use ($session, $report) {
+                $aiChatMessage->chat_session_id = $session->id;
+                $aiChatMessage->role = 'assistant';
+                $aiChatMessage->content = $report;
+                $aiChatMessage->save();
+            }),
+            'session' => $session,
+        ];
+    }
 }
