@@ -2,10 +2,18 @@
 
 namespace App\Http\Controllers;
 
+
+use Exception;
+use App\Traits\ResponseTrait;
 use App\Services\AuthService;
+use Illuminate\Support\Facades\Log;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    use ResponseTrait;
     protected AuthService $authService;
 
     public function __construct(AuthService $authService)
@@ -13,9 +21,22 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    public function register($request)
+    public function register(RegisterRequest $request)
     {
-        // To be implemented
+        $validated = $request->validated();
+
+        try {
+            $data = $this->authService->register($validated);
+
+            return $this->successResponse($data, 201);
+        } catch (Exception $e) {
+            Log::error('Registration error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return $this->errorResponse('Failed to register user: ' . $e->getMessage(), 500);
+        }
     }
 
     public function login($request)
