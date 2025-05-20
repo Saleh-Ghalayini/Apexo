@@ -23,4 +23,17 @@ class AIToolsService
         $this->calendarToolsService = new CalendarToolsService($dataAccessService);
         $this->employeeToolsService = new EmployeeToolsService($dataAccessService);
     }
+
+    public function getToolsForUser(\App\Models\User $user): array
+    {
+        $tools = [];
+        $tools = array_merge(
+            $tools,
+            $this->meetingToolsService->getToolsForUser($user),
+            $this->reportToolsService->getToolsForUser($user),
+            $this->calendarToolsService->getToolsForUser($user),
+            $this->employeeToolsService->getToolsForUser($user)
+        );
+        return $tools;
+    }
 }
