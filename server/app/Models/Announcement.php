@@ -15,4 +15,9 @@ class Announcement extends Model
         'slack_channel',
         'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
