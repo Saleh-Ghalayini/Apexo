@@ -21,6 +21,11 @@ class CompanyFactory extends Factory
             'country' => fake()->country(),
             'phone' => fake()->phoneNumber(),
             'website' => 'https://' . $domain,
+            'industry' => fake()->word(),
+            'size' => fake()->numberBetween(10, 1000),
+            'subscription_ends_at' => $this->faker->dateTimeBetween('now', '+1 year'),
+            'subscription_plan' => fake()->randomElement(['free', 'basic', 'premium']),
+            'active' => true,
         ];
     }
 }
