@@ -67,5 +67,14 @@ class AIService
         }
     }
 
-    public function generateTaskReminderEmail(array $data): array {}
+    public function generateTaskReminderEmail(array $data): array
+    {
+        $prompt = "Generate a friendly and professional email reminder for the following user and task.\n" .
+            "User Name: {$data['user_name']}\n" .
+            "User Email: {$data['user_email']}\n" .
+            "Task Title: {$data['task_title']}\n" .
+            "Task Details: {$data['task_details']}\n" .
+            "Deadline: {$data['deadline']}\n" .
+            "Return a JSON object with 'subject' and 'body'.";
+    }
 }
