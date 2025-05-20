@@ -31,7 +31,7 @@
 <!-- Project Highlights -->
 <img src="./readme/title4.svg"/>
  
-<img src="./readme/Project_Highlights.png" width="900">
+<img src="./readme/ProjectHighlights.png" width="900">
 
 - ### Real-time Meeting Participation
   Transcribing discussions, summarizing key points, and automatically extracting actionable tasks.
