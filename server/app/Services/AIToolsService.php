@@ -44,5 +44,7 @@ class AIToolsService
             'toolName' => $toolName,
             'arguments' => $arguments
         ]);
+        switch ($toolName) {
+        }
     }
 }
