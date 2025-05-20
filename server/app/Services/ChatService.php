@@ -8,4 +8,16 @@ class ChatService
     protected \App\Services\ChatReportService $chatReportService;
     protected \App\Services\ChatAiService $chatAiService;
     protected \App\Services\ToolDispatcherService $toolDispatcherService;
+
+    public function __construct(
+        \App\Services\ChatMessageService $chatMessageService,
+        \App\Services\ChatReportService $chatReportService,
+        \App\Services\ChatAiService $chatAiService,
+        \App\Services\ToolDispatcherService $toolDispatcherService
+    ) {
+        $this->chatMessageService = $chatMessageService;
+        $this->chatReportService = $chatReportService;
+        $this->chatAiService = $chatAiService;
+        $this->toolDispatcherService = $toolDispatcherService;
+    }
 }
