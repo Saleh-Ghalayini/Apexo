@@ -204,5 +204,19 @@ class AIService
                 'success' => false,
                 'error' => 'AI API failed',
             ];
+
+        $choices = $response->json('choices');
+        $content = $choices[0]['message']['content'] ?? '';
+
+        $json = null;
+        if (preg_match('/```json(.*?)```/s', $content, $matches))   $json = trim($matches[1]);
+        elseif (preg_match('/\{.*\}/s', $content, $matches))    $json = $matches[0];
+
+        $analytics = json_decode($json, true);
+        if (!$analytics || !isset($analytics['summary']))
+            return [
+                'success' => false,
+                'error' => 'AI did not return valid analytics',
+            ];
     }
 }
