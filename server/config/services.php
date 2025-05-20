@@ -57,4 +57,7 @@ return [
         'temperature' => env('OPENAI_TEMPERATURE', 0.7),
     ],
 
+    'google_calendar' => [
+        'credentials_path' => env('GOOGLE_CALENDAR_CREDENTIALS_PATH'),
+    ],
 ];
