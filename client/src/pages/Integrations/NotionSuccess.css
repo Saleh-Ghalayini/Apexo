@@ -1,0 +1,80 @@
+.notion-success-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+
+.notion-success-card {
+  max-width: 500px;
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  overflow: hidden;
+}
+
+.notion-success-content {
+  padding: 40px 20px;
+}
+
+.status-icon {
+  font-size: 48px;
+  height: 80px;
+  width: 80px;
+  line-height: 80px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-icon.success {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
+
+.status-icon.error {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #F44336;
+}
+
+.notion-success-content h2 {
+  margin-bottom: 16px;
+  font-size: 24px;
+  color: #333;
+}
+
+.notion-success-content p {
+  color: #666;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.redirect-message {
+  margin-top: 16px;
+  font-style: italic;
+  color: #888;
+  font-size: 14px;
+}
+
+/* Loading spinner */
+.spinner {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 20px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #4285f4;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

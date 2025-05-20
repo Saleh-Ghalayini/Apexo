@@ -1,0 +1,249 @@
+/* Pricing section styles */
+.pricing {
+    padding: var(--spacing-xl) 90px;
+    background-color: #FFFFFF;
+}
+
+.pricing-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pricing-title {
+    font-size: 42px;
+    text-align: center;
+    color: var(--text-dark);
+    margin-bottom: var(--spacing-sm);
+    font-family: 'Poppins', sans-serif;
+}
+
+.title-regular {
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.title-accent {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.pricing-subtitle {
+    text-align: center;
+    color: var(--text-dark);
+    font-size: 20px;
+    max-width: 600px;
+    margin: 0 auto var(--spacing-xl);
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.5;
+}
+
+.pricing-cards {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.pricing-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    border-radius: 8px;
+    padding: 40px 30px;
+    width: 350px;
+    transition: all var(--transition-speed) ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.pricing-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.pricing-popular {
+    border-color: var(--primary);
+    box-shadow: 0 8px 24px rgba(0, 143, 143, 0.15);
+    transform: translateY(-10px);
+}
+
+.popular-badge {
+    position: absolute;
+    top: -12px;
+    right: 30px;
+    background-color: var(--primary);
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.pricing-header {
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #E8E8E8;
+}
+
+.pricing-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.pricing-subtitle {
+    display: block;
+    font-size: 16px;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+.pricing-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.pricing-currency {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-right: 2px;
+}
+
+.pricing-amount {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1;
+}
+
+.pricing-period {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-left: 5px;
+}
+
+.pricing-description {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.pricing-features {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+    flex-grow: 1;
+}
+
+.pricing-feature-item {
+    padding: 10px 0;
+    font-size: 15px;
+    color: var(--text-dark);
+    font-family: 'Poppins', sans-serif;
+}
+
+.feature-check {
+    color: var(--primary);
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.pricing-action {
+    margin-top: auto;
+}
+
+.pricing-button {
+    width: 100%;
+    padding: 12px;
+    font-weight: 600;
+    transition: all var(--transition-speed) ease;
+    background-color: var(--primary);
+    color: #FFFFFF;
+}
+
+.pricing-button:hover {
+    background-color: var(--primary-dark);
+}
+
+.pricing-card:first-child .pricing-button {
+    background-color: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+}
+
+.pricing-card:first-child .pricing-button:hover {
+    background-color: rgba(0, 143, 143, 0.1);
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+    .pricing {
+        padding: var(--spacing-xl) 60px;
+    }
+
+    .pricing-card {
+        width: 300px;
+    }
+}
+
+@media (max-width: 992px) {
+    .pricing-card {
+        width: 280px;
+        padding: 30px 20px;
+    }
+    
+    .pricing-popular {
+        transform: translateY(-10px);
+    }
+}
+
+@media (max-width: 768px) {
+    .pricing {
+        padding: var(--spacing-lg) 40px;
+    }
+
+    .pricing-title {
+        font-size: 36px;
+    }
+
+    .pricing-subtitle {
+        font-size: 18px;
+    }
+    
+    .pricing-cards {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .pricing-card {
+        width: 100%;
+        max-width: 350px;
+        margin-bottom: 20px;
+    }
+    
+    .pricing-popular {
+        transform: none;
+        order: -1;
+    }
+}
+
+@media (max-width: 576px) {
+    .pricing {
+        padding: var(--spacing-md) 20px;
+    }
+
+    .pricing-title {
+        font-size: 28px;
+    }
+
+    .pricing-subtitle {
+        font-size: 16px;
+    }
+}

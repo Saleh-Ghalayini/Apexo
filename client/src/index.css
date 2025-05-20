@@ -1,0 +1,311 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #008F8F;
+    --primary-dark: #007878;
+    --secondary: #15262C;
+    --text-dark: #203030;
+    --text-light: #FFFFFF;
+    --text-muted: #555555;
+    --background-light: #F5F5F5;
+    --teal: #008F7D;
+    --teal-dark: #017666;
+    --dark-bg: #121921;
+    --input-bg: #FFFFFF;
+    --input-text: #333333;
+    --placeholder: #C3C3C3;
+    --translucent-white-05: rgba(255, 255, 255, 0.05);
+    --translucent-white-1: rgba(255, 255, 255, 0.1);
+    --translucent-white-2: rgba(255, 255, 255, 0.2);
+    --translucent-white-5: rgba(255, 255, 255, 0.5);
+    --translucent-white-7: rgba(255, 255, 255, 0.7);
+    --spacing-xs: 5px;
+    --spacing-sm: 10px;
+    --spacing-md: 20px;
+    --spacing-lg: 40px;
+    --spacing-xl: 80px;
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --transition-speed: 0.3s;
+    --sidebar-width: 80px;
+    --avatar-size: 40px;
+    --icon-size: 24px;
+    --icon-size-sm: 20px;
+    --icon-size-xs: 16px;
+}
+
+html {
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--background-light);
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+    transition: all var(--transition-speed) ease;
+}
+
+button {
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat-bold', sans-serif;
+    margin-bottom: var(--spacing-md);
+    line-height: 1.2;
+}
+
+p {
+    margin-bottom: var(--spacing-md);
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+@media (max-width: 1200px) {
+    :root {
+        --spacing-xl: 60px;
+    }
+}
+
+@media (max-width: 992px) {
+    :root {
+        --spacing-lg: 30px;
+        --spacing-xl: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --spacing-md: 15px;
+        --spacing-lg: 25px;
+        --spacing-xl: 40px;
+    }
+    h1, h2 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    :root {
+        --spacing-md: 10px;
+        --spacing-lg: 20px;
+        --spacing-xl: 30px;
+    }
+}
+
+@font-face {
+    font-family: 'Lato';
+    src: url('./assets/fonts/Lato/Lato-Regular.ttf') format('trueType');
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('./assets/fonts/Montserrat/Montserrat-Regular.ttf') format('trueType');
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Montserrat-bold';
+    src: url('./assets/fonts/Montserrat/Montserrat-SemiBold.ttf') format('trueType');
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('./assets/fonts/Poppins/Poppins-Regular.ttf') format('trueType');
+    font-style: normal;
+    font-display: swap;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.gap-sm {
+    gap: var(--spacing-sm);
+}
+
+.gap-md {
+    gap: var(--spacing-md);
+}
+
+.gap-lg {
+    gap: var(--spacing-lg);
+}
+
+/* Auth form styles */
+.auth-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+.auth-form-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--secondary);
+    color: var(--text-light);
+    position: relative;
+    padding: 2rem;
+}
+
+.auth-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    position: absolute;
+    top: 2rem;
+    left: 0;
+    right: 0;
+    padding: 0 2rem;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+}
+
+/* Common form field styles */
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 1px solid var(--translucent-white-2);
+    border-radius: var(--border-radius-sm);
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-size: 1rem;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Input icon styling */
+.input-icon {
+    position: absolute;
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--icon-size);
+    height: var(--icon-size);
+    opacity: 0.6;
+}
+
+/* Button styles */
+.primary-button {
+    background-color: var(--primary);
+    color: var(--text-light);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: 0.75rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+.primary-button:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Flex utilities beyond the basics */
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-between-center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Avatar styles */
+.avatar {
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+/* Illustration container */
+.illustration-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--text-light);
+    padding: 2rem;
+}
+
+.loading-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background-color: var(--secondary);
+    color: var(--text-light);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+    display: none;
+}

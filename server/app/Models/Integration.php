@@ -2,26 +2,47 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Integration extends Model
 {
-    /** @use HasFactory<\Database\Factories\IntegrationFactory> */
     use HasFactory;
 
     protected $fillable = [
-        'company_id',
+        'user_id',
         'provider',
-        'settings',
+        'credentials',
+        'status',
+        'token_type',
+        'access_token',
+        'refresh_token',
+        'expires_at',
+        'metadata',
     ];
 
-    protected $casts = [
-        'settings' => 'array'
+    protected $hidden = [
+        'credentials',
+        'access_token',
+        'refresh_token',
     ];
 
-    public function company()
+    protected function casts(): array
     {
-        return $this->belongsTo(Company::class);
+        return [
+            'credentials' => 'encrypted:json',
+            'metadata' => 'json',
+            'expires_at' => 'datetime',
+        ];
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function credentials()
+    {
+        return $this->hasMany(IntegrationCredential::class);
     }
 }

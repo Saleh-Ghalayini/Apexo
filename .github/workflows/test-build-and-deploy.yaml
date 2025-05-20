@@ -1,0 +1,141 @@
+name: Test, Build and Deploy Laravel App
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  Run-Laravel-Tests:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+
+      - name: Install Dependencies & Configure Environment
+        working-directory: ./server
+        run: |
+          cp .env.example .env
+
+          sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env
+          sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+          sed -i 's/^DB_PORT=.*/DB_PORT=5432/' .env
+          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=testing/' .env
+          sed -i 's/^DB_USERNAME=.*/DB_USERNAME=postgres/' .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=password/' .env
+
+          composer install --no-interaction --prefer-dist
+          php artisan key:generate --force
+          php artisan jwt:secret --force
+
+          echo "Waiting for PostgreSQL to be ready..."
+          until pg_isready -h 127.0.0.1 -p 5432 -U postgres; do
+            sleep 2
+            echo "Waiting for database..."
+          done
+
+          php artisan migrate --force
+
+      - name: Clear Cache and Rebuild Config
+        working-directory: ./server
+        run: |
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan config:cache
+
+      - name: Run Laravel tests
+        working-directory: ./server
+        run: php artisan test
+
+  Build-And-Push-Docker:
+    needs: Run-Laravel-Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: develop
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build Docker image
+        run: docker build -f ./server/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/apexo:latest ./server
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/apexo:latest
+
+  Copy-docker-compose-To-EC2:
+    needs: Build-And-Push-Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Copy docker-compose to EC2
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "docker-compose.yaml"
+          target: "/home/${{ secrets.EC2_USER }}/"
+
+  Deploy-To-Server:
+    needs: Build-And-Push-Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: SSH into Server and Deploy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd /home/${{ secrets.EC2_USER }}
+            sudo docker-compose down || true
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/apexo:latest
+            sudo docker-compose up -d --build
+
+            sudo docker exec ${{ secrets.EC2_USER }}_app_1 sh -c '
+              if [ ! -f .env ]; then cp .env.example .env; fi
+              php artisan key:generate --force
+              php artisan jwt:secret --force || true
+              php artisan migrate --force
+              php artisan config:clear
+              php artisan cache:clear
+              php artisan config:cache
+            '
