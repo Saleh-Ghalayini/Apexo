@@ -276,5 +276,11 @@ class AIService
             Excel::store(new \App\Exports\EmployeeReportExport($user, $analytics, $employeeAnalytics), $path);
         else
             throw new \Exception('Unsupported format');
+
+        $employeeAnalytics->report_file = $path;
+        $employeeAnalytics->report_format = $format;
+        $employeeAnalytics->save();
+
+        return $path;
     }
 }
