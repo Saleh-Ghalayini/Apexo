@@ -171,5 +171,8 @@ class AIService
 
         $analytics['success'] = true;
         return $analytics;
+
+    public function analyzeEmployeePerformance($user, $meetings, $tasks, $periodStart, $periodEnd): array {
+    }
     }
 }
