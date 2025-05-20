@@ -23,5 +23,13 @@ class DefaultUserSeeder extends Seeder
             'role' => 'hr',
             'company_id' => $company->id,
         ]);
+
+        User::create([
+            'name' => 'Manager User',
+            'email' => 'manager@example.com',
+            'password' => Hash::make('password'),
+            'role' => 'manager',
+            'company_id' => $company->id,
+        ]);
     }
 }
