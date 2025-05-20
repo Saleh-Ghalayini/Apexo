@@ -55,5 +55,8 @@ class AIService
     public function sendReport(string $report, string $to): bool
     {
         $fromEmail = 'ghalayinisaleh9@gmail.com';
+        try {
+        } catch (\Exception $e) {
+        }
     }
 }
