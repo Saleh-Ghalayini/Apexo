@@ -1,5 +1,4 @@
 import './Signup.css';
-import '../Auth.css';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../../assets/images/apexo_logo.svg';
@@ -48,12 +47,46 @@ const Signup: React.FC = () => {
     // Clear general error message
     if (error) setError(null);
   };
+
+  const validate = () => {
+    const errors: Record<string, string> = {};
+    if (!formData.name.trim()) {
+      errors.name = 'Full name is required.';
+    }
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required.';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        errors.email = 'Please enter a valid email address.';
+      }
+    }
+    if (!formData.company_name.trim()) {
+      errors.company_name = 'Company name is required.';
+    }
+    if (!formData.company_domain.trim()) {
+      errors.company_domain = 'Company domain is required.';
+    }
+    if (!formData.password) {
+      errors.password = 'Password is required.';
+    } else if (formData.password.length < 8) {
+      errors.password = 'Password must be at least 8 characters.';
+    }
+    if (!formData.password_confirmation) {
+      errors.password_confirmation = 'Please confirm your password.';
+    } else if (formData.password !== formData.password_confirmation) {
+      errors.password_confirmation = 'Passwords do not match.';
+    }
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
     setValidationErrors({});
-    
+    if (!validate()) return;
+    setLoading(true);
     try {
       await register(formData);
       // Redirect to dashboard after successful registration
@@ -95,130 +128,132 @@ const Signup: React.FC = () => {
         </div>
 
         <div className="signup-form-wrapper">
-          <div className="form-field">
-            <label htmlFor="name">Full Name</label>
-            <div className="input-wrapper">
-              <img src={userIcon} alt="User" className="input-icon" />
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="John Doe"
-                required
-                className={validationErrors.name ? 'input-error' : ''}
-              />
+          <div className="form-row">
+            <div className="form-field">
+              <label htmlFor="name">Full Name</label>
+              <div className="input-wrapper">
+                <img src={userIcon} alt="User" className="input-icon" />
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="John Doe"
+                  required
+                  className={validationErrors.name ? 'input-error' : ''}
+                />
+              </div>
+              {validationErrors.name && <div className="field-error">{validationErrors.name}</div>}
             </div>
-            {validationErrors.name && <div className="field-error">{validationErrors.name}</div>}
-          </div>
-          
-          <div className="form-field">
-            <label htmlFor="email">Email Address</label>
-            <div className="input-wrapper">
-              <img src={mailIcon} alt="Email" className="input-icon" />
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="example@company.com"
-                required
-                className={validationErrors.email ? 'input-error' : ''}
-              />
-            </div>
-            {validationErrors.email && <div className="field-error">{validationErrors.email}</div>}
-          </div>
-
-          <div className="form-field">
-            <label htmlFor="company_name">Company Name</label>
-            <div className="input-wrapper">
-              <img src={companyIcon} alt="Company" className="input-icon" />
-              <input
-                type="text"
-                id="company_name"
-                name="company_name"
-                value={formData.company_name}
-                onChange={handleChange}
-                placeholder="Acme Inc."
-                required
-                className={validationErrors.company_name ? 'input-error' : ''}
-              />
-            </div>
-            {validationErrors.company_name && <div className="field-error">{validationErrors.company_name}</div>}
-          </div>
-
-          <div className="form-field">
-            <label htmlFor="company_domain">Company Domain</label>
-            <div className="input-wrapper">
-              <img src={companyIcon} alt="Domain" className="input-icon" />
-              <input
-                type="text"
-                id="company_domain"
-                name="company_domain"
-                value={formData.company_domain}
-                onChange={handleChange}
-                placeholder="acme.com"
-                required
-                className={validationErrors.company_domain ? 'input-error' : ''}
-              />
-            </div>
-            {validationErrors.company_domain && <div className="field-error">{validationErrors.company_domain}</div>}
-          </div>
-          
-          <div className="form-field">
-            <label htmlFor="password">Password</label>
-            <div className="input-wrapper">
-              <img src={lockIcon} alt="Password" className="input-icon" />
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Min. 8 characters"
-                required
-                className={validationErrors.password ? 'input-error' : ''}
-              />
-            </div>
-            {validationErrors.password && <div className="field-error">{validationErrors.password}</div>}
-          </div>
-
-          <div className="form-field">
-            <label htmlFor="password_confirmation">Confirm Password</label>
-            <div className="input-wrapper">
-              <img src={lockIcon} alt="Confirm Password" className="input-icon" />
-              <input
-                type="password"
-                id="password_confirmation"
-                name="password_confirmation"
-                value={formData.password_confirmation}
-                onChange={handleChange}
-                placeholder="Confirm password"
-                required
-              />
-            </div>
-          </div>          <div className="form-field">
-            <label htmlFor="role">Role</label>
-            <div className="select-wrapper">
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                required
-              >
-                <option value="employee">Employee</option>
-                <option value="manager">Manager</option>
-                <option value="hr">HR</option>
-              </select>
+            <div className="form-field">
+              <label htmlFor="email">Email Address</label>
+              <div className="input-wrapper">
+                <img src={mailIcon} alt="Email" className="input-icon" />
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="example@company.com"
+                  required
+                  className={validationErrors.email ? 'input-error' : ''}
+                />
+              </div>
+              {validationErrors.email && <div className="field-error">{validationErrors.email}</div>}
             </div>
           </div>
 
-          {/* Optional fields */}
-          <div className="optional-fields-section">
-            <h3>Optional Information</h3>
+          <div className="form-row">
+            <div className="form-field">
+              <label htmlFor="company_name">Company Name</label>
+              <div className="input-wrapper">
+                <img src={companyIcon} alt="Company" className="input-icon" />
+                <input
+                  type="text"
+                  id="company_name"
+                  name="company_name"
+                  value={formData.company_name}
+                  onChange={handleChange}
+                  placeholder="Acme Inc."
+                  required
+                  className={validationErrors.company_name ? 'input-error' : ''}
+                />
+              </div>
+              {validationErrors.company_name && <div className="field-error">{validationErrors.company_name}</div>}
+            </div>
+            <div className="form-field">
+              <label htmlFor="company_domain">Company Domain</label>
+              <div className="input-wrapper">
+                <img src={companyIcon} alt="Domain" className="input-icon" />
+                <input
+                  type="text"
+                  id="company_domain"
+                  name="company_domain"
+                  value={formData.company_domain}
+                  onChange={handleChange}
+                  placeholder="acme.com"
+                  required
+                  className={validationErrors.company_domain ? 'input-error' : ''}
+                />
+              </div>
+              {validationErrors.company_domain && <div className="field-error">{validationErrors.company_domain}</div>}
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-field">
+              <label htmlFor="password">Password</label>
+              <div className="input-wrapper">
+                <img src={lockIcon} alt="Password" className="input-icon" />
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Min. 8 characters"
+                  required
+                  className={validationErrors.password ? 'input-error' : ''}
+                />
+              </div>
+              {validationErrors.password && <div className="field-error">{validationErrors.password}</div>}
+            </div>
+            <div className="form-field">
+              <label htmlFor="password_confirmation">Confirm Password</label>
+              <div className="input-wrapper">
+                <img src={lockIcon} alt="Confirm Password" className="input-icon" />
+                <input
+                  type="password"
+                  id="password_confirmation"
+                  name="password_confirmation"
+                  value={formData.password_confirmation}
+                  onChange={handleChange}
+                  placeholder="Confirm password"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-field">
+              <label htmlFor="role">Role</label>
+              <div className="select-wrapper">
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="employee">Employee</option>
+                  <option value="manager">Manager</option>
+                  <option value="hr">HR</option>
+                </select>
+              </div>
+            </div>
             <div className="form-field">
               <label htmlFor="job_title">Job Title</label>
               <div className="input-wrapper">
@@ -233,7 +268,9 @@ const Signup: React.FC = () => {
                 />
               </div>
             </div>
+          </div>
 
+          <div className="form-row">
             <div className="form-field">
               <label htmlFor="department">Department</label>
               <div className="input-wrapper">
@@ -248,7 +285,6 @@ const Signup: React.FC = () => {
                 />
               </div>
             </div>
-
             <div className="form-field">
               <label htmlFor="phone">Phone Number</label>
               <div className="input-wrapper">
