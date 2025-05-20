@@ -110,6 +110,12 @@ class AIToolsService
                 }
             case 'generate_report':
                 return $this->dataAccessService->generateReport($user, $arguments);
+            case 'save_report':
+                return $this->dataAccessService->saveReport($user, $arguments);
+            case 'get_report':
+                return $this->dataAccessService->getReport($user, $arguments);
+            case 'email_report':
+                return $this->dataAccessService->emailReport($user, $arguments['report_id'] ?? null, $arguments['to'] ?? null);
         }
     }
 }
