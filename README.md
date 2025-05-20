@@ -26,10 +26,6 @@
 
 <img src="./readme/FlowDiagram.png" width="1024">
 
-### Deployment Diagram
-
-<img src="./readme/DeploymentDiagram.svg" width="1024">
-
 <br><br>
 
 <!-- Project Highlights -->
