@@ -2,55 +2,103 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\AuthService;
+
+use Exception;
 use App\Traits\ResponseTrait;
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterRequest;
+use App\Services\AuthService;
+use Illuminate\Support\Facades\Log;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
     use ResponseTrait;
-    protected $authService;
+    protected AuthService $authService;
 
     public function __construct(AuthService $authService)
     {
         $this->authService = $authService;
     }
 
-    public function login(LoginRequest $request)
-    {
-        $credentials = $request->validated();
-
-        $loginResponse = $this->authService->login($credentials);
-
-        if (isset($loginResponse['success']) && !$loginResponse['success'])
-            return $this->errorResponse($loginResponse['message'], 401);
-
-        return $this->successResponse([
-            'token' => $loginResponse['token'],
-            'user' => $loginResponse['user']
-        ]);
-    }
-
     public function register(RegisterRequest $request)
     {
-        $credentails = $request->validated();
+        $validated = $request->validated();
 
-        $registerResponse = $this->authService->register($credentails);
+        try {
+            $data = $this->authService->register($validated);
 
-        if (isset($registerResponse['success']) && !$registerResponse['success'])
-            return $this->errorResponse($registerResponse['message']);
+            return $this->successResponse($data, 201);
+        } catch (Exception $e) {
+            Log::error('Registration error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
-        return $this->successResponse(['user' => $registerResponse['user']], 201);
+            return $this->errorResponse('Failed to register user: ' . $e->getMessage(), 500);
+        }
+    }
+
+    public function login(LoginRequest $request)
+    {
+        $validated = $request->validated();
+
+        try {
+            $data = $this->authService->login($validated);
+
+            return $this->successResponse($data);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            Log::error('Login error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            throw ValidationException::withMessages([
+                'email' => [$e->getMessage()],
+            ]);
+        }
     }
 
     public function logout()
     {
-        $logoutResponse = $this->authService->logout();
+        try {
+            $this->authService->logout();
 
-        if (isset($logoutResponse['success']) && !$logoutResponse['success'])
-            return $this->errorResponse($logoutResponse['message'], 400);
+            return $this->successResponse([
+                'message' => 'Successfully logged out'
+            ]);
+        } catch (Exception $e) {
+            Log::error('Logout error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
-        return $this->successResponse(['message' => 'Successfully logged out']);
+            return $this->errorResponse('Failed to logout', 500);
+        }
+    }
+
+    public function refresh()
+    {
+        try {
+            $data = $this->authService->refresh();
+
+            return $this->successResponse($data);
+        } catch (Exception $e) {
+            Log::error('Token refresh error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            if (
+                strpos($e->getMessage(), 'User is not active') !== false ||
+                strpos($e->getMessage(), 'Token') !== false
+            ) {
+                return $this->errorResponse('Unauthorized', 401);
+            }
+
+            return $this->errorResponse('Failed to refresh token', 500);
+        }
     }
 }

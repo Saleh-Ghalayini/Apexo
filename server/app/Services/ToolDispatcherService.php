@@ -53,21 +53,21 @@ class ToolDispatcherService
                     Log::warning('[ToolDispatcher] Meeting not found', ['meetingTitle' => $meetingTitle]);
                 }
                 if ($meeting && $meeting->analytics) {
-                    Log::info('[ToolDispatcher] Analytics are ready for meeting', ['meeting_id' => $meeting->id]);
                     $format = (stripos($userMessage, 'excel') !== false || stripos($userMessage, 'xlsx') !== false) ? 'xlsx' : 'pdf';
-                    Log::info('[ToolDispatcher] Generating report', ['format' => $format]);
+
                     $path = $this->tools['ai_service']->generateMeetingReport($meeting, $format);
-                    Log::info('[ToolDispatcher] Report generated', ['path' => $path]);
                     $filename = basename($path);
                     $mime = $format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
                     $fileContent = \Illuminate\Support\Facades\Storage::get($path);
                     $base64 = base64_encode($fileContent);
+
                     $aiMessage = tap(new \App\Models\ChatMessage(), function ($aiChatMessage) use ($session) {
                         $aiChatMessage->chat_session_id = $session->id;
                         $aiChatMessage->role = 'assistant';
                         $aiChatMessage->content = 'The report got generated and downloaded on your machine.';
                         $aiChatMessage->save();
                     });
+
                     $aiMessage->metadata = json_encode([
                         'tool_results' => [[
                             'file' => [
@@ -78,7 +78,6 @@ class ToolDispatcherService
                         ]]
                     ]);
                     $aiMessage->save();
-                    Log::info('[ToolDispatcher] AI message with file sent', ['filename' => $filename]);
                     return [
                         'result' => [
                             'user_message' => $userChatMessage,

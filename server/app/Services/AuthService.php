@@ -2,79 +2,127 @@
 
 namespace App\Services;
 
+use Exception;
 use App\Models\User;
 use App\Models\Company;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
-
 class AuthService
 {
-    public function login(array $credentials)
+    public function register(array $data)
     {
-        $auth_credentials = [
-            'email' => $credentials['email'],
-            'password' => $credentials['password'],
-        ];
+        try {
+            $company = Company::firstOrCreate(
+                ['domain' => $data['company_domain']],
+                [
+                    'name' => $data['company_name'],
+                    'domain' => $data['company_domain'],
+                    'status' => 'active',
+                ]
+            );
 
-        if (!$token = JWTAuth::attempt($auth_credentials))
-            return [
-                'success' => false,
-                'message' => 'Invalid Credentials',
+            $userData = [
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'role' => $data['role'],
+                'company_id' => $company->id,
+                'active' => true,
             ];
 
-        $user = Auth::user();
+            $optionalFields = ['job_title', 'department', 'phone', 'avatar'];
+            foreach ($optionalFields as $field) {
+                if (isset($data[$field])) {
+                    $userData[$field] = $data[$field];
+                }
+            }
+
+            $user = User::create($userData);
+        } catch (Exception $e) {
+            throw $e;
+        }
+
+        $token = JWTAuth::fromUser($user);
 
         return [
-            'success' => true,
+            'user' => $user,
+            'company' => $company,
             'token' => $token,
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-            ]
+            'token_type' => 'bearer',
+            'expires_in' => config('jwt.ttl') * 60,
         ];
     }
 
-    public function register(array $user_data)
+    public function login(array $credentials)
     {
-        $company = Company::where('domain', $user_data['company_domain'])->first();
+        try {
+            if (!$token = auth('api')->attempt($credentials)) {
+                throw new Exception('The provided credentials are incorrect.');
+            }
 
-        if (!$company)
-            $company = Company::create([
-                'name' => $user_data['company_name'],
-                'domain' => $user_data['company_domain'],
-            ]);
+            $user = auth('api')->user();
 
-        $user_data['company_id'] = $company->id;
-        $user_data['password'] = Hash::make($user_data['password']);
+            if (!$user->active) {
+                auth('api')->logout();
+                throw new Exception('This account has been deactivated.');
+            }
 
-        $user = User::create($user_data);
-
-        return [
-            'success' => true,
-            'user' => [
-                'id' => $user->id,
-                'company_id' => $user->company_id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-            ],
-        ];
+            return [
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => config('jwt.ttl') * 60,
+            ];
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     public function logout()
     {
         try {
-            JWTAuth::invalidate(JWTAuth::getToken());
-            return ['success' => true];
-        } catch (\Exception $e) {
+            auth('api')->logout();
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function getAuthUserWithToken()
+    {
+        try {
+            $user = auth('api')->user();
+            if (!$user) throw new Exception('User not authenticated');
+
+            $token = JWTAuth::fromUser($user);
+
             return [
-                'success' => false,
-                'message' => 'Failed to log out, please try again.'
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => config('jwt.ttl') * 60,
             ];
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function refresh()
+    {
+        try {
+            $user = auth('api')->user();
+            if (!$user || !$user->active) throw new Exception('User is not active.');
+
+            $token = JWTAuth::parseToken()->refresh();
+
+            return [
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => config('jwt.ttl') * 60,
+            ];
+        } catch (Exception $e) {
+            throw $e;
         }
     }
 }

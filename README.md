@@ -61,6 +61,10 @@
 | --------------------------------------- | ----------------------------------------- |
 | ![Landing](./readme/demo/LoginDemo.gif) | ![fsdaf](./readme/demo/DashboardDemo.gif) |
 
+| Landing Page Demo                             |
+| --------------------------------------------- |
+| ![Landing](./readme/demo/LandingPageDemo.gif) |
+
 <br><br>
 
 <!-- Development & Testing -->

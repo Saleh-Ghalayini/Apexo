@@ -2,16 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Traits\ResponseTrait;
 use App\Services\ChatService;
-use Illuminate\Http\JsonResponse;
-use App\Http\Requests\SendChatMessageRequest;
-use App\Http\Requests\CreateChatSessionRequest;
 
 class ChatController extends Controller
 {
-    use ResponseTrait;
     protected $chatService;
 
     public function __construct(ChatService $chatService)
@@ -19,53 +13,53 @@ class ChatController extends Controller
         $this->chatService = $chatService;
     }
 
-    public function getSessions(Request $request): JsonResponse
+    public function getSessions($request)
     {
         $status = $request->query('status');
         $sessions = $this->chatService->getSessions($status);
 
-        return $this->successResponse($sessions);
+        return response()->json($sessions);
     }
 
-    public function getSession(int $id, Request $request): JsonResponse
+    public function getSession($id, $request)
     {
         $limit = $request->query('limit');
         $since = $request->query('since');
 
         $session = $this->chatService->getSession($id, $limit, $since);
 
-        return $this->successResponse($session);
+        return response()->json($session);
     }
 
-    public function createSession(CreateChatSessionRequest $request): JsonResponse
+    public function createSession($request)
     {
         $title = $request->input('title');
         $initialMessage = $request->input('initial_message');
 
         $result = $this->chatService->createSession($title, $initialMessage);
 
-        return $this->successResponse($result, 201);
+        return response()->json($result, 201);
     }
 
-    public function sendMessage(int $id, SendChatMessageRequest $request): JsonResponse
+    public function sendMessage($id, $request)
     {
         $message = $request->input('message');
         $result = $this->chatService->sendMessage($id, $message);
 
-        return $this->successResponse($result);
+        return response()->json($result);
     }
 
-    public function archiveSession(int $id): JsonResponse
+    public function archiveSession($id)
     {
         $session = $this->chatService->archiveSession($id);
 
-        return $this->successResponse($session);
+        return response()->json($session);
     }
 
-    public function deleteSession(int $id): JsonResponse
+    public function deleteSession($id)
     {
         $result = $this->chatService->deleteSession($id);
 
-        return $this->successResponse(['deleted' => $result]);
+        return response()->json(['deleted' => $result]);
     }
 }
