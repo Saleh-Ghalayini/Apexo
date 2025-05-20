@@ -34,5 +34,7 @@ class ChatService
         $msg = [];
         $msg['content'] = $message;
         $msg['sender'] = $sender;
+        $msg['timestamp'] = time();
+        return $msg;
     }
 }
