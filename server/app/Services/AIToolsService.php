@@ -44,7 +44,12 @@ class AIToolsService
             'toolName' => $toolName,
             'arguments' => $arguments
         ]);
+
         switch ($toolName) {
+            case 'get_user_tasks':
+                return $this->dataAccessService->getUserTasks($user, $arguments);
+            case 'get_user_meetings':
+                return $this->dataAccessService->getUserMeetings($user, $arguments);
         }
     }
 }
