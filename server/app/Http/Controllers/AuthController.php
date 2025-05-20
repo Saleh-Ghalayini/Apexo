@@ -39,8 +39,25 @@ class AuthController extends Controller
         }
     }
 
-    public function login($request)
+    public function login(LoginRequest $request)
     {
-        // To be implemented
+        $validated = $request->validated();
+
+        try {
+            $data = $this->authService->login($validated);
+
+            return $this->successResponse($data);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            Log::error('Login error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            throw ValidationException::withMessages([
+                'email' => [$e->getMessage()],
+            ]);
+        }
     }
 }
