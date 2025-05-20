@@ -51,11 +51,15 @@ class ChatController extends Controller
 
     public function archiveSession($id)
     {
-        // To be implemented
+        $session = $this->chatService->archiveSession($id);
+
+        return response()->json($session);
     }
 
     public function deleteSession($id)
     {
-        // To be implemented
+        $result = $this->chatService->deleteSession($id);
+
+        return response()->json(['deleted' => $result]);
     }
 }
