@@ -253,5 +253,11 @@ class AIService
             Excel::store(new \App\Exports\MeetingReportExport($meeting, $analytics), $path);
         else
             throw new \Exception('Unsupported format');
+
+        $meeting->report_file = $path;
+        $meeting->report_format = $format;
+        $meeting->save();
+
+        return $path;
     }
 }
