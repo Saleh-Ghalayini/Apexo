@@ -50,4 +50,11 @@ return [
         'redirect' => env('NOTION_REDIRECT_URI'),
     ],
 
+    'openai' => [
+        'secret' => env('OPENAI_API_KEY'),
+        'url' => env('OPENAI_URL', 'https://api.openai.com/v1'),
+        'model' => env('OPENAI_DEFAULT_MODEL', 'gpt-4o'),
+        'temperature' => env('OPENAI_TEMPERATURE', 0.7),
+    ],
+
 ];
