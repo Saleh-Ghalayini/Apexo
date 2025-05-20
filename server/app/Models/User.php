@@ -91,4 +91,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Integration::class);
     }
+
+    public function integrationCredentials()
+    {
+        return $this->hasMany(IntegrationCredential::class);
+    }
 }
