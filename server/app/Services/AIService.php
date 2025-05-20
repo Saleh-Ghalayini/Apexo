@@ -218,5 +218,15 @@ class AIService
                 'success' => false,
                 'error' => 'AI did not return valid analytics',
             ];
+
+        $analytics = json_decode($json, true);
+        if (!$analytics || !isset($analytics['summary']))
+            return [
+                'success' => false,
+                'error' => 'AI did not return valid analytics',
+            ];
+
+        $analytics['success'] = true;
+        return $analytics;
     }
 }
