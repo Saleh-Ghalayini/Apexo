@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
+
 class ToolDispatcherService
 {
     protected array $tools;
@@ -37,6 +39,49 @@ class ToolDispatcherService
                 'tool' => 'email_report',
                 'handled' => true,
             ];
+        }
+        if (preg_match('/analyz(e|ing|ed)? (the )?meeting/i', $userMessage) && preg_match('/(report|download|pdf|excel)/i', $userMessage)) {
+            Log::info('[ToolDispatcher] Analytics+report request detected');
+            if (preg_match('/meeting (titled|named)?[\s\'"]*([\w\s\-]+)[\'"]*/i', $userMessage, $matches)) {
+                $meetingTitle = trim($matches[2]);
+                Log::info('[ToolDispatcher] Extracted meeting title', ['meetingTitle' => $meetingTitle]);
+                $meeting = \App\Models\Meeting::where('title', $meetingTitle)->latest()->first();
+                if ($meeting && $meeting->analytics) {
+                    $format = (stripos($userMessage, 'excel') !== false || stripos($userMessage, 'xlsx') !== false) ? 'xlsx' : 'pdf';
+                    $path = $this->tools['ai_service']->generateMeetingReport($meeting, $format);
+                    $filename = basename($path);
+                    $mime = $format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                    $fileContent = \Illuminate\Support\Facades\Storage::get($path);
+                    $base64 = base64_encode($fileContent);
+
+                    $aiMessage = tap(new \App\Models\ChatMessage(), function ($aiChatMessage) use ($session) {
+                        $aiChatMessage->chat_session_id = $session->id;
+                        $aiChatMessage->role = 'assistant';
+                        $aiChatMessage->content = 'The report got generated and downloaded on your machine.';
+                        $aiChatMessage->save();
+                    });
+
+                    $aiMessage->metadata = json_encode([
+                        'tool_results' => [[
+                            'file' => [
+                                'name' => $filename,
+                                'mime' => $mime,
+                                'base64' => $base64,
+                            ]
+                        ]]
+                    ]);
+                    $aiMessage->save();
+                    return [
+                        'result' => [
+                            'user_message' => $userChatMessage,
+                            'ai_message' => $aiMessage,
+                            'session' => $session,
+                        ],
+                        'tool' => 'meeting_report',
+                        'handled' => true,
+                    ];
+                }
+            }
         }
     }
 }
