@@ -2,243 +2,339 @@
 
 namespace App\Services;
 
-use App\Models\NotionPage;
-use Illuminate\Support\Str;
-use App\Traits\ExecuteExternalServiceTrait;
+use App\Models\Integration;
+use App\Models\IntegrationData;
+use Illuminate\Support\Facades\Http;
 
 class NotionService
 {
-    use ExecuteExternalServiceTrait;
+    protected string $baseUrl = 'https://api.notion.com/v1';
+    protected string $notionVersion = '2022-06-28';
 
-    private const DEFAULT_TITLE = 'Untitled Task';
-
-    public function create($user, $data)
+    public function getDatabases(Integration $integration): array
     {
-        $notion_key = config('notion.api_key');
-        $notion_db_Id = config('notion.database_id');
+        try {
+            $response = $this->makeRequest($integration, 'POST', '/search', [
+                'filter' => [
+                    'value' => 'database',
+                    'property' => 'object'
+                ]
+            ]);
 
+            if (!isset($response['results']) || !is_array($response['results']))
+                return [];
+
+            $databases = [];
+            foreach ($response['results'] as $database)
+                $databases[] = [
+                    'id' => $database['id'],
+                    'title' => $this->extractDatabaseTitle($database),
+                    'description' => $this->extractDatabaseDescription($database),
+                    'url' => $database['url'] ?? '',
+                    'created_time' => $database['created_time'] ?? '',
+                    'last_edited_time' => $database['last_edited_time'] ?? '',
+                ];
+
+            return $databases;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public function getDatabase(Integration $integration, string $databaseId): ?array
+    {
+        try {
+            $response = $this->makeRequest($integration, 'GET', "/databases/{$databaseId}");
+
+            if (!isset($response['id']))
+                return null;
+
+            return [
+                'id' => $response['id'],
+                'title' => $this->extractDatabaseTitle($response),
+                'description' => $this->extractDatabaseDescription($response),
+                'url' => $response['url'] ?? '',
+                'properties' => $response['properties'] ?? [],
+                'created_time' => $response['created_time'] ?? '',
+                'last_edited_time' => $response['last_edited_time'] ?? '',
+            ];
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function queryDatabase(Integration $integration, string $databaseId, array $query = []): array
+    {
+        try {
+            $response = $this->makeRequest($integration, 'POST', "/databases/{$databaseId}/query", $query);
+
+            if (!isset($response['results']) || !is_array($response['results']))
+                return [];
+
+            return $response['results'];
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public function createPage(Integration $integration, string $databaseId, array $properties, array $children = []): ?array
+    {
+        try {
+            $data = [
+                'parent' => [
+                    'database_id' => $databaseId
+                ],
+                'properties' => $properties
+            ];
+
+            if (!empty($children))
+                $data['children'] = $children;
+
+            $response = $this->makeRequest($integration, 'POST', '/pages', $data);
+
+            if (!isset($response['id']))
+                return null;
+
+            return $response;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function updatePage(Integration $integration, string $pageId, array $properties): ?array
+    {
+        try {
+            $response = $this->makeRequest($integration, 'PATCH', "/pages/{$pageId}", [
+                'properties' => $properties
+            ]);
+
+            if (!isset($response['id']))
+                return null;
+
+            return $response;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function storeDatabase(Integration $integration, array $database): ?IntegrationData
+    {
+        try {
+            return IntegrationData::updateOrCreate(
+                [
+                    'integration_id' => $integration->id,
+                    'data_type' => 'notion_database',
+                    'external_id' => $database['id'],
+                ],
+                [
+                    'name' => $database['title'],
+                    'description' => $database['description'] ?? null,
+                    'data' => [
+                        'url' => $database['url'] ?? null,
+                        'properties' => $database['properties'] ?? [],
+                        'created_time' => $database['created_time'] ?? null,
+                        'last_edited_time' => $database['last_edited_time'] ?? null,
+                    ],
+                    'is_active' => true,
+                ]
+            );
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    protected function makeRequest(Integration $integration, string $method, string $endpoint, array $data = []): array
+    {
+        if (!$integration || $integration->provider !== 'notion')
+            throw new \Exception('Invalid Notion integration');
+
+        $url = $this->baseUrl . $endpoint;
         $headers = [
-            'Authorization' => "Bearer {$notion_key}",
-            'Notion-Version' => config('notion.version'),
+            'Authorization' => "Bearer {$integration->access_token}",
+            'Notion-Version' => $this->notionVersion,
             'Content-Type' => 'application/json',
         ];
 
-        $payload = [
-            'parent' => [
-                'database_id' => $notion_db_Id,
-            ],
-            'properties' => $this->formatProperties($data, $user),
-        ];
+        try {
+            $method = strtolower($method);
+            $client = Http::withHeaders($headers);
 
-        $response = $this->request('POST', config('notion.api_url'), $headers, $payload);
+            if ($method === 'get')
+                $response = $client->get($url, $data);
+            else
+                $response = $client->$method($url, $data);
 
-        if (!$response->successful()) {
-            $errorDetails = $response->json();
-            $errorMessage = $errorDetails['message'] ?? 'An unknown error occurred.';
-            $statusCode = $response->status();
+            if (!$response->successful()) {
+                throw new \Exception("Notion API error: {$response->status()} - {$response->body()}");
+            }
 
-            return [
-                'status' => 'error',
-                'data' => [],
-                'message' => "Failed to create task in Notion. Error: {$errorMessage}",
-                'status_code' => $statusCode,
-                'details' => $errorDetails,
-            ];
+            return $response->json() ?? [];
+        } catch (\Exception $e) {
+            throw $e;
         }
-
-        $notionPage = new NotionPage();
-        $notionPage->user_id = $user->id;
-        $notionPage->page_id = $response->json('id');
-        $notionPage->title = $data['title'] ?? self::DEFAULT_TITLE;
-        $notionPage->save();
-
-        return [
-            'status' => 'success',
-            'data' => [
-                'page_id' => $response->json('id'),
-                'notion_response' => $response->json(),
-            ],
-            'message' => 'Task created in Notion successfully.',
-        ];
     }
 
-    public function update($user, $data)
+    protected function extractDatabaseTitle(array $database): string
     {
-        $notionToken = config('notion.api_key');
+        if (isset($database['title']) && is_array($database['title'])) {
+            $titles = array_map(function ($title) {
+                return $title['plain_text'] ?? '';
+            }, $database['title']);
 
-        $prompt = $data['prompt'] ?? $data['payload']['prompt'] ?? null;
-
-        if (!$prompt) {
-            return [
-                'status' => 'error',
-                'message' => 'Prompt is required for updating a task.',
-                'data' => [],
-            ];
+            return implode('', $titles);
         }
 
-        $parsed = $this->parsePrompt($prompt);
-
-        if (empty($parsed['page_title']) || empty($parsed['properties'])) {
-            return [
-                'status' => 'error',
-                'message' => 'Failed to extract page title or properties from prompt.',
-                'data' => [],
-            ];
+        if (isset($database['properties']) && is_array($database['properties'])) {
+            foreach ($database['properties'] as $property)
+                if (isset($property['type']) && $property['type'] === 'title' && isset($property['title']) && is_array($property['title'])) {
+                    $titles = array_map(fn($t) => $t['plain_text'] ?? '', $property['title']);
+                    return implode('', $titles);
+                }
         }
 
-        $page = NotionPage::where('title', $parsed['page_title'])->where('user_id', $user->id)->first();
-
-        if (!$page) {
-            return [
-                'status' => 'error',
-                'message' => 'Page not found for user.',
-                'data' => [],
-            ];
-        }
-
-        $data['page_id'] = $page->page_id;
-        $data = array_merge($data, $parsed['properties']);
-
-        $headers = [
-            'Authorization' => "Bearer {$notionToken}",
-            'Notion-Version' => config('notion.version'),
-            'Content-Type' => 'application/json',
-        ];
-
-        $payload = [
-            'properties' => $this->formatProperties($data, $user),
-        ];
-
-        $url = "https://api.notion.com/v1/pages/{$data['page_id']}";
-
-        $response = $this->request('PATCH', $url, $headers, $payload);
-
-        if (!$response->successful()) {
-            return [
-                'status' => 'error',
-                'message' => 'Failed to update task in Notion',
-                'data' => [],
-                'details' => $response->json(),
-            ];
-        }
-
-        return [
-            'status' => 'success',
-            'message' => 'Task updated in Notion successfully.',
-            'data' => $response->json(),
-        ];
+        return 'Untitled Database';
     }
 
-    public function assign($user, $data)
+    protected function extractDatabaseDescription(array $database): string
     {
-        return [
-            'status' => 'not_implemented',
-            'message' => 'Assigning Notion tasks is not implemented yet.',
-            'data' => [],
-        ];
-    }
+        if (isset($database['description']) && is_array($database['description'])) {
+            $descriptions = array_map(function ($desc) {
+                return $desc['plain_text'] ?? '';
+            }, $database['description']);
 
-    public function track($user, $data)
-    {
-        return [
-            'status' => 'not_implemented',
-            'message' => 'Tracking Notion tasks is not implemented yet.',
-            'data' => [],
-        ];
-    }
-
-    public function delete($user, $data)
-    {
-        $page = NotionPage::where('title', $data['title'])->where('user_id', $user->id)->first();
-
-        if (!$page) {
-            return [
-                'status' => 'error',
-                'message' => 'Page not found for deletion.',
-                'data' => [],
-            ];
+            return implode('', $descriptions);
         }
 
-        $url = "https://api.notion.com/v1/pages/{$page->page_id}";
-
-        $headers = [
-            'Authorization' => "Bearer " . config('notion.api_key'),
-            'Notion-Version' => config('notion.version'),
-            'Content-Type' => 'application/json',
-        ];
-
-        $response = $this->request('PATCH', $url, $headers, ['archived' => true]);
-
-        if (!$response->successful()) {
-            return [
-                'status' => 'error',
-                'message' => 'Failed to archive (delete) the task in Notion.',
-                'data' => [],
-            ];
-        }
-
-        $page->delete();
-
-        return [
-            'status' => 'success',
-            'message' => 'Task archived (deleted) from Notion successfully.',
-            'data' => [],
-        ];
+        return '';
     }
 
-    private function formatProperties(array $data, $user): array
+    public function formatPropertiesForPage(array $properties, array $schema): array
     {
-        $properties = [];
+        $formattedProperties = [];
 
-        foreach ($data as $property => $value) {
-            if ($property === 'page_id' || is_array($value) || empty($value))
+        foreach ($properties as $key => $value) {
+            if (!isset($schema[$key]))
                 continue;
 
-            $formatted_prop = ucwords(str_replace('_', ' ', $property));
-
-            if (str_contains(strtolower($formatted_prop), 'date') || strtolower($formatted_prop) === 'due date') {
-                $properties[$formatted_prop] = ['date' => ['start' => $value]];
-            } elseif (str_contains(strtolower($formatted_prop), 'title')) {
-                $properties[$formatted_prop] = ['title' => [[
-                    'text' => ['content' => $value]
-                ]]];
-            } else {
-                $properties[$formatted_prop] = ['rich_text' => [[
-                    'text' => ['content' => $value]
-                ]]];
-            }
+            $type = $schema[$key]['type'] ?? null;
+            $formattedProperties[$key] = $this->formatPropertyByType($type, $value);
         }
 
-        if (!isset($properties['Title'])) {
-            $properties['Title'] = ['title' => [[
-                'text' => ['content' => self::DEFAULT_TITLE]
-            ]]];
-        }
-
-        return $properties;
+        return $formattedProperties;
     }
 
-    private function parsePrompt(string $prompt): array
+    protected function formatPropertyByType(?string $type, $value): array
     {
-        $properties = [];
-
-        preg_match_all('/([\w\s]+):\s*(.+?)(?=\s+\w+:|$)/', $prompt, $matches, PREG_SET_ORDER);
-
-        foreach ($matches as $match) {
-            $key = ucwords(trim($match[1]));
-            $value = trim($match[2]);
-            $properties[$key] = $value;
+        switch ($type) {
+            case 'title':
+                return [
+                    'title' => [
+                        ['text' => ['content' => (string) $value]]
+                    ]
+                ];
+            case 'rich_text':
+                return [
+                    'rich_text' => [
+                        ['text' => ['content' => (string) $value]]
+                    ]
+                ];
+            case 'number':
+                return ['number' => is_numeric($value) ? $value : null];
+            case 'select':
+                return ['select' => ['name' => (string) $value]];
+            case 'multi_select':
+                $multiSelectValues = is_array($value) ? $value : explode(',', (string)$value);
+                return ['multi_select' => array_map(fn($v) => ['name' => trim($v)], $multiSelectValues)];
+            case 'date':
+                $dateStr = is_string($value) ? $value : null;
+                return ['date' => ['start' => $dateStr]];
+            case 'people':
+                $people = is_array($value) ? $value : [];
+                return ['people' => array_map(fn($id) => ['id' => $id], $people)];
+            case 'checkbox':
+                return ['checkbox' => (bool)$value];
+            case 'url':
+                return ['url' => (string) $value];
+            case 'email':
+                return ['email' => (string) $value];
+            case 'phone_number':
+                return ['phone_number' => (string) $value];
+            case 'formula':
+            case 'relation':
+            case 'rollup':
+                return [];
+            default:
+                return [];
         }
-
-        return [
-            'page_title' => $this->extractTitle($prompt),
-            'properties' => $properties,
-        ];
     }
 
-    private function extractTitle(string $prompt): string
+    public function handleOAuthCallback($request): array
     {
-        preg_match('/"([^"]+)"/', $prompt, $matches);
-        return $matches[1] ?? self::DEFAULT_TITLE;
+        $state = $request->session()->pull('notion_oauth_state');
+        if (!$state || $state !== $request->state)
+            return ['success' => false, 'message' => 'Invalid state parameter'];
+
+        if (!$request->has('code'))
+            return ['success' => false, 'message' => 'Authorization code missing'];
+
+        $code = $request->code;
+        $clientId = config('services.notion.client_id');
+        $clientSecret = config('services.notion.client_secret');
+        $redirectUri = config('services.notion.redirect');
+        $response = Http::asForm()->post('https://api.notion.com/v1/oauth/token', [
+            'grant_type' => 'authorization_code',
+            'code' => $code,
+            'redirect_uri' => $redirectUri,
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+        ]);
+
+        if (!$response->successful())
+            return ['success' => false, 'message' => 'Failed to get access token: ' . $response->body()];
+
+        $data = $response->json();
+        $accessToken = $data['access_token'];
+        $workspaceId = $data['workspace_id'];
+        $workspaceName = $data['workspace_name'] ?? 'Notion Workspace';
+        $botId = $data['bot_id'];
+        $expiresAt = now()->addSeconds($data['expires_in']);
+        $userResponse = Http::withToken($accessToken)
+            ->withHeaders(['Notion-Version' => '2022-06-28'])
+            ->get('https://api.notion.com/v1/users');
+        $userEmail = null;
+        if ($userResponse->successful()) {
+            $users = $userResponse->json('results', []);
+            foreach ($users as $user)
+                if (isset($user['type']) && $user['type'] === 'person') {
+                    $userEmail = $user['person']['email'] ?? null;
+                    break;
+                }
+        }
+
+        $userId = $request->user()?->id ?? $request->session()->pull('notion_oauth_user_id');
+        if (!$userId)
+            return ['success' => false, 'message' => 'User ID not found. Please try authenticating again.'];
+
+        \App\Models\Integration::updateOrCreate(
+            [
+                'user_id' => $userId,
+                'provider' => 'notion',
+            ],
+            [
+                'token_type' => 'Bearer',
+                'access_token' => $accessToken,
+                'refresh_token' => null,
+                'expires_at' => $expiresAt,
+                'status' => 'active',
+                'metadata' => [
+                    'workspace_id' => $workspaceId,
+                    'workspace_name' => $workspaceName,
+                    'bot_id' => $botId,
+                    'user_email' => $userEmail,
+                ],
+            ]
+        );
+
+        return ['success' => true];
     }
 }
