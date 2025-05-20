@@ -14,5 +14,20 @@ class TestUserSeeder extends Seeder
         ], [
             'name' => 'Apexo Test Company',
         ]);
+
+        $testUsers = [
+            [
+                'name' => 'Saleh Ghalayini',
+                'email' => 'ghalayinisaleh4@gmail.com',
+            ],
+            [
+                'name' => 'Saleh Ghalayini 2',
+                'email' => 'ghalayinisaleh69@gmail.com',
+            ],
+            [
+                'name' => 'Rami Ghalayini',
+                'email' => 'rghalayini21@gmail.com',
+            ],
+        ];
     }
 }
