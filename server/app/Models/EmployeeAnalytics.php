@@ -10,4 +10,11 @@ class EmployeeAnalytics extends Model
     use HasFactory;
 
     protected $table = 'employee_analytics';
+
+    protected $fillable = [
+        'user_id',
+        'period_start',
+        'period_end',
+        'analytics',
+    ];
 }
