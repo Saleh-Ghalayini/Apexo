@@ -14,4 +14,9 @@ class AuthService
     {
         // To be implemented
     }
+
+    public function login(array $credentials)
+    {
+        // To be implemented
+    }
 }
