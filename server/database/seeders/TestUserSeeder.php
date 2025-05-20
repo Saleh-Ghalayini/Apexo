@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use App\Models\Company;
 use Illuminate\Database\Seeder;
 
@@ -29,5 +30,14 @@ class TestUserSeeder extends Seeder
                 'email' => 'rghalayini21@gmail.com',
             ],
         ];
+
+        foreach ($testUsers as $userData) {
+            User::updateOrCreate(
+                ['email' => $userData['email']],
+                [
+                    'name' => $userData['name'],
+                ]
+            );
+        }
     }
 }
