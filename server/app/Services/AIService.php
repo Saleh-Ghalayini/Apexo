@@ -52,5 +52,8 @@ class AIService
         return $report;
     }
 
-    public function sendReport(string $report, string $to): bool {}
+    public function sendReport(string $report, string $to): bool
+    {
+        $fromEmail = 'ghalayinisaleh9@gmail.com';
+    }
 }
