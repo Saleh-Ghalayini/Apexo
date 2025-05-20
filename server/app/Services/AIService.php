@@ -124,5 +124,8 @@ class AIService
         ];
     }
 
-    public function analyzeMeetingTranscript(string $transcript, array $meetingData = []): array {}
+    public function analyzeMeetingTranscript(string $transcript, array $meetingData = []): array
+    {
+        $prompt = "Analyze the following meeting transcript. Provide a summary, sentiment, action items (with assignee and due date if possible), and main topics discussed. Return a JSON object with keys: summary, sentiment, action_items (array), topics (array).\nTranscript:\n$transcript";
+    }
 }
