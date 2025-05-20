@@ -8,4 +8,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class AiPrompt extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'name',
+        'prompt_text',
+        'description',
+        'category',
+        'parameters',
+        'is_favorite',
+        'is_public',
+        'usage_count',
+    ];
 }
