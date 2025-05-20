@@ -15,4 +15,11 @@ class ChatSession extends Model
         'status',
         'last_activity_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'last_activity_at' => 'datetime',
+        ];
+    }
 }
