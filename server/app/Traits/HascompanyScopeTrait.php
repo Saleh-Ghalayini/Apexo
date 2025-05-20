@@ -4,5 +4,8 @@ namespace App\Traits;
 
 trait HasCompanyScopeTrait
 {
-    // empty
+    protected static function bootHasCompanyScopeTrait()
+    {
+        // method skeleton
+    }
 }
