@@ -260,4 +260,6 @@ class AIService
 
         return $path;
     }
+
+    public function generateEmployeeReport(EmployeeAnalytics $employeeAnalytics, string $format = 'pdf'): string {}
 }
