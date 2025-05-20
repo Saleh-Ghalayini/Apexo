@@ -12,4 +12,14 @@ class AuthController extends Controller
     {
         $this->authService = $authService;
     }
+
+    public function register($request)
+    {
+        // To be implemented
+    }
+
+    public function login($request)
+    {
+        // To be implemented
+    }
 }
