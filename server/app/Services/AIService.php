@@ -31,5 +31,16 @@ class AIService
                 $report .= "- Priority: " . ucfirst($task->priority) . "\n";
             }
         }
+
+        $priorityCounts = [
+            'High' => $tasks->where('priority', 'high')->count(),
+            'Medium' => $tasks->where('priority', 'medium')->count(),
+            'Low' => $tasks->where('priority', 'low')->count(),
+        ];
+
+        $report .= "3. Prioritization Summary:\n";
+        foreach ($priorityCounts as $priority => $count)
+            $report .= "$priority Priority: $count tasks\n";
+        return $report;
     }
 }
