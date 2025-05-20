@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Meeting;
 use App\Services\AIService;
 use Illuminate\Http\Request;
+use App\Models\EmployeeAnalytics;
 use App\Jobs\ProcessMeetingAnalyticsJob;
 use App\Http\Requests\SendReportRequest;
 use App\Jobs\ProcessEmployeeAnalyticsJob;
@@ -68,5 +69,16 @@ class AIController extends Controller
     {
         $meeting = Meeting::findOrFail($meetingId);
         return response()->json(['analytics' => $meeting->analytics]);
+    }
+
+    public function getEmployeeAnalytics(Request $request, $employeeId)
+    {
+        $periodStart = $request->input('period_start');
+        $periodEnd = $request->input('period_end');
+        $query = EmployeeAnalytics::where('user_id', $employeeId);
+        if ($periodStart) $query->where('period_start', $periodStart);
+        if ($periodEnd) $query->where('period_end', $periodEnd);
+        $analytics = $query->latest()->first();
+        return response()->json(['analytics' => $analytics ? $analytics->analytics : null]);
     }
 }
