@@ -23,4 +23,9 @@ class ChatMessage extends Model
             'metadata' => 'json',
         ];
     }
+
+    public function chatSession()
+    {
+        return $this->belongsTo(ChatSession::class);
+    }
 }
