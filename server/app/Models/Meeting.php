@@ -23,4 +23,15 @@ class Meeting extends Model
         'metadata',
         'analytics',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'scheduled_at' => 'datetime',
+            'ended_at' => 'datetime',
+            'attendees' => 'json',
+            'metadata' => 'json',
+            'analytics' => 'json',
+        ];
+    }
 }
