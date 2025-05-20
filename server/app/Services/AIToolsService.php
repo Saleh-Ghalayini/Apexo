@@ -36,4 +36,6 @@ class AIToolsService
         );
         return $tools;
     }
+
+    public function processToolCall(\App\Models\User $user, string $toolName, array $arguments): array {}
 }
