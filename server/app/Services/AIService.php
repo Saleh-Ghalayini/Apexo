@@ -76,5 +76,17 @@ class AIService
             "Task Details: {$data['task_details']}\n" .
             "Deadline: {$data['deadline']}\n" .
             "Return a JSON object with 'subject' and 'body'.";
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . config('services.openai.secret'),
+        ])->post(config('services.openai.url', 'https://api.openai.com/v1') . '/chat/completions', [
+            'model' => config('services.openai.model', 'gpt-4o'),
+            'messages' => [
+                ['role' => 'system', 'content' => 'You are an assistant that writes professional emails.'],
+                ['role' => 'user', 'content' => $prompt],
+            ],
+            'max_tokens' => 400,
+            'temperature' => config('services.openai.temperature', 0.7),
+        ]);
     }
 }
