@@ -20,4 +20,6 @@ class ChatService
         $this->chatAiService = $chatAiService;
         $this->toolDispatcherService = $toolDispatcherService;
     }
+
+    public function startChatSession(array $participants): array {}
 }
