@@ -12,4 +12,10 @@ class AIController extends Controller
     {
         $this->aiService = $aiService;
     }
+
+    public function generateTaskReport()
+    {
+        $report = $this->aiService->generateTaskReport();
+        return response()->json(['report' => $report]);
+    }
 }
