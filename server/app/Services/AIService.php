@@ -110,5 +110,17 @@ class AIService
                 'success' => false,
                 'error' => 'AI did not return a valid email format',
             ];
+
+        $email = json_decode($json, true);
+        if (!$email || !isset($email['subject']) || !isset($email['body']))
+            return [
+                'success' => false,
+                'error' => 'AI did not return a valid email format',
+            ];
+
+        return [
+            'success' => true,
+            'email' => $email,
+        ];
     }
 }
