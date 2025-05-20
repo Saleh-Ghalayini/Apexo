@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\ResponseTrait;
 use App\Services\AnnouncementService;
+use App\Http\Requests\SendAnnouncementRequest;
 
 class AnnouncementController extends Controller
 {
@@ -15,5 +17,10 @@ class AnnouncementController extends Controller
         $this->announcementService = $announcementService;
     }
 
-    public function sendToSlack($request) {}
+    public function sendToSlack(SendAnnouncementRequest $request)
+    {
+        $user = $request->user();
+        $data = $request->validated();
+        $result = $this->announcementService->sendToSlack($user, $data);
+    }
 }
