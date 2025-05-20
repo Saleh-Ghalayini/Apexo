@@ -29,4 +29,9 @@ class AuthService
     {
         // To be implemented
     }
+
+    public function refresh()
+    {
+        // To be implemented
+    }
 }
