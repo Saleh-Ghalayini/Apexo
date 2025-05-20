@@ -30,6 +30,15 @@ class AuthService
                 'company_id' => $company->id,
                 'active' => true,
             ];
+
+            $optionalFields = ['job_title', 'department', 'phone', 'avatar'];
+            foreach ($optionalFields as $field) {
+                if (isset($data[$field])) {
+                    $userData[$field] = $data[$field];
+                }
+            }
+
+            $user = User::create($userData);
         } catch (Exception $e) {
             throw $e;
         }
