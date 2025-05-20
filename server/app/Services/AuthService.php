@@ -10,5 +10,8 @@ use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthService
 {
-    // Empty class for initial atomic commit
+    public function register(array $data)
+    {
+        // To be implemented
+    }
 }
