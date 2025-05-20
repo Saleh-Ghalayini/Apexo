@@ -245,5 +245,13 @@ class AIService
 
         $filename = 'meeting_report_' . $meeting->id . '_' . now()->timestamp . '.' . $format;
         $path = 'reports/' . $filename;
+
+        if ($format === 'pdf') {
+            $pdf = Pdf::loadView('reports.meeting', ['meeting' => $meeting, 'analytics' => $analytics]);
+            Storage::put($path, $pdf->output());
+        } elseif ($format === 'xlsx' || $format === 'excel')
+            Excel::store(new \App\Exports\MeetingReportExport($meeting, $analytics), $path);
+        else
+            throw new \Exception('Unsupported format');
     }
 }
