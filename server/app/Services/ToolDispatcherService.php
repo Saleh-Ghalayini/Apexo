@@ -83,5 +83,11 @@ class ToolDispatcherService
                 }
             }
         }
+        Log::info('[ToolDispatcher] Passing to chatAiService.handleAiMessage');
+        return [
+            'result' => $this->tools['chat_ai']->handleAiMessage($session, $user, $userMessage, $userChatMessage),
+            'tool' => 'chat_ai',
+            'handled' => false,
+        ];
     }
 }
