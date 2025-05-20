@@ -22,4 +22,12 @@ class Task extends Model
         'external_system',
         'external_data',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'deadline' => 'datetime',
+            'external_data' => 'json',
+        ];
+    }
 }
