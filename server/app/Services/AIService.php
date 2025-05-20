@@ -186,5 +186,17 @@ class AIService
             "Tasks assigned ($taskCount): $taskTitles\n" .
             "Tasks completed: $completedTasks\n" .
             "Provide a summary, notable achievements, areas for improvement, and overall sentiment. Return a JSON object with keys: summary, meetings_attended, tasks_completed, tasks_assigned, sentiment, notable_achievements (array), areas_for_improvement (array).";
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . config('services.openai.secret'),
+        ])->post(config('services.openai.url', 'https://api.openai.com/v1') . '/chat/completions', [
+            'model' => config('services.openai.model', 'gpt-4o'),
+            'messages' => [
+                ['role' => 'system', 'content' => 'You are an assistant that analyzes employee performance and returns structured analytics.'],
+                ['role' => 'user', 'content' => $prompt],
+            ],
+            'max_tokens' => 800,
+            'temperature' => config('services.openai.temperature', 0.4),
+        ]);
     }
 }
