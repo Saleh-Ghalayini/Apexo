@@ -11,26 +11,28 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('companies', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('domain')->unique();
-            $table->string('logo')->nullable();
-            $table->text('description')->nullable();
-            $table->string('address')->nullable();
-            $table->string('city')->nullable();
-            $table->string('state')->nullable();
-            $table->string('country')->nullable();
-            $table->string('zip_code')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('website')->nullable();
-            $table->string('industry')->nullable();
-            $table->integer('size')->nullable(); // Number of employees
-            $table->timestamp('subscription_ends_at')->nullable();
-            $table->string('subscription_plan')->default('free'); // free, basic, premium
-            $table->boolean('active')->default(true);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('companies')) {
+            Schema::create('companies', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('domain')->unique();
+                $table->string('logo')->nullable();
+                $table->text('description')->nullable();
+                $table->string('address')->nullable();
+                $table->string('city')->nullable();
+                $table->string('state')->nullable();
+                $table->string('country')->nullable();
+                $table->string('zip_code')->nullable();
+                $table->string('phone')->nullable();
+                $table->string('website')->nullable();
+                $table->string('industry')->nullable();
+                $table->integer('size')->nullable(); // Number of employees
+                $table->timestamp('subscription_ends_at')->nullable();
+                $table->string('subscription_plan')->default('free'); // free, basic, premium
+                $table->boolean('active')->default(true);
+                $table->timestamps();
+            });
+        }
     }
 
     /**
