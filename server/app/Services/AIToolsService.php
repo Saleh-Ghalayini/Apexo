@@ -126,6 +126,33 @@ class AIToolsService
                     $params['subject'] ?? '',
                     $params['body'] ?? ''
                 );
+            case 'create_meeting':
+                $meetingData = $arguments['params'] ?? $arguments;
+                if (isset($meetingData['attendees']) && is_string($meetingData['attendees']))
+                    $meetingData['attendees'] = array_map('trim', explode(',', $meetingData['attendees']));
+
+                if (isset($meetingData['attendees']) && is_array($meetingData['attendees'])) {
+                    $meetingData['attendees'] = array_map(function ($attendee) {
+                        if (filter_var($attendee, FILTER_VALIDATE_EMAIL))   return ['email' => $attendee];
+                        else  return ['name' => $attendee];
+                    }, $meetingData['attendees']);
+                }
+                $meetingData['user_id'] = $user->id;
+                $existing = \App\Models\Meeting::where('user_id', $meetingData['user_id'])
+                    ->where('title', $meetingData['title'])
+                    ->where('scheduled_at', $meetingData['scheduled_at'])
+                    ->first();
+                if ($existing)  return ['success' => true, 'meeting_id' => $existing->id, 'duplicate' => true];
+                $meeting = \App\Models\Meeting::create($meetingData);
+                if (!empty($meetingData['transcript'])) {
+                    $aiService = app(\App\Services\AIService::class);
+                    $analytics = $aiService->analyzeMeetingTranscript($meetingData['transcript'], $meeting->toArray());
+
+                    if (isset($analytics['summary']))   $meeting->summary = $analytics['summary'];
+                    $meeting->analytics = $analytics;
+                    $meeting->save();
+                }
+                return ['success' => true, 'meeting_id' => $meeting->id];
         }
     }
 }
