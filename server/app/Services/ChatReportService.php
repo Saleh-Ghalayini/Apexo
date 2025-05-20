@@ -13,4 +13,10 @@ class ChatReportService
     {
         $this->taskReportService = $taskReportService;
     }
+
+    public function isTaskReportRequest(string $userMessage): bool
+    {
+        $lowerMessage = strtolower($userMessage);
+        return preg_match('/\b(generate|create|make) (a )?(task )?report\b/', $lowerMessage);
+    }
 }
