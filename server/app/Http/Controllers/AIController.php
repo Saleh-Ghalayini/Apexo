@@ -63,4 +63,10 @@ class AIController extends Controller
         ProcessEmployeeAnalyticsJob::dispatch($user->id, $periodStart, $periodEnd);
         return response()->json(['message' => 'Employee analytics job dispatched.']);
     }
+
+    public function getMeetingAnalytics($meetingId)
+    {
+        $meeting = Meeting::findOrFail($meetingId);
+        return response()->json(['analytics' => $meeting->analytics]);
+    }
 }
