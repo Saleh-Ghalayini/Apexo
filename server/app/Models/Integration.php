@@ -40,4 +40,9 @@ class Integration extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function credentials()
+    {
+        return $this->hasMany(IntegrationCredential::class);
+    }
 }
