@@ -16,19 +16,19 @@
 
 ### ER Diagram
 
-<img src="./readme/ERDiagram.png" height="1024" width="1024">
+<img src="./readme/ERDiagram.png" heigh="1024" width="1024">
 
 ### Component Diagram
 
-<img src="./readme/ComponentDiagram.png" height="1024" width="1024">
+<img src="./readme/ComponentDiagram.png" heigh="1024" width="1024">
 
 ### Flow Diagram
 
-<img src="./readme/FlowDiagram.png" height="1024" width="1024">
+<img src="./readme/FlowDiagram.png" heigh="1024" width="1024">
 
 ### Deployment Diagram
 
-<img src="./readme/DeploymentDiagram.svg" height="1024" width="1024">
+<img src="./readme/DeploymentDiagram.svg" heigh="1024" width="1024">
 
 <br><br>
 
