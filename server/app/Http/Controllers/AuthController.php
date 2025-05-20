@@ -78,4 +78,27 @@ class AuthController extends Controller
             return $this->errorResponse('Failed to logout', 500);
         }
     }
+
+    public function refresh()
+    {
+        try {
+            $data = $this->authService->refresh();
+
+            return $this->successResponse($data);
+        } catch (Exception $e) {
+            Log::error('Token refresh error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            if (
+                strpos($e->getMessage(), 'User is not active') !== false ||
+                strpos($e->getMessage(), 'Token') !== false
+            ) {
+                return $this->errorResponse('Unauthorized', 401);
+            }
+
+            return $this->errorResponse('Failed to refresh token', 500);
+        }
+    }
 }
