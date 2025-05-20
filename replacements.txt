@@ -1,0 +1,9 @@
+S@lehgh2004==>your-db-password-here
+"erkn gjdk rors ytfo"==>your-mail-password-here
+rYUdJYHq7IyhmEuXD7oc5f0dKg4Si2D6cgZ4zj7Af0oHtlg8kAEdvxSxLgxlSCSC==>your-jwt-secret-here
+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==>your-openai-api-key-here
+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==>your-openai-api-key-here
+52fa97d22bc4e64e5ef8be90be6c00bd==>your-slack-client-secret-here
+c4f83e1cf7c5fbe2577e41dec41e1b12==>your-slack-signing-secret-here
+LgmrmILbZmb5RfJlPEYPuZDi==>your-slack-verification-token-here
+secret_sIUWGbw4GQtOtr2Ge4HfQizFQNjtwXwGwbLtJKLkgXm==>your-notion-client-secret-here
