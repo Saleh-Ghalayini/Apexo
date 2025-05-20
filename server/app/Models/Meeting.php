@@ -34,4 +34,9 @@ class Meeting extends Model
             'analytics' => 'json',
         ];
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
