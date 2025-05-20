@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Meeting;
 use App\Services\AIService;
+use App\Jobs\ProcessMeetingAnalyticsJob;
 use App\Http\Requests\SendReportRequest;
 use App\Http\Requests\GenerateEmailRequest;
 
@@ -37,5 +39,14 @@ class AIController extends Controller
         if (!empty($result['success'])) return response()->json(['email' => $result['email']]);
 
         return response()->json(['error' => $result['error'] ?? 'Failed to generate email'], 500);
+    }
+
+    public function analyzeMeeting($meetingId)
+    {
+        $meeting = Meeting::findOrFail($meetingId);
+        if (!$meeting->transcript) return response()->json(['error' => 'Meeting transcript is missing.'], 400);
+
+        ProcessMeetingAnalyticsJob::dispatch($meeting->id);
+        return response()->json(['message' => 'Meeting analytics job dispatched.']);
     }
 }
