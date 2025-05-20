@@ -111,4 +111,19 @@ class AIController extends Controller
         $mime = $format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
         return Storage::download($employeeAnalytics->report_file, $filename, ['Content-Type' => $mime]);
     }
+
+    public function sendReminder(Request $request)
+    {
+        $data = $request->validate([
+            'to' => 'required|email',
+            'subject' => 'required|string',
+            'body' => 'required|string',
+        ]);
+        try {
+            // Mail::to($data['to'])->send(new ReminderMail($data['subject'], $data['body']));
+            return response()->json(['message' => 'Reminder sent.'], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to send reminder.'], 500);
+        }
+    }
 }
