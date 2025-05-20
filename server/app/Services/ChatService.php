@@ -2,17 +2,26 @@
 
 namespace App\Services;
 
+use App\Models\ChatSession;
+use App\Services\ChatAiService;
+use App\Services\ChatReportService;
+use App\Traits\MessageAnalysisTrait;
+use Illuminate\Support\Facades\Auth;
+use App\Services\ChatMessageService;
+
 class ChatService
 {
-    protected \App\Services\ChatMessageService $chatMessageService;
-    protected \App\Services\ChatReportService $chatReportService;
-    protected \App\Services\ChatAiService $chatAiService;
+    use MessageAnalysisTrait;
+
+    protected ChatMessageService $chatMessageService;
+    protected ChatReportService $chatReportService;
+    protected ChatAiService $chatAiService;
     protected \App\Services\ToolDispatcherService $toolDispatcherService;
 
     public function __construct(
-        \App\Services\ChatMessageService $chatMessageService,
-        \App\Services\ChatReportService $chatReportService,
-        \App\Services\ChatAiService $chatAiService,
+        ChatMessageService $chatMessageService,
+        ChatReportService $chatReportService,
+        ChatAiService $chatAiService,
         \App\Services\ToolDispatcherService $toolDispatcherService
     ) {
         $this->chatMessageService = $chatMessageService;
@@ -21,60 +30,107 @@ class ChatService
         $this->toolDispatcherService = $toolDispatcherService;
     }
 
-    public function startChatSession(array $participants): array
+    public function createSession(?string $title = null, ?string $initialMessage = null): array
     {
-        $session = [];
-        $session['id'] = uniqid('chat_', true);
-        $session['participants'] = $participants;
+        $user = Auth::user();
+        $session = new ChatSession();
+        $session->user_id = $user->id;
+        $session->title = $title ?? 'New Chat';
+        $session->status = 'active';
+        $session->last_activity_at = now();
+        $session->save();
+
+        if ($initialMessage)
+            return [
+                'session' => $session,
+                'messages' => [
+                    $this->sendMessage($session->id, $initialMessage)['user_message'],
+                    $this->sendMessage($session->id, $initialMessage)['ai_message']
+                ],
+            ];
+
+        return [
+            'session' => $session,
+            'messages' => [],
+        ];
+    }
+
+    public function getSessions(?string $status = null)
+    {
+        $query = ChatSession::where('user_id', Auth::id())
+            ->orderBy('last_activity_at', 'desc');
+
+        if ($status)    $query->where('status', $status);
+
+        return $query->get();
+    }
+
+    public function getSession(int $sessionId, ?int $limit = null, ?string $since = null)
+    {
+        $session = ChatSession::where('id', $sessionId)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $messagesQuery = $session->messages()->orderBy('created_at', 'asc');
+
+        if ($since)
+            $messagesQuery->where('created_at', '>', $since);
+        if ($limit)
+            $messagesQuery->limit($limit);
+
+        $session->setRelation('messages', $messagesQuery->get());
+
         return $session;
     }
 
-    public function sendMessage(array $session, string $message, string $sender): array
+    public function sendMessage(int $sessionId, string $userMessage): array
     {
-        $msg = [];
-        $msg['content'] = $message;
-        $msg['sender'] = $sender;
-        $msg['timestamp'] = time();
-        $this->chatMessageService->saveMessage($session['id'], $msg);
+        $session = $this->getSession($sessionId);
+        $user = Auth::user();
+        $session->last_activity_at = now();
+        $session->save();
 
-        if ($sender !== 'ai') {
-            if (str_starts_with($message, '/tool ')) {
-                $toolCommand = substr($message, 6);
-                $toolResult = $this->toolDispatcherService->dispatch($session, $toolCommand, $sender);
-                $this->chatMessageService->saveMessage($session['id'], [
-                    'content' => $toolResult,
-                    'sender' => 'tool',
-                    'timestamp' => time()
-                ]);
-            } else {
-                $aiResponse = $this->chatAiService->generateResponse($session, $message, $sender);
-                $this->chatMessageService->saveMessage($session['id'], $aiResponse);
-            }
+        $userChatMessage = $this->chatMessageService->persistUserMessage($session, $userMessage);
+        $this->chatMessageService->updateSessionTitleIfNeeded($session, $userMessage, $userChatMessage);
+
+        try {
+            $dispatchResult = $this->toolDispatcherService->dispatchTool($session, $user, $userMessage, $userChatMessage);
+            if ($dispatchResult['handled'])
+                return $dispatchResult['result'];
+
+
+            return $dispatchResult['result'];
+        } catch (\Throwable $e) {
+            $errorMsg = $e->getMessage() ?: 'An unknown error occurred.';
+
+            $aiErrorMessage = tap(new \App\Models\ChatMessage(), function ($aiChatMessage) use ($session, $errorMsg) {
+                $aiChatMessage->chat_session_id = $session->id;
+                $aiChatMessage->role = 'assistant';
+                $aiChatMessage->content = "Sorry, I couldn't complete your request due to: $errorMsg. Please try again or ask for help.";
+                $aiChatMessage->save();
+            });
+            return [
+                'user_message' => $userChatMessage,
+                'ai_message' => $aiErrorMessage,
+                'session' => $session,
+                'error' => $errorMsg,
+            ];
         }
-
-        $this->chatReportService->updateReport($session['id']);
-
-        return $msg;
     }
 
-    public function getMessages(string $sessionId): array
+    public function archiveSession(int $sessionId): ChatSession
     {
-        return $this->chatMessageService->getMessages($sessionId);
+        $session = $this->getSession($sessionId);
+        $session->status = 'archived';
+        $session->save();
+
+        return $session;
     }
 
-    public function getReport(string $sessionId): array
+    public function deleteSession(int $sessionId): bool
     {
-        return $this->chatReportService->getReport($sessionId);
-    }
-
-    public function resetSession(string $sessionId): void
-    {
-        $this->chatMessageService->clearMessages($sessionId);
-        $this->chatReportService->resetReport($sessionId);
-    }
-
-    public function sessionExists(string $sessionId): bool
-    {
-        return $this->chatMessageService->sessionExists($sessionId);
+        $session = $this->getSession($sessionId);
+        $session->messages()->delete();
+        return $session->delete();
     }
 }
