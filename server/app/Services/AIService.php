@@ -265,5 +265,8 @@ class AIService
     {
         $user = $employeeAnalytics->user;
         $analytics = $employeeAnalytics->analytics ?? [];
+
+        $filename = 'employee_report_' . $user->id . '_' . now()->timestamp . '.' . $format;
+        $path = 'reports/' . $filename;
     }
 }
