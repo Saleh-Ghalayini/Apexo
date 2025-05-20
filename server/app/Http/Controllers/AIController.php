@@ -96,4 +96,19 @@ class AIController extends Controller
         $mime = $format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
         return Storage::download($meeting->report_file, $filename, ['Content-Type' => $mime]);
     }
+
+    public function downloadEmployeeReport(Request $request, $employeeAnalyticsId)
+    {
+        $format = $request->query('format', 'pdf');
+        $employeeAnalytics = EmployeeAnalytics::findOrFail($employeeAnalyticsId);
+        if (!$employeeAnalytics->analytics)
+            return response()->json(['error' => 'No analytics available for this employee/period.'], 404);
+
+        if (!$employeeAnalytics->report_file || $employeeAnalytics->report_format !== $format || !Storage::exists($employeeAnalytics->report_file))
+            app(AIService::class)->generateEmployeeReport($employeeAnalytics, $format);
+
+        $filename = basename($employeeAnalytics->report_file);
+        $mime = $format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        return Storage::download($employeeAnalytics->report_file, $filename, ['Content-Type' => $mime]);
+    }
 }
