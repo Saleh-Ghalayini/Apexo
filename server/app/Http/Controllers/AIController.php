@@ -7,6 +7,7 @@ use App\Models\Meeting;
 use App\Services\AIService;
 use Illuminate\Http\Request;
 use App\Models\EmployeeAnalytics;
+use Illuminate\Support\Facades\Storage;
 use App\Jobs\ProcessMeetingAnalyticsJob;
 use App\Http\Requests\SendReportRequest;
 use App\Jobs\ProcessEmployeeAnalyticsJob;
@@ -80,5 +81,19 @@ class AIController extends Controller
         if ($periodEnd) $query->where('period_end', $periodEnd);
         $analytics = $query->latest()->first();
         return response()->json(['analytics' => $analytics ? $analytics->analytics : null]);
+    }
+
+    public function downloadMeetingReport(Request $request, $meetingId)
+    {
+        $format = $request->query('format', 'pdf');
+        $meeting = Meeting::findOrFail($meetingId);
+        if (!$meeting->analytics) return response()->json(['error' => 'No analytics available for this meeting.'], 404);
+
+        if (!$meeting->report_file || $meeting->report_format !== $format || !Storage::exists($meeting->report_file))
+            app(AIService::class)->generateMeetingReport($meeting, $format);
+
+        $filename = basename($meeting->report_file);
+        $mime = $format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        return Storage::download($meeting->report_file, $filename, ['Content-Type' => $mime]);
     }
 }
