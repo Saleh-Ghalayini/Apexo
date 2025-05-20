@@ -43,7 +43,10 @@ class ChatController extends Controller
 
     public function sendMessage($id, $request)
     {
-        // To be implemented
+        $message = $request->input('message');
+        $result = $this->chatService->sendMessage($id, $message);
+
+        return response()->json($result);
     }
 
     public function archiveSession($id)
