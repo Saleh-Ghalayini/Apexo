@@ -67,7 +67,7 @@
     flex-direction: column;
     gap: 1.2rem;
     width: 100%;
-    max-width: 400px;
+    max-width: 540px;
     margin: 5rem auto 2rem auto;
 }
 
@@ -226,6 +226,32 @@
     height: auto;
     max-height: 80vh;
     object-fit: contain;
+}
+
+.form-row {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.form-row .form-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-row .form-field input,
+.form-row .form-field select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 1.08rem;
+  padding: 0.85rem 1.2rem 0.85rem 2.5rem;
+}
+
+@media (max-width: 700px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
 }
 
 @media (max-width: 992px) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApi } from '../../hooks/useApi';
-import Button from '../../components/Button/Button';
-import Toast from '../../components/Toast/Toast';
+import Button from '../../components/Button';
+import Toast from '../../components/Toast';
 import './AIPromptPanel.css';
 
 interface AIPromptStatus {

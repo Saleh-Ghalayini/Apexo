@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { NotionTest } from '../../utils/notionTest';
 import './NotionTest.css';
 
 interface TestResult {
