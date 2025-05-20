@@ -9,7 +9,9 @@ class ChatMessageFactory extends Factory
     public function definition(): array
     {
         return [
-            // empty
+            'chat_session_id' => \App\Models\ChatSession::factory(),
+            'role' => fake()->randomElement(['user', 'assistant']),
+            'content' => fake()->sentence(),
         ];
     }
 }
