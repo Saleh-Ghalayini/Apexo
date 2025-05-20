@@ -8,6 +8,9 @@ class ChatSessionFactory extends Factory
 {
     public function definition(): array
     {
-        return [];
+        return [
+            'user_id' => \App\Models\User::factory(),
+            'title' => fake()->sentence(3),
+        ];
     }
 }
