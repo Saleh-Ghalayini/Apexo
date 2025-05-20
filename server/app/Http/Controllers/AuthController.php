@@ -60,4 +60,22 @@ class AuthController extends Controller
             ]);
         }
     }
+
+    public function logout()
+    {
+        try {
+            $this->authService->logout();
+
+            return $this->successResponse([
+                'message' => 'Successfully logged out'
+            ]);
+        } catch (Exception $e) {
+            Log::error('Logout error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return $this->errorResponse('Failed to logout', 500);
+        }
+    }
 }
