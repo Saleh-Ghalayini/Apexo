@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Meeting;
 use App\Services\AIService;
+use Illuminate\Http\Request;
 use App\Jobs\ProcessMeetingAnalyticsJob;
 use App\Http\Requests\SendReportRequest;
+use App\Jobs\ProcessEmployeeAnalyticsJob;
 use App\Http\Requests\GenerateEmailRequest;
 
 class AIController extends Controller
@@ -48,5 +51,16 @@ class AIController extends Controller
 
         ProcessMeetingAnalyticsJob::dispatch($meeting->id);
         return response()->json(['message' => 'Meeting analytics job dispatched.']);
+    }
+
+    public function analyzeEmployee(Request $request, $employeeId)
+    {
+        $user = User::findOrFail($employeeId);
+        $periodStart = $request->input('period_start');
+        $periodEnd = $request->input('period_end');
+        if (!$periodStart || !$periodEnd) return response()->json(['error' => 'period_start and period_end are required.'], 400);
+
+        ProcessEmployeeAnalyticsJob::dispatch($user->id, $periodStart, $periodEnd);
+        return response()->json(['message' => 'Employee analytics job dispatched.']);
     }
 }
