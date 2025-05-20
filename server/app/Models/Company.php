@@ -8,4 +8,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Company extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'domain',
+        'description',
+        'address',
+        'city',
+        'state',
+        'country',
+        'zip_code',
+        'phone',
+        'website',
+        'industry',
+        'size',
+        'subscription_ends_at',
+        'subscription_plan',
+        'active',
+    ];
 }
