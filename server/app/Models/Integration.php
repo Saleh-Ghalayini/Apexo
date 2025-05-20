@@ -20,4 +20,19 @@ class Integration extends Model
         'expires_at',
         'metadata',
     ];
+
+    protected $hidden = [
+        'credentials',
+        'access_token',
+        'refresh_token',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'credentials' => 'encrypted:json',
+            'metadata' => 'json',
+            'expires_at' => 'datetime',
+        ];
+    }
 }
