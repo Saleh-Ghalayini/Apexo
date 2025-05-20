@@ -28,4 +28,14 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'remember_token',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'active' => 'boolean',
+            'google_calendar_token' => 'array',
+        ];
+    }
 }
