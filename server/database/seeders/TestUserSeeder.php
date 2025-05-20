@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Company;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class TestUserSeeder extends Seeder
 {
@@ -36,6 +37,10 @@ class TestUserSeeder extends Seeder
                 ['email' => $userData['email']],
                 [
                     'name' => $userData['name'],
+                    'password' => Hash::make('password'),
+                    'role' => 'employee',
+                    'company_id' => $company->id,
+                    'active' => true,
                 ]
             );
         }
