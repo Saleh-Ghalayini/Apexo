@@ -21,5 +21,8 @@ class ChatService
         $this->toolDispatcherService = $toolDispatcherService;
     }
 
-    public function startChatSession(array $participants): array {}
+    public function startChatSession(array $participants): array
+    {
+        $session = [];
+    }
 }
