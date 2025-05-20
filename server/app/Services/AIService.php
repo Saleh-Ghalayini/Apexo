@@ -230,5 +230,17 @@ class AIService
         return $analytics;
     }
 
-    public function generateMeetingReport(Meeting $meeting, string $format = 'pdf'): string {}
+    public function generateMeetingReport(Meeting $meeting, string $format = 'pdf'): string
+    {
+        $meeting = Meeting::find($meeting->id);
+        $analytics = $meeting->analytics;
+        if (!is_array($analytics) || empty($analytics) || !isset($analytics['summary'])) {
+            $analytics = [
+                'summary' => $meeting->summary,
+                'sentiment' => $meeting->metadata['sentiment'] ?? null,
+                'topics' => $meeting->metadata['topics'] ?? null,
+                'action_items' => $meeting->metadata['action_items'] ?? null,
+            ];
+        }
+    }
 }
