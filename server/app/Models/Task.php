@@ -30,4 +30,9 @@ class Task extends Model
             'external_data' => 'json',
         ];
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
