@@ -40,5 +40,17 @@ class DatabaseSeeder extends Seeder
                 'company_id' => $company->id,
             ]
         );
+
+        $employee = \App\Models\User::firstOrCreate(
+            [
+                'email' => 'employee@apexodemo.com',
+            ],
+            [
+                'name' => 'Employee User',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'employee',
+                'company_id' => $company->id,
+            ]
+        );
     }
 }
