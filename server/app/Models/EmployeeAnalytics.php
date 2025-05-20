@@ -23,4 +23,9 @@ class EmployeeAnalytics extends Model
         'period_end' => 'date',
         'analytics' => 'json',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
