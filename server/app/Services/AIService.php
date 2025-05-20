@@ -127,5 +127,17 @@ class AIService
     public function analyzeMeetingTranscript(string $transcript, array $meetingData = []): array
     {
         $prompt = "Analyze the following meeting transcript. Provide a summary, sentiment, action items (with assignee and due date if possible), and main topics discussed. Return a JSON object with keys: summary, sentiment, action_items (array), topics (array).\nTranscript:\n$transcript";
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . config('services.openai.secret'),
+        ])->post(config('services.openai.url', 'https://api.openai.com/v1') . '/chat/completions', [
+            'model' => config('services.openai.model', 'gpt-4o'),
+            'messages' => [
+                ['role' => 'system', 'content' => 'You are an assistant that analyzes meeting transcripts and returns structured analytics.'],
+                ['role' => 'user', 'content' => $prompt],
+            ],
+            'max_tokens' => 800,
+            'temperature' => config('services.openai.temperature', 0.4),
+        ]);
     }
 }
