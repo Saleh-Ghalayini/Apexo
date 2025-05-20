@@ -61,7 +61,9 @@ class AIService
                     ->to($to)
                     ->subject('Task Report');
             });
+            return true;
         } catch (\Exception $e) {
+            return false;
         }
     }
 }
