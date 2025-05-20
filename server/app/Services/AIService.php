@@ -242,5 +242,8 @@ class AIService
                 'action_items' => $meeting->metadata['action_items'] ?? null,
             ];
         }
+
+        $filename = 'meeting_report_' . $meeting->id . '_' . now()->timestamp . '.' . $format;
+        $path = 'reports/' . $filename;
     }
 }
