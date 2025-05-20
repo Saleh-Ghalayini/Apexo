@@ -66,4 +66,6 @@ class AIService
             return false;
         }
     }
+
+    public function generateTaskReminderEmail(array $data): array {}
 }
