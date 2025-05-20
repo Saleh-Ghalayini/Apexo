@@ -31,5 +31,10 @@ class TestMultiCompanySeeder extends Seeder
             'role' => 'manager',
             'company_id' => $company2->id,
         ]);
+
+        $employees2 = User::factory(3)->create([
+            'company_id' => $company2->id,
+            'role' => 'employee',
+        ]);
     }
 }
