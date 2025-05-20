@@ -28,5 +28,17 @@ class DatabaseSeeder extends Seeder
                 'company_id' => $company->id,
             ]
         );
+
+        $manager = \App\Models\User::firstOrCreate(
+            [
+                'email' => 'manager@apexodemo.com',
+            ],
+            [
+                'name' => 'Manager User',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'manager',
+                'company_id' => $company->id,
+            ]
+        );
     }
 }
