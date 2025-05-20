@@ -15,5 +15,13 @@ class DefaultUserSeeder extends Seeder
             'domain' => 'apexo.local',
             'active' => true,
         ]);
+
+        User::create([
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password'),
+            'role' => 'hr',
+            'company_id' => $company->id,
+        ]);
     }
 }
