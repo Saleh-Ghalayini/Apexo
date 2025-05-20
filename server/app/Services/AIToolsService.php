@@ -93,6 +93,23 @@ class AIToolsService
                         return ['success' => false, 'error' => 'Exception: ' . $e->getMessage()];
                     }
                 }
+            case 'list_google_calendar_events': {
+                    $params = $arguments;
+                    $token = $user->google_calendar_token;
+                    if (!$token)    return ['success' => false, 'error' => 'Google Calendar not connected'];
+
+                    try {
+                        $calendarService = app(\App\Services\GoogleCalendarService::class);
+                        $calendarService->setAccessToken($token);
+                        $maxResults = isset($params['maxResults']) ? (int)$params['maxResults'] : 10;
+                        $events = $calendarService->listUpcomingEvents($maxResults);
+                        return ['success' => true, 'events' => $events];
+                    } catch (\Throwable $e) {
+                        return ['success' => false, 'error' => 'Exception: ' . $e->getMessage()];
+                    }
+                }
+            case 'generate_report':
+                return $this->dataAccessService->generateReport($user, $arguments);
         }
     }
 }
