@@ -38,8 +38,18 @@ class ChatService
         $this->chatMessageService->saveMessage($session['id'], $msg);
 
         if ($sender !== 'ai') {
-            $aiResponse = $this->chatAiService->generateResponse($session, $message, $sender);
-            $this->chatMessageService->saveMessage($session['id'], $aiResponse);
+            if (str_starts_with($message, '/tool ')) {
+                $toolCommand = substr($message, 6);
+                $toolResult = $this->toolDispatcherService->dispatch($session, $toolCommand, $sender);
+                $this->chatMessageService->saveMessage($session['id'], [
+                    'content' => $toolResult,
+                    'sender' => 'tool',
+                    'timestamp' => time()
+                ]);
+            } else {
+                $aiResponse = $this->chatAiService->generateResponse($session, $message, $sender);
+                $this->chatMessageService->saveMessage($session['id'], $aiResponse);
+            }
         }
 
         $this->chatReportService->updateReport($session['id']);
