@@ -22,5 +22,10 @@ class AnnouncementController extends Controller
         $user = $request->user();
         $data = $request->validated();
         $result = $this->announcementService->sendToSlack($user, $data);
+        if (!empty($result['success'])) {
+            return $this->successResponse($result['announcement']);
+        } else {
+            return $this->errorResponse($result['error'] ?? 'Failed', $result['code'] ?? 400);
+        }
     }
 }
