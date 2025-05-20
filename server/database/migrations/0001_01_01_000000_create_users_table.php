@@ -6,7 +6,28 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-    public function up(): void {}
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->string('role')->default('employee');
+            $table->string('job_title')->nullable();
+            $table->string('department')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('avatar')->nullable();
+            $table->boolean('active')->default(true);
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
 
-    public function down(): void {}
+    public function down(): void
+    {
+        Schema::dropIfExists('users');
+    }
 };
