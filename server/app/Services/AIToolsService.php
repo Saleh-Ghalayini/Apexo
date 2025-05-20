@@ -50,6 +50,15 @@ class AIToolsService
                 return $this->dataAccessService->getUserTasks($user, $arguments);
             case 'get_user_meetings':
                 return $this->dataAccessService->getUserMeetings($user, $arguments);
+            case 'get_employee_info':
+                return $this->dataAccessService->getEmployeeInfo($user, $arguments['employee_identifier'] ?? '');
+            case 'get_department_analytics':
+                if ($user->isEmployee())
+                    return [
+                        'success' => false,
+                        'error' => 'Access denied. Insufficient permissions.'
+                    ];
+                return $this->dataAccessService->getDepartmentAnalytics($user, $arguments);
         }
     }
 }
