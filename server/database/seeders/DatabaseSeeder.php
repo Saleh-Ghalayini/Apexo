@@ -16,5 +16,17 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Apexo Demo Company',
             ]
         );
+
+        $admin = \App\Models\User::firstOrCreate(
+            [
+                'email' => 'admin@apexodemo.com',
+            ],
+            [
+                'name' => 'Admin User',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'hr',
+                'company_id' => $company->id,
+            ]
+        );
     }
 }
