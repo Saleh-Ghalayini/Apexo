@@ -56,7 +56,27 @@ class AuthService
 
     public function login(array $credentials)
     {
-        // To be implemented
+        try {
+            if (!$token = auth('api')->attempt($credentials)) {
+                throw new Exception('The provided credentials are incorrect.');
+            }
+
+            $user = auth('api')->user();
+
+            if (!$user->active) {
+                auth('api')->logout();
+                throw new Exception('This account has been deactivated.');
+            }
+
+            return [
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => config('jwt.ttl') * 60,
+            ];
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     public function logout()
