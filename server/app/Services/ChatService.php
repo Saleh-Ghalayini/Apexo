@@ -42,6 +42,8 @@ class ChatService
             $this->chatMessageService->saveMessage($session['id'], $aiResponse);
         }
 
+        $this->chatReportService->updateReport($session['id']);
+
         return $msg;
     }
 }
