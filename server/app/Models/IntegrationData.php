@@ -26,4 +26,9 @@ class IntegrationData extends Model
             'is_active' => 'boolean',
         ];
     }
+
+    public function integration()
+    {
+        return $this->belongsTo(Integration::class);
+    }
 }
