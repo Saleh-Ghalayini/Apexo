@@ -17,5 +17,12 @@ class ChatMessageService
         return $userChatMessage;
     }
 
-    public function updateSessionTitleIfNeeded(ChatSession $session, string $userMessage, ChatMessage $userChatMessage): void {}
+    public function updateSessionTitleIfNeeded(ChatSession $session, string $userMessage, ChatMessage $userChatMessage): void
+    {
+        if ($session->messages()->count() <= 1 && $session->title === 'New Chat') {
+            $session->title = substr($userMessage, 0, 50);
+            $session->save();
+            $userChatMessage->delete();
+        }
+    }
 }
