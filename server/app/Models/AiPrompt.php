@@ -20,4 +20,13 @@ class AiPrompt extends Model
         'is_public',
         'usage_count',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'intent' => 'json',
+            'parameters' => 'json',
+            'result' => 'json',
+        ];
+    }
 }
