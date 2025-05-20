@@ -56,6 +56,11 @@ class AIService
     {
         $fromEmail = 'ghalayinisaleh9@gmail.com';
         try {
+            Mail::raw($report, function ($message) use ($fromEmail, $to) {
+                $message->from($fromEmail)
+                    ->to($to)
+                    ->subject('Task Report');
+            });
         } catch (\Exception $e) {
         }
     }
