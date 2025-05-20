@@ -21,6 +21,15 @@ class AuthService
                     'status' => 'active',
                 ]
             );
+
+            $userData = [
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'role' => $data['role'],
+                'company_id' => $company->id,
+                'active' => true,
+            ];
         } catch (Exception $e) {
             throw $e;
         }
