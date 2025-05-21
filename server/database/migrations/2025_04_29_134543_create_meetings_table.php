@@ -11,14 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('meetings', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
-            $table->text('transcript')->nullable();
-            $table->text('summary')->nullable();
-            $table->timestamp('scheduled_at');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('meetings')) {
+            Schema::create('meetings', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->string('title');
+                $table->timestamp('scheduled_at');
+                $table->timestamp('ended_at')->nullable();
+                $table->text('transcript')->nullable();
+                $table->text('summary')->nullable();
+                $table->string('status')->default('scheduled');
+                $table->string('external_id')->nullable();
+                $table->string('meeting_url')->nullable();
+                $table->json('attendees')->nullable();
+                $table->json('metadata')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

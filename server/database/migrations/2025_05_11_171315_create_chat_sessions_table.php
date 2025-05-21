@@ -11,18 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chat_sessions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('title')->nullable(); // Auto-generated title based on first message or user can set it
-            $table->string('status')->default('active'); // active, archived
-            $table->timestamp('last_activity_at');
-            $table->timestamps();
+        if (!Schema::hasTable('chat_sessions')) {
+            Schema::create('chat_sessions', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->string('title')->nullable(); // Auto-generated title based on first message or user can set it
+                $table->string('status')->default('active'); // active, archived
+                $table->timestamp('last_activity_at');
+                $table->timestamps();
 
-            // PostgreSQL-specific indexes
-            $table->index(['user_id', 'created_at']);
-            $table->index('status');
-        });
+                // PostgreSQL-specific indexes
+                $table->index(['user_id', 'created_at']);
+                $table->index('status');
+            });
+        }
     }
 
     /**

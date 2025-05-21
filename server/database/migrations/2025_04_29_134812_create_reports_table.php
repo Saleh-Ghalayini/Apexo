@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reports', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
-            $table->enum('type', ['weekly', 'monthly', 'yearly']);
-            $table->jsonb('data');
-            $table->timestamp('generated_at');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('reports')) {
+            Schema::create('reports', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('company_id')->constrained()->onDelete('cascade');
+                $table->enum('type', ['weekly', 'monthly', 'yearly']);
+                $table->jsonb('data');
+                $table->timestamp('generated_at');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

@@ -11,10 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ai_prompts', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('ai_prompts')) {
+            Schema::create('ai_prompts', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->text('content');
+                $table->string('status')->default('pending');
+                $table->json('intent')->nullable();
+                $table->json('parameters')->nullable();
+                $table->json('result')->nullable();
+                $table->text('error')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
