@@ -59,6 +59,11 @@ jobs:
 
           php artisan migrate --force
 
+      - name: Debug Print .env DB config before tests
+        working-directory: ./server
+        run: |
+          echo "[DEBUG] DB config in .env before tests:" && grep DB_ .env
+
       - name: Run Laravel tests
         working-directory: ./server
         run: php artisan test
