@@ -116,6 +116,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Debug nginx.conf existence
+        run: |
+          ls -l ./nginx.conf
+          file ./nginx.conf
+
       - name: Remove nginx.conf directory if exists
         uses: appleboy/ssh-action@v1
         with:
@@ -130,7 +135,7 @@ jobs:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: "nginx.conf"
+          source: "./nginx.conf"
           target: "/home/${{ secrets.EC2_USER }}/nginx.conf"
 
       - name: SSH into Server and Deploy
