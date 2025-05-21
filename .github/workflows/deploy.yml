@@ -18,9 +18,9 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_DB: apexo_db
+          POSTGRES_DB: testing
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: Abou@li5-3
+          POSTGRES_PASSWORD: password
         options: >-
           --health-cmd "pg_isready -U postgres"
           --health-interval 10s
@@ -44,14 +44,15 @@ jobs:
           sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env
           sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
           sed -i 's/^DB_PORT=.*/DB_PORT=5432/' .env
-          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=apexo_db/' .env
+          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=testing/' .env
           sed -i 's/^DB_USERNAME=.*/DB_USERNAME=postgres/' .env
-          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=Abou@li5-3/' .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=password/' .env
 
           composer install --no-interaction --prefer-dist
           php artisan key:generate --force
           php artisan jwt:secret --force
 
+          echo "Waiting for PostgreSQL to be ready..."
           until pg_isready -h 127.0.0.1 -p 5432 -U postgres; do
             sleep 2
             echo "Waiting for database..."
@@ -59,15 +60,12 @@ jobs:
 
           php artisan migrate --force
 
-      - name: Debug Print .env DB config before tests
+      - name: Clear Cache and Rebuild Config
         working-directory: ./server
         run: |
-          echo "[DEBUG] DB config in .env before tests:" && grep DB_ .env
-
-      - name: Debug Test Postgres connection with psql
-        run: |
-          sudo apt-get update && sudo apt-get install -y postgresql-client
-          PGPASSWORD=Abou@li5-3 psql -h 127.0.0.1 -U postgres -d apexo_db -c '\conninfo' || echo "[DEBUG] psql connection failed"
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan config:cache
 
       - name: Run Laravel tests
         working-directory: ./server
@@ -101,7 +99,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Copy docker-compose.yaml to EC2
+      - name: Copy docker-compose to EC2
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
@@ -118,35 +116,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Debug Check nginx.conf on EC2 before removal
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST_PRODUCTION }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          script: |
-            echo "[DEBUG] Before removal:"
-            ls -l /home/${{ secrets.EC2_USER }}/nginx.conf || echo "nginx.conf does not exist"
-            file /home/${{ secrets.EC2_USER }}/nginx.conf || echo "nginx.conf does not exist"
+      - name: Debug nginx.conf existence
+        run: |
+          ls -l ./nginx.conf
+          file ./nginx.conf
 
-      - name: Remove nginx.conf on EC2 (file or dir)
+      - name: Remove nginx.conf directory if exists
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: rm -rf /home/${{ secrets.EC2_USER }}/nginx.conf
-
-      - name: Debug Check nginx.conf on EC2 after removal
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST_PRODUCTION }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          script: |
-            echo "[DEBUG] After removal:"
-            ls -l /home/${{ secrets.EC2_USER }}/nginx.conf || echo "nginx.conf does not exist"
-            file /home/${{ secrets.EC2_USER }}/nginx.conf || echo "nginx.conf does not exist"
 
       - name: Copy nginx.conf to EC2
         uses: appleboy/scp-action@v1
@@ -157,44 +138,29 @@ jobs:
           source: "./nginx.conf"
           target: "/home/${{ secrets.EC2_USER }}/nginx.conf"
 
-      - name: Debug Check nginx.conf on EC2 after SCP
+      - name: Debug nginx.conf on EC2 after SCP
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            echo "[DEBUG] After SCP:"
             ls -l /home/${{ secrets.EC2_USER }}/nginx.conf
             file /home/${{ secrets.EC2_USER }}/nginx.conf
 
       - name: SSH into Server and Deploy
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            set -e
-            echo "[DEBUG] Docker Compose version:"
-            sudo docker compose version
-            echo "[DEBUG] Docker images:"
-            sudo docker images
-            echo "[DEBUG] Docker ps before deploy:"
-            sudo docker ps -a
             cd /home/${{ secrets.EC2_USER }}
-            echo "[DEBUG] Compose up..."
             sudo docker compose down || true
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/apexo:latest
             sudo docker compose up -d --build
-            echo "[DEBUG] Docker ps after deploy:"
-            sudo docker ps -a
-            echo "[DEBUG] nginx.conf after deploy:"
-            ls -l /home/${{ secrets.EC2_USER }}/nginx.conf
-            file /home/${{ secrets.EC2_USER }}/nginx.conf
-            echo "[DEBUG] App container logs (last 40 lines):"
-            sudo docker logs $(sudo docker ps -qf "name=_app_1") --tail 40 || echo "No app container logs"
-            sudo docker exec $(sudo docker ps -qf "name=_app_1") sh -c '
+
+            sudo docker exec ${{ secrets.EC2_USER }}_app_1 sh -c '
               if [ ! -f .env ]; then cp .env.example .env; fi
               php artisan key:generate --force
               php artisan jwt:secret --force || true
