@@ -148,19 +148,38 @@ jobs:
             ls -l /home/${{ secrets.EC2_USER }}/nginx.conf
             file /home/${{ secrets.EC2_USER }}/nginx.conf
 
-      - name: SSH into Server and Deploy
-        uses: appleboy/ssh-action@v0.1.10
+      - name: Aggressive Docker cleanup and debug nginx.conf before compose up
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd /home/${{ secrets.EC2_USER }}
-            sudo docker compose down || true
+            sudo docker compose down --volumes --remove-orphans || true
+            sudo docker system prune -af --volumes
+            echo "[DEBUG] nginx.conf on host before compose up:"
+            ls -l /home/${{ secrets.EC2_USER }}/nginx.conf
+            file /home/${{ secrets.EC2_USER }}/nginx.conf
+
+      - name: SSH into Server and Deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST_PRODUCTION }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd /home/${{ secrets.EC2_USER }}
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/apexo:latest
             sudo docker compose up -d --build
-
-            sudo docker exec ${{ secrets.EC2_USER }}_app_1 sh -c '
+            echo "[DEBUG] Docker ps after deploy:"
+            sudo docker ps -a
+            echo "[DEBUG] nginx.conf after deploy:"
+            ls -l /home/${{ secrets.EC2_USER }}/nginx.conf
+            file /home/${{ secrets.EC2_USER }}/nginx.conf
+            echo "[DEBUG] App container logs (last 40 lines):"
+            sudo docker logs $(sudo docker ps -qf "name=_app_1") --tail 40 || echo "No app container logs"
+            sudo docker exec $(sudo docker ps -qf "name=_app_1") sh -c '
               if [ ! -f .env ]; then cp .env.example .env; fi
               php artisan key:generate --force
               php artisan jwt:secret --force || true
