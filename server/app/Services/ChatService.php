@@ -40,14 +40,16 @@ class ChatService
         $session->last_activity_at = now();
         $session->save();
 
-        if ($initialMessage)
+        if ($initialMessage) {
+            $sendResult = $this->sendMessage($session->id, $initialMessage);
             return [
                 'session' => $session,
                 'messages' => [
-                    $this->sendMessage($session->id, $initialMessage)['user_message'],
-                    $this->sendMessage($session->id, $initialMessage)['ai_message']
+                    $sendResult['user_message'],
+                    $sendResult['ai_message']
                 ],
             ];
+        }
 
         return [
             'session' => $session,

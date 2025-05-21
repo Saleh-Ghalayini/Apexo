@@ -33,7 +33,10 @@ class GoogleCalendarController extends Controller
         if (!$request->expectsJson() && !str_contains($request->header('accept', ''), 'application/json'))
             return redirect()->away($authUrl);
 
-        return $this->successResponse(['authUrl' => $authUrl, 'state' => $token]);
+        return $this->successResponse([
+            'authUrl' => $authUrl,
+            'state' => $token
+        ]);
     }
 
     public function handleGoogleCallback(Request $request)
@@ -69,7 +72,9 @@ class GoogleCalendarController extends Controller
         if ($user && isset($token['access_token'])) {
             $user->google_calendar_token = $token;
             $user->save();
-            return $this->successResponse(['message' => 'Google Calendar connected!']);
+            return $this->successResponse([
+                'message' => 'Google Calendar connected!'
+            ]);
         }
 
         Log::error('Could not connect Google Calendar', ['user' => $user, 'token' => $token]);
@@ -83,7 +88,9 @@ class GoogleCalendarController extends Controller
             $this->calendarService->setUserTokenOrFail($user);
             $maxResults = $request->query('maxResults', 10);
             $events = $this->calendarService->listUpcomingEvents($maxResults);
-            return $this->successResponse($events);
+            return $this->successResponse([
+                'events' => $events
+            ]);
         } catch (\Exception $e) {
             Log::error('Google Calendar listEvents error', ['user_id' => $user?->id, 'error' => $e->getMessage()]);
             return $this->errorResponse($e->getMessage(), 401);
@@ -98,7 +105,9 @@ class GoogleCalendarController extends Controller
             $eventData = $request->validated();
             $eventData = $this->calendarService->cleanEventData($eventData);
             $event = $this->calendarService->createEvent($eventData);
-            return $this->successResponse($event);
+            return $this->successResponse([
+                'event' => $event
+            ]);
         } catch (\Google_Service_Exception $e) {
             Log::error('Google Calendar API error', ['user_id' => $user?->id, 'error' => $e->getMessage()]);
             return $this->errorResponse('Google Calendar API error: ' . $e->getMessage(), 400);
@@ -130,7 +139,10 @@ class GoogleCalendarController extends Controller
                 'end' => ['dateTime' => $end->toIso8601String(), 'timeZone' => config('app.timezone', 'UTC')],
             ];
             $event = $this->calendarService->createEvent($eventData);
-            return $this->successResponse(['message' => 'Event booked!', 'event' => $event]);
+            return $this->successResponse([
+                'message' => 'Event booked!',
+                'event' => $event
+            ]);
         }
         return $this->errorResponse('Could not parse request. Please use: "book a 1hr [topic] for me in my calendar"', 400);
     }
@@ -147,7 +159,9 @@ class GoogleCalendarController extends Controller
         if ($user instanceof \App\Models\User) {
             $user->google_calendar_token = $token;
             $user->save();
-            return $this->successResponse(['message' => 'Token saved!']);
+            return $this->successResponse([
+                'message' => 'Token saved!'
+            ]);
         }
         return $this->errorResponse('User model not found or invalid', 400);
     }

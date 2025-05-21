@@ -25,34 +25,55 @@ class AIController extends Controller
     public function generateTaskReport()
     {
         $report = $this->aiService->generateTaskReport();
-        return response()->json(['report' => $report]);
+        return response()->json([
+            'success' => true,
+            'payload' => [ 'report' => $report ]
+        ]);
     }
 
     public function sendReport(SendReportRequest $request)
     {
         $validated = $request->validated();
         $sent = $this->aiService->sendReport($validated['report'], $validated['to'], $validated['from_user_id']);
-        if ($sent) return response()->json(['message' => 'Report sent.']);
+        if ($sent) return response()->json([
+            'success' => true,
+            'payload' => [ 'message' => 'Report sent.' ]
+        ]);
 
-        return response()->json(['error' => 'Failed to send report.'], 500);
+        return response()->json([
+            'success' => false,
+            'error' => 'Failed to send report.'
+        ], 500);
     }
 
     public function generateEmail(GenerateEmailRequest $request)
     {
         $data = $request->validated();
         $result = $this->aiService->generateTaskReminderEmail($data);
-        if (!empty($result['success'])) return response()->json(['email' => $result['email']]);
+        if (!empty($result['success'])) return response()->json([
+            'success' => true,
+            'payload' => [ 'email' => $result['email'] ]
+        ]);
 
-        return response()->json(['error' => $result['error'] ?? 'Failed to generate email'], 500);
+        return response()->json([
+            'success' => false,
+            'error' => $result['error'] ?? 'Failed to generate email'
+        ], 500);
     }
 
     public function analyzeMeeting($meetingId)
     {
         $meeting = Meeting::findOrFail($meetingId);
-        if (!$meeting->transcript) return response()->json(['error' => 'Meeting transcript is missing.'], 400);
+        if (!$meeting->transcript) return response()->json([
+            'success' => false,
+            'error' => 'Meeting transcript is missing.'
+        ], 400);
 
         ProcessMeetingAnalyticsJob::dispatch($meeting->id);
-        return response()->json(['message' => 'Meeting analytics job dispatched.']);
+        return response()->json([
+            'success' => true,
+            'payload' => [ 'message' => 'Meeting analytics job dispatched.' ]
+        ]);
     }
 
     public function analyzeEmployee(Request $request, $employeeId)
@@ -60,16 +81,25 @@ class AIController extends Controller
         $user = User::findOrFail($employeeId);
         $periodStart = $request->input('period_start');
         $periodEnd = $request->input('period_end');
-        if (!$periodStart || !$periodEnd) return response()->json(['error' => 'period_start and period_end are required.'], 400);
+        if (!$periodStart || !$periodEnd) return response()->json([
+            'success' => false,
+            'error' => 'period_start and period_end are required.'
+        ], 400);
 
         ProcessEmployeeAnalyticsJob::dispatch($user->id, $periodStart, $periodEnd);
-        return response()->json(['message' => 'Employee analytics job dispatched.']);
+        return response()->json([
+            'success' => true,
+            'payload' => [ 'message' => 'Employee analytics job dispatched.' ]
+        ]);
     }
 
     public function getMeetingAnalytics($meetingId)
     {
         $meeting = Meeting::findOrFail($meetingId);
-        return response()->json(['analytics' => $meeting->analytics]);
+        return response()->json([
+            'success' => true,
+            'payload' => [ 'analytics' => $meeting->analytics ]
+        ]);
     }
 
     public function getEmployeeAnalytics(Request $request, $employeeId)
@@ -80,7 +110,10 @@ class AIController extends Controller
         if ($periodStart) $query->where('period_start', $periodStart);
         if ($periodEnd) $query->where('period_end', $periodEnd);
         $analytics = $query->latest()->first();
-        return response()->json(['analytics' => $analytics ? $analytics->analytics : null]);
+        return response()->json([
+            'success' => true,
+            'payload' => [ 'analytics' => $analytics ? $analytics->analytics : null ]
+        ]);
     }
 
     public function downloadMeetingReport(Request $request, $meetingId)
@@ -121,9 +154,15 @@ class AIController extends Controller
         ]);
         try {
             // Mail::to($data['to'])->send(new ReminderMail($data['subject'], $data['body']));
-            return response()->json(['message' => 'Reminder sent.'], 201);
+            return response()->json([
+                'success' => true,
+                'payload' => [ 'message' => 'Reminder sent.' ]
+            ], 201);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to send reminder.'], 500);
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to send reminder.'
+            ], 500);
         }
     }
 }

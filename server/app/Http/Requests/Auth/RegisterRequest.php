@@ -36,4 +36,24 @@ class RegisterRequest extends FormRequest
             'avatar' => ['sometimes', 'nullable', 'string', 'max:255'],
         ];
     }
+
+    /**
+     * Get the custom validation messages for the request.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'password.confirmed' => 'The password field confirmation does not match.',
+            'password_confirmation.required_with' => 'The password confirmation field is required.',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'password_confirmation' => 'password confirmation',
+        ];
+    }
 }

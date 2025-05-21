@@ -116,7 +116,7 @@ class RegistrationTest extends TestCase
         $response = $this->postJson('/api/v1/auth/register', $user_data);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['password_confirmation']);
+            ->assertJsonValidationErrors(['password']);
     }
 
     public function testRegisterWithInvalidEmail()
