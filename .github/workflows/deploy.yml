@@ -18,9 +18,9 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_DB: testing
+          POSTGRES_DB: apexo_db
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
+          POSTGRES_PASSWORD: Abou@li5-3
         options: >-
           --health-cmd "pg_isready -U postgres"
           --health-interval 10s
@@ -44,9 +44,9 @@ jobs:
           sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env
           sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
           sed -i 's/^DB_PORT=.*/DB_PORT=5432/' .env
-          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=testing/' .env
+          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=apexo_db/' .env
           sed -i 's/^DB_USERNAME=.*/DB_USERNAME=postgres/' .env
-          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=password/' .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=Abou@li5-3/' .env
 
           composer install --no-interaction --prefer-dist
           php artisan key:generate --force
