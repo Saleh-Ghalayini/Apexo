@@ -14,7 +14,7 @@ return new class extends Migration
         if (!Schema::hasTable('integrations')) {
             Schema::create('integrations', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('company_id')->constrained()->onDelete('cascade');
+                $table->foreignId('company_id')->nullable()->constrained()->onDelete('cascade');
                 $table->string('name');
                 $table->string('email')->nullable();
                 $table->enum('provider', ['workspace', 'channel', 'scheduler', 'Email', 'Other']); // Match frontend types
