@@ -127,7 +127,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: rm -rf /home/${{ secrets.EC2_USER }}/nginx.conf
 
-      - name: Debug: Check nginx.conf on EC2 after removal
+      - name: Debug Check nginx.conf on EC2 after removal
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
@@ -147,7 +147,7 @@ jobs:
           source: "./nginx.conf"
           target: "/home/${{ secrets.EC2_USER }}/nginx.conf"
 
-      - name: Debug: Check nginx.conf on EC2 after SCP
+      - name: Debug Check nginx.conf on EC2 after SCP
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
