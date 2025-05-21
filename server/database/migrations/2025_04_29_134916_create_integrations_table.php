@@ -17,8 +17,8 @@ return new class extends Migration
                 $table->foreignId('company_id')->nullable()->constrained()->onDelete('cascade');
                 $table->string('name')->nullable();
                 $table->string('email')->nullable();
-                $table->enum('provider', ['workspace', 'channel', 'scheduler', 'Email', 'Other'])->nullable(); // Match frontend types
-                $table->enum('status', ['active', 'inactive'])->default('inactive');
+                $table->string('provider')->nullable();
+                $table->string('status')->default('inactive');
                 $table->jsonb('settings')->nullable();
                 $table->timestamp('connected_at')->nullable();
                 $table->timestamp('disconnected_at')->nullable();
