@@ -25,9 +25,9 @@ const getIconForProvider = (type: string) => {
 };
 
 const AddIntegrationModal: React.FC<AddIntegrationModalProps> = ({ show, onClose }) => {
-  const [providers, setProviders] = useState<any[]>([]);
+  const [providers, setProviders] = useState<{ id: string; name: string; type: string; description: string; iconUrl: string }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   useEffect(() => {
     if (show) {

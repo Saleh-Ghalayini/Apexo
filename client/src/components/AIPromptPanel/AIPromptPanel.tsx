@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useApi } from '../../hooks/useApi';
+import useApi from '../../hooks/useApi';
 import Button from '../../components/Button';
 import Toast from '../../components/Toast';
 import './AIPromptPanel.css';
@@ -10,8 +10,8 @@ interface AIPromptStatus {
   status: 'pending' | 'processing' | 'completed' | 'failed';
   operation_type: 'create' | 'update' | 'delete' | 'query';
   created_at: string;
-  ai_response?: any;
-  notion_response?: any;
+  ai_response?: unknown;
+  notion_response?: unknown;
   error_message?: string;
 }
 
@@ -163,7 +163,7 @@ const AIPromptPanel: React.FC = () => {
                   {item.status === 'failed' && (
                     <Button
                       onClick={() => handleRetry(item.id)}
-                      size="small"
+                      size="sm"
                       variant="secondary"
                       disabled={loading}
                     >
@@ -171,7 +171,7 @@ const AIPromptPanel: React.FC = () => {
                     </Button>
                   )}
                   <Button
-                    size="small"
+                    size="sm"
                     variant="text"
                     onClick={() => {
                       // View details logic

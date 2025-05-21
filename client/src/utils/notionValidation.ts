@@ -112,6 +112,7 @@ export class NotionValidation {
       const savedDatabases = await IntegrationService.getSavedNotionDatabases();
 
       if (savedDatabases && savedDatabases.length > 0) {
+        // @ts-expect-error: database_id may exist on backend response
         const savedDb = savedDatabases.find(db => db.database_id === firstDb.id);
 
         if (savedDb) {

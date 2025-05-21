@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 // import Loading from '../Loading';
 
 const AuthRedirect: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
 
   // if (loading) {

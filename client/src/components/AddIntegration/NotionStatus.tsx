@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { IntegrationService } from '../../services/integrationService';
+import type { Integration } from '../../services/integrationService';
 
 export default function NotionStatus() {
   const [status, setStatus] = useState<'connected' | 'not_connected' | 'loading'>('loading');
@@ -8,13 +9,15 @@ export default function NotionStatus() {
   useEffect(() => {
     async function checkStatus() {
       try {
-        const integrations = await IntegrationService.getIntegrations();
+        const integrations: Integration[] = await IntegrationService.getIntegrations();
         const notionIntegration = integrations.find(
           (i) => i.provider === 'notion' && i.status === 'active'
         );
         if (notionIntegration) {
           setStatus('connected');
+          // @ts-expect-error: metadata may exist on backend response
           if (notionIntegration.metadata?.workspace_name) {
+            // @ts-expect-error: metadata may exist on backend response
             setWorkspaceName(notionIntegration.metadata.workspace_name);
           }
         } else {
