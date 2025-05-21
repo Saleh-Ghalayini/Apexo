@@ -3,10 +3,11 @@ import './Button.css';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children: React.ReactNode;
-    variant?: 'primary' | 'secondary' | 'outline';
+    variant?: 'primary' | 'secondary' | 'outline' | 'text';
     size?: 'sm' | 'md' | 'lg';
     icon?: React.ReactNode;
     fullWidth?: boolean;
+    loading?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({ 
@@ -16,6 +17,7 @@ const Button: React.FC<ButtonProps> = ({
     size = 'md',
     icon,
     fullWidth = false,
+    loading = false,
     ...rest 
 }) => {
     const buttonClasses = [
@@ -28,9 +30,9 @@ const Button: React.FC<ButtonProps> = ({
     ].filter(Boolean).join(' ');
 
     return(
-        <button className={buttonClasses} {...rest}>
+        <button className={buttonClasses} disabled={loading || rest.disabled} {...rest}>
             {icon && <span className="btn-icon-wrapper">{icon}</span>}
-            {children}
+            {loading ? <span className="btn-loading-spinner"></span> : children}
         </button>
     );
 }

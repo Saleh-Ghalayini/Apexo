@@ -6,21 +6,24 @@ interface ToastProps {
   type: 'success' | 'error' | 'info';
   duration?: number;
   onClose: () => void;
+  autoClose?: boolean;
+  autoCloseTime?: number;
 }
 
-const Toast: React.FC<ToastProps> = ({ message, type, duration = 3000, onClose }) => {
+const Toast: React.FC<ToastProps> = ({ message, type, duration = 3000, onClose, autoClose = true, autoCloseTime }) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    if (!autoClose) return;
     const timer = setTimeout(() => {
       setVisible(false);
       setTimeout(() => {
         onClose();
       }, 300);
-    }, duration);
+    }, autoCloseTime || duration);
 
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  }, [duration, onClose, autoClose, autoCloseTime]);
 
   return (
     <div className={`toast ${type} ${visible ? 'visible' : 'hidden'}`}>
