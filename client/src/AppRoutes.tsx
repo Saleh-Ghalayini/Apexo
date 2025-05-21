@@ -12,7 +12,6 @@ import AuthRedirect from './components/AuthRedirect';
 import GoogleCalendarCallback from './pages/Integrations/GoogleCalendarCallback';
 import NotFound from './pages/NotFound';
 
-
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<LandingPage />} />
