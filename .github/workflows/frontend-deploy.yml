@@ -27,7 +27,7 @@ jobs:
       - name: Copy frontend build to EC2
         uses: appleboy/scp-action@v1
         with:
-          host: ${{ secrets.EC2_HOST_STAGING }}
+          host: ${{ secrets.EC2_HOST_PRODUCTION }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           source: "client/dist"
@@ -36,7 +36,7 @@ jobs:
       - name: Upload frontend build to S3 from EC2
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.EC2_HOST_STAGING }}
+          host: ${{ secrets.EC2_HOST_PRODUCTION }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |

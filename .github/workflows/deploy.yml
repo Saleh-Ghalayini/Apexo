@@ -116,6 +116,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Copy nginx.conf to EC2
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST_PRODUCTION }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "nginx.conf"
+          target: "/home/${{ secrets.EC2_USER }}/nginx.conf"
+
       - name: SSH into Server and Deploy
         uses: appleboy/ssh-action@v0.1.10
         with:
