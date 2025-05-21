@@ -15,6 +15,9 @@ class GoogleCalendarService
     {
         $this->client = new Google_Client();
         $credentialsPath = config('services.google_calendar.credentials_path');
+        if (!file_exists(base_path($credentialsPath))) {
+            throw new \App\Exceptions\MissingGoogleCredentialsException();
+        }
         $this->client->setAuthConfig(base_path($credentialsPath));
         $this->client->setScopes([
             Google_Service_Calendar::CALENDAR,

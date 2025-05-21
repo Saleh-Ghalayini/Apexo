@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Services\GoogleCalendarService;
 use App\Http\Requests\GoogleCalendarEventRequest;
+use App\Exceptions\MissingGoogleCredentialsException;
 
 class GoogleCalendarController extends Controller
 {
@@ -22,86 +23,83 @@ class GoogleCalendarController extends Controller
 
     public function redirectToGoogle(Request $request)
     {
-        $token = $request->query('jwt');
-        Log::info('Google OAuth redirectToGoogle received jwt', ['jwt' => $token]);
-        if (!$token && $request->hasHeader('Authorization'))
-            if (preg_match('/Bearer\s+(.*)$/i', $request->header('Authorization'), $matches))
-                $token = $matches[1];
+        try {
+            $token = $request->query('jwt');
+            Log::info('Google OAuth redirectToGoogle received jwt', ['jwt' => $token]);
+            if (!$token && $request->hasHeader('Authorization'))
+                if (preg_match('/Bearer\s+(.*)$/i', $request->header('Authorization'), $matches))
+                    $token = $matches[1];
 
-        // Check for missing credentials file
-        $credentialsPath = config('services.google_calendar.credentials_path');
-        if (!file_exists(base_path($credentialsPath))) {
-            return $this->errorResponse('Google Calendar credentials not configured', 422);
+            $authUrl = $this->calendarService->getAuthUrlWithState($token);
+            Log::info('Google OAuth redirect URL', ['authUrl' => $authUrl, 'state' => $token]);
+            if (!$request->expectsJson() && !str_contains($request->header('accept', ''), 'application/json'))
+                return redirect()->away($authUrl);
+
+            return $this->successResponse([
+                'authUrl' => $authUrl,
+                'state' => $token
+            ]);
+        } catch (MissingGoogleCredentialsException $e) {
+            return $this->errorResponse($e->getMessage(), 422);
         }
-
-        $authUrl = $this->calendarService->getAuthUrlWithState($token);
-        Log::info('Google OAuth redirect URL', ['authUrl' => $authUrl, 'state' => $token]);
-        if (!$request->expectsJson() && !str_contains($request->header('accept', ''), 'application/json'))
-            return redirect()->away($authUrl);
-
-        return $this->successResponse([
-            'authUrl' => $authUrl,
-            'state' => $token
-        ]);
     }
 
     public function handleGoogleCallback(Request $request)
     {
-        Log::info('Google OAuth callback query', $request->query());
-        if ($request->query('error')) return $this->errorResponse('Authorization failed: ' . $request->query('error'), 400);
-
-        $code = $request->query('code');
-        $state = $request->query('state');
-        Log::info('Google OAuth callback received', ['code' => $code, 'state' => $state]);
-        if (!$code) return $this->errorResponse('Missing code', 400);
-
-        $user = null;
-        if ($state) {
-            try {
-                $payload = app('tymon.jwt.auth')->setToken($state)->getPayload();
-                $userId = $payload->get('sub');
-                $user = \App\Models\User::find($userId);
-            } catch (\Exception $e) {
-                Log::error('JWT decode failed', ['message' => $e->getMessage(), 'state' => $state]);
-            }
-        } else {
-            $user = Auth::user();
-        }
-
         try {
+            Log::info('Google OAuth callback query', $request->query());
+            if ($request->query('error')) return $this->errorResponse('Authorization failed: ' . $request->query('error'), 400);
+
+            $code = $request->query('code');
+            $state = $request->query('state');
+            Log::info('Google OAuth callback received', ['code' => $code, 'state' => $state]);
+            if (!$code) return $this->errorResponse('Missing code', 400);
+
+            $user = null;
+            if ($state) {
+                try {
+                    $payload = app('tymon.jwt.auth')->setToken($state)->getPayload();
+                    $userId = $payload->get('sub');
+                    $user = \App\Models\User::find($userId);
+                } catch (\Exception $e) {
+                    Log::error('JWT decode failed', ['message' => $e->getMessage(), 'state' => $state]);
+                }
+            } else {
+                $user = Auth::user();
+            }
+
             $token = $this->calendarService->fetchAccessTokenWithAuthCode($code);
+
+            if ($user && isset($token['access_token'])) {
+                $user->google_calendar_token = $token;
+                $user->save();
+                return $this->successResponse([
+                    'message' => 'Google Calendar connected!'
+                ]);
+            }
+
+            Log::error('Could not connect Google Calendar', ['user' => $user, 'token' => $token]);
+            return $this->errorResponse('Could not connect Google Calendar', 400);
+        } catch (MissingGoogleCredentialsException $e) {
+            return $this->errorResponse($e->getMessage(), 422);
         } catch (\Exception $e) {
-            Log::error('Error fetching access token', ['message' => $e->getMessage()]);
-            return $this->errorResponse('Token exchange failed', 400);
+            Log::error('GoogleCalendarController handleGoogleCallback error', ['error' => $e->getMessage()]);
+            return $this->errorResponse('Internal server error', 500);
         }
-
-        if ($user && isset($token['access_token'])) {
-            $user->google_calendar_token = $token;
-            $user->save();
-            return $this->successResponse([
-                'message' => 'Google Calendar connected!'
-            ]);
-        }
-
-        Log::error('Could not connect Google Calendar', ['user' => $user, 'token' => $token]);
-        return $this->errorResponse('Could not connect Google Calendar', 400);
     }
 
     public function listEvents(Request $request)
     {
-        $user = Auth::user();
-        // Check for missing credentials file
-        $credentialsPath = config('services.google_calendar.credentials_path');
-        if (!file_exists(base_path($credentialsPath))) {
-            return $this->errorResponse('Google Calendar credentials not configured', 422);
-        }
         try {
+            $user = Auth::user();
             $this->calendarService->setUserTokenOrFail($user);
             $maxResults = $request->query('maxResults', 10);
             $events = $this->calendarService->listUpcomingEvents($maxResults);
             return $this->successResponse([
                 'events' => $events
             ]);
+        } catch (MissingGoogleCredentialsException $e) {
+            return $this->errorResponse($e->getMessage(), 422);
         } catch (\Exception $e) {
             Log::error('Google Calendar listEvents error', ['user_id' => $user?->id, 'error' => $e->getMessage()]);
             return $this->errorResponse($e->getMessage(), 401);
@@ -110,13 +108,8 @@ class GoogleCalendarController extends Controller
 
     public function createEvent(GoogleCalendarEventRequest $request)
     {
-        $user = Auth::user();
-        // Check for missing credentials file
-        $credentialsPath = config('services.google_calendar.credentials_path');
-        if (!file_exists(base_path($credentialsPath))) {
-            return $this->errorResponse('Google Calendar credentials not configured', 422);
-        }
         try {
+            $user = Auth::user();
             $this->calendarService->setUserTokenOrFail($user);
             $eventData = $request->validated();
             $eventData = $this->calendarService->cleanEventData($eventData);
@@ -124,6 +117,8 @@ class GoogleCalendarController extends Controller
             return $this->successResponse([
                 'event' => $event
             ]);
+        } catch (MissingGoogleCredentialsException $e) {
+            return $this->errorResponse($e->getMessage(), 422);
         } catch (\Google_Service_Exception $e) {
             Log::error('Google Calendar API error', ['user_id' => $user?->id, 'error' => $e->getMessage()]);
             return $this->errorResponse('Google Calendar API error: ' . $e->getMessage(), 400);

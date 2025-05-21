@@ -27,7 +27,7 @@ class AIController extends Controller
         $report = $this->aiService->generateTaskReport();
         return response()->json([
             'success' => true,
-            'payload' => [ 'report' => $report ]
+            'payload' => ['report' => $report]
         ]);
     }
 
@@ -37,7 +37,7 @@ class AIController extends Controller
         $sent = $this->aiService->sendReport($validated['report'], $validated['to'], $validated['from_user_id']);
         if ($sent) return response()->json([
             'success' => true,
-            'payload' => [ 'message' => 'Report sent.' ]
+            'payload' => ['message' => 'Report sent.']
         ]);
 
         return response()->json([
@@ -52,7 +52,7 @@ class AIController extends Controller
         $result = $this->aiService->generateTaskReminderEmail($data);
         if (!empty($result['success'])) return response()->json([
             'success' => true,
-            'payload' => [ 'email' => $result['email'] ]
+            'payload' => ['email' => $result['email']]
         ]);
 
         return response()->json([
@@ -72,7 +72,7 @@ class AIController extends Controller
         ProcessMeetingAnalyticsJob::dispatch($meeting->id);
         return response()->json([
             'success' => true,
-            'payload' => [ 'message' => 'Meeting analytics job dispatched.' ]
+            'payload' => ['message' => 'Meeting analytics job dispatched.']
         ]);
     }
 
@@ -89,7 +89,7 @@ class AIController extends Controller
         ProcessEmployeeAnalyticsJob::dispatch($user->id, $periodStart, $periodEnd);
         return response()->json([
             'success' => true,
-            'payload' => [ 'message' => 'Employee analytics job dispatched.' ]
+            'payload' => ['message' => 'Employee analytics job dispatched.']
         ]);
     }
 
@@ -98,7 +98,7 @@ class AIController extends Controller
         $meeting = Meeting::findOrFail($meetingId);
         return response()->json([
             'success' => true,
-            'payload' => [ 'analytics' => $meeting->analytics ]
+            'payload' => ['analytics' => $meeting->analytics]
         ]);
     }
 
@@ -112,7 +112,7 @@ class AIController extends Controller
         $analytics = $query->latest()->first();
         return response()->json([
             'success' => true,
-            'payload' => [ 'analytics' => $analytics ? $analytics->analytics : null ]
+            'payload' => ['analytics' => $analytics ? $analytics->analytics : null]
         ]);
     }
 
@@ -156,7 +156,7 @@ class AIController extends Controller
             // Mail::to($data['to'])->send(new ReminderMail($data['subject'], $data['body']));
             return response()->json([
                 'success' => true,
-                'payload' => [ 'message' => 'Reminder sent.' ]
+                'payload' => ['message' => 'Reminder sent.']
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
