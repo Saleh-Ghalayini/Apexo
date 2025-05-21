@@ -109,7 +109,7 @@ jobs:
           target: "/home/${{ secrets.EC2_USER }}/"
 
   Deploy-To-Server:
-    needs: Build-And-Push-Docker
+    needs: Copy-docker-compose-To-EC2
     runs-on: ubuntu-latest
 
     steps:
