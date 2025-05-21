@@ -124,9 +124,9 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd /home/${{ secrets.EC2_USER }}
-            sudo docker-compose down || true
+            sudo docker compose down || true
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/apexo:latest
-            sudo docker-compose up -d --build
+            sudo docker compose up -d --build
 
             sudo docker exec ${{ secrets.EC2_USER }}_app_1 sh -c '
               if [ ! -f .env ]; then cp .env.example .env; fi
@@ -137,3 +137,43 @@ jobs:
               php artisan cache:clear
               php artisan config:cache
             '
+
+  Build-And-Deploy-Frontend:
+    needs: Deploy-To-Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies and build
+        working-directory: ./client
+        run: |
+          npm install
+          npm run build
+
+      - name: Copy frontend build to EC2
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST_STAGING }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "client/dist"
+          target: "/home/${{ secrets.EC2_USER }}/frontend-dist"
+
+      - name: Upload frontend build to S3 from EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST_STAGING }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            if ! command -v aws &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y awscli
+            fi
+            aws s3 sync /home/${{ secrets.EC2_USER }}/frontend-dist/ s3://fse-final-saleh --delete
+            rm -rf /home/${{ secrets.EC2_USER }}/frontend-dist
