@@ -148,17 +148,18 @@ jobs:
           source: "nginx.conf"
           target: "/home/${{ secrets.EC2_USER }}/nginx.conf.tmp"
 
-      - name: Move nginx.conf into place and verify
+      - name: Force move nginx.conf into place and verify
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            rm -f /home/${{ secrets.EC2_USER }}/nginx.conf || true
-            mv /home/${{ secrets.EC2_USER }}/nginx.conf.tmp /home/${{ secrets.EC2_USER }}/nginx.conf
+            rm -rf /home/${{ secrets.EC2_USER }}/nginx.conf || true
+            cp /home/${{ secrets.EC2_USER }}/nginx.conf.tmp /home/${{ secrets.EC2_USER }}/nginx.conf
             ls -ld /home/${{ secrets.EC2_USER }}/nginx.conf
             file /home/${{ secrets.EC2_USER }}/nginx.conf
+            ls -l /home/${{ secrets.EC2_USER }}/
 
       - name: Aggressive Docker cleanup and debug nginx.conf before compose up
         uses: appleboy/ssh-action@v1
