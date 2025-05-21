@@ -28,6 +28,12 @@ class GoogleCalendarController extends Controller
             if (preg_match('/Bearer\s+(.*)$/i', $request->header('Authorization'), $matches))
                 $token = $matches[1];
 
+        // Check for missing credentials file
+        $credentialsPath = config('services.google_calendar.credentials_path');
+        if (!file_exists(base_path($credentialsPath))) {
+            return $this->errorResponse('Google Calendar credentials not configured', 422);
+        }
+
         $authUrl = $this->calendarService->getAuthUrlWithState($token);
         Log::info('Google OAuth redirect URL', ['authUrl' => $authUrl, 'state' => $token]);
         if (!$request->expectsJson() && !str_contains($request->header('accept', ''), 'application/json'))
@@ -84,6 +90,11 @@ class GoogleCalendarController extends Controller
     public function listEvents(Request $request)
     {
         $user = Auth::user();
+        // Check for missing credentials file
+        $credentialsPath = config('services.google_calendar.credentials_path');
+        if (!file_exists(base_path($credentialsPath))) {
+            return $this->errorResponse('Google Calendar credentials not configured', 422);
+        }
         try {
             $this->calendarService->setUserTokenOrFail($user);
             $maxResults = $request->query('maxResults', 10);
@@ -100,6 +111,11 @@ class GoogleCalendarController extends Controller
     public function createEvent(GoogleCalendarEventRequest $request)
     {
         $user = Auth::user();
+        // Check for missing credentials file
+        $credentialsPath = config('services.google_calendar.credentials_path');
+        if (!file_exists(base_path($credentialsPath))) {
+            return $this->errorResponse('Google Calendar credentials not configured', 422);
+        }
         try {
             $this->calendarService->setUserTokenOrFail($user);
             $eventData = $request->validated();
