@@ -9,7 +9,9 @@ return new class extends Migration
     public function up()
     {
         Schema::table('integrations', function (Blueprint $table) {
-            $table->string('provider')->nullable()->after('user_id');
+            if (!Schema::hasColumn('integrations', 'provider')) {
+                $table->string('provider')->nullable()->after('user_id');
+            }
         });
     }
 
