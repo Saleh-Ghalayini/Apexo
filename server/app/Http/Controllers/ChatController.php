@@ -49,10 +49,10 @@ class ChatController extends Controller
                 'payload' => $result
             ], 201);
         } catch (\Throwable $e) {
-            \Log::error('Chat session creation failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+            // \Log::error('Chat session creation failed', [
+            //     'error' => $e->getMessage(),
+            //     'trace' => $e->getTraceAsString(),
+            // ]);
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage()
