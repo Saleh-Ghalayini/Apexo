@@ -41,7 +41,10 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             if ! command -v aws &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y awscli
+              sudo apt-get update && sudo apt-get install -y python3-pip
+              pip3 install --user awscli
+              export PATH=$PATH:/home/${USER}/.local/bin
             fi
+            export PATH=$PATH:/home/${USER}/.local/bin
             aws s3 sync /home/${{ secrets.EC2_USER }}/frontend-dist/ s3://fse-final-saleh --delete
             rm -rf /home/${{ secrets.EC2_USER }}/frontend-dist
