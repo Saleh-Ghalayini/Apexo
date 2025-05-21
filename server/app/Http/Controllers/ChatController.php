@@ -18,7 +18,10 @@ class ChatController extends Controller
         $status = $request->query('status');
         $sessions = $this->chatService->getSessions($status);
 
-        return response()->json($sessions);
+        return response()->json([
+            'success' => true,
+            'payload' => $sessions
+        ]);
     }
 
     public function getSession($id, $request)
@@ -28,7 +31,10 @@ class ChatController extends Controller
 
         $session = $this->chatService->getSession($id, $limit, $since);
 
-        return response()->json($session);
+        return response()->json([
+            'success' => true,
+            'payload' => $session
+        ]);
     }
 
     public function createSession($request)
@@ -38,7 +44,11 @@ class ChatController extends Controller
 
         $result = $this->chatService->createSession($title, $initialMessage);
 
-        return response()->json($result, 201);
+        // Always wrap in { success, payload } for API consistency
+        return response()->json([
+            'success' => true,
+            'payload' => $result
+        ], 201);
     }
 
     public function sendMessage($id, $request)
@@ -46,20 +56,29 @@ class ChatController extends Controller
         $message = $request->input('message');
         $result = $this->chatService->sendMessage($id, $message);
 
-        return response()->json($result);
+        return response()->json([
+            'success' => true,
+            'payload' => $result
+        ]);
     }
 
     public function archiveSession($id)
     {
         $session = $this->chatService->archiveSession($id);
 
-        return response()->json($session);
+        return response()->json([
+            'success' => true,
+            'payload' => $session
+        ]);
     }
 
     public function deleteSession($id)
     {
         $result = $this->chatService->deleteSession($id);
 
-        return response()->json(['deleted' => $result]);
+        return response()->json([
+            'success' => true,
+            'payload' => ['deleted' => $result]
+        ]);
     }
 }
