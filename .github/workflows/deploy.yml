@@ -99,7 +99,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Copy docker-compose to EC2
+      - name: Copy docker-compose.yaml to EC2
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
@@ -116,65 +116,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Debug nginx.conf existence
-        run: |
-          ls -l ./nginx.conf
-          file ./nginx.conf
-
-      - name: Remove nginx.conf directory if exists
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST_PRODUCTION }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          script: rm -rf /home/${{ secrets.EC2_USER }}/nginx.conf
-
-      - name: Ensure nginx.conf is removed from EC2 host
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST_PRODUCTION }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          script: |
-            rm -f /home/${{ secrets.EC2_USER }}/nginx.conf || true
-            rm -rf /home/${{ secrets.EC2_USER }}/nginx.conf || true
-
-      - name: Copy nginx.conf to EC2 (temp)
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST_PRODUCTION }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          source: "nginx.conf"
-          target: "/home/${{ secrets.EC2_USER }}/nginx.conf.tmp"
-
-      - name: Force move nginx.conf into place and verify
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST_PRODUCTION }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          script: |
-            rm -rf /home/${{ secrets.EC2_USER }}/nginx.conf || true
-            cp /home/${{ secrets.EC2_USER }}/nginx.conf.tmp /home/${{ secrets.EC2_USER }}/nginx.conf
-            ls -ld /home/${{ secrets.EC2_USER }}/nginx.conf
-            file /home/${{ secrets.EC2_USER }}/nginx.conf
-            ls -l /home/${{ secrets.EC2_USER }}/
-
-      - name: Aggressive Docker cleanup and debug nginx.conf before compose up
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST_PRODUCTION }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          script: |
-            cd /home/${{ secrets.EC2_USER }}
-            sudo docker compose down --volumes --remove-orphans || true
-            sudo docker system prune -af --volumes
-            echo "[DEBUG] nginx.conf on host before compose up:"
-            ls -l /home/${{ secrets.EC2_USER }}/nginx.conf
-            file /home/${{ secrets.EC2_USER }}/nginx.conf
-
       - name: SSH into Server and Deploy
         uses: appleboy/ssh-action@v1
         with:
@@ -183,24 +124,10 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd /home/${{ secrets.EC2_USER }}
+            sudo docker compose down || true
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/apexo:latest
             sudo docker compose up -d --build
-            echo "[DEBUG] Docker ps after deploy:"
             sudo docker ps -a
-            echo "[DEBUG] nginx.conf after deploy:"
-            ls -l /home/${{ secrets.EC2_USER }}/nginx.conf
-            file /home/${{ secrets.EC2_USER }}/nginx.conf
-            echo "[DEBUG] App container logs (last 40 lines):"
-            sudo docker logs $(sudo docker ps -qf "name=_app_1") --tail 40 || echo "No app container logs"
-            sudo docker exec $(sudo docker ps -qf "name=_app_1") sh -c '
-              if [ ! -f .env ]; then cp .env.example .env; fi
-              php artisan key:generate --force
-              php artisan jwt:secret --force || true
-              php artisan migrate --force
-              php artisan config:clear
-              php artisan cache:clear
-              php artisan config:cache
-            '
 
   Build-And-Deploy-Frontend:
     needs: Deploy-To-Server
