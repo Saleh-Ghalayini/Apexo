@@ -108,7 +108,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Debug: Check nginx.conf on EC2 before removal
+      - name: Debug Check nginx.conf on EC2 before removal
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
