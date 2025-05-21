@@ -1,49 +1,58 @@
-- name: Setup Node.js environment
-  uses: actions/setup-node@v3
-  with:
-    node-version: "22"
-- name: Check Node.js version
-  run: node -v
-- name: Check npm version
-  run: npm -v
+name: Build and Deploy Frontend to S3 via EC2
 
-- name: Install dependencies
-  working-directory: ./client
-  run: npm install --legacy-peer-deps
-- name: Build React App
-  working-directory: ./client
-  run: npm run build
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
-- name: Debug: List frontend build output
-  run: |
-    ls -l client/dist || true
-    ls -l client/dist/index.html || true
-
-- name: Uploading React App to EC2
-  uses: appleboy/scp-action@v1
-  with:
-    host: ${{ secrets.EC2_HOST }}
-    username: ${{ secrets.EC2_USER }}
-    key: ${{ secrets.EC2_KEY }}
-    source: "client/dist"
-    target: "/home/${{ secrets.EC2_USER }}/frontend-dist"
-- name: Uploading React App to S3
-  uses: appleboy/ssh-action@v1
-  with:
-    host: ${{ secrets.EC2_HOST }}
-    username: ${{ secrets.EC2_USER }}
-    key: ${{ secrets.EC2_KEY }}
-    script: |
-      if ! command -v aws &> /dev/null; then
-        sudo apt-get update && sudo apt-get install -y unzip
-        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-        unzip awscliv2.zip
-        sudo ./aws/install
-        export PATH=$PATH:/usr/local/bin
-      fi
-      export PATH=$PATH:/usr/local/bin
-      ls -l /home/${{ secrets.EC2_USER }}/frontend-dist || true
-      ls -l /home/${{ secrets.EC2_USER }}/frontend-dist/index.html || true
-      aws --version
-      aws s3 sync /home/${{ secrets.EC2_USER }}/frontend-dist/ s3://fse-final-saleh --delete
-      rm -rf /home/${{ secrets.EC2_USER }}/frontend-dist
+jobs:
+  Build-And-Deploy-Frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+      - name: Check Node.js version
+        run: node -v
+      - name: Check npm version
+        run: npm -v
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm install --legacy-peer-deps
+      - name: Build React App
+        working-directory: ./client
+        run: npm run build
+      - name: Debug: List frontend build output
+        run: |
+          ls -l client/dist || true
+          ls -l client/dist/index.html || true
+      - name: Uploading React App to EC2
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "client/dist"
+          target: "/home/${{ secrets.EC2_USER }}/frontend-dist"
+      - name: Uploading React App to S3
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            if ! command -v aws &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y unzip
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip
+              sudo ./aws/install
+              export PATH=$PATH:/usr/local/bin
+            fi
+            export PATH=$PATH:/usr/local/bin
+            ls -l /home/${{ secrets.EC2_USER }}/frontend-dist || true
+            ls -l /home/${{ secrets.EC2_USER }}/frontend-dist/index.html || true
+            aws --version
+            aws s3 sync /home/${{ secrets.EC2_USER }}/frontend-dist/ s3://fse-final-saleh --delete
+            rm -rf /home/${{ secrets.EC2_USER }}/frontend-dist
