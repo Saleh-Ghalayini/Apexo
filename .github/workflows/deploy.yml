@@ -64,7 +64,7 @@ jobs:
         run: |
           echo "[DEBUG] DB config in .env before tests:" && grep DB_ .env
 
-      - name: Debug: Test Postgres connection with psql
+      - name: Debug Test Postgres connection with psql
         run: |
           sudo apt-get update && sudo apt-get install -y postgresql-client
           PGPASSWORD=Abou@li5-3 psql -h 127.0.0.1 -U postgres -d apexo_db -c '\conninfo' || echo "[DEBUG] psql connection failed"
